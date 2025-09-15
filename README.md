@@ -1,11 +1,55 @@
-# React + TypeScript + Vite
+# HappyRow Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript + Vite application with automated deployment via GitHub Actions.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ⚡️ Vite for fast development and building
+- ⚛️ React 19 with TypeScript
+- 🧪 Vitest for testing
+- 🐳 Docker support with multi-stage builds
+- 🚀 Automated deployment with GitHub Actions
+- 📦 GitHub Container Registry integration
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm run test
+
+# Build for production
+npm run build
+```
+
+## Deployment
+
+This project includes automated deployment via GitHub Actions:
+
+- **GitHub Pages**: Automatic deployment to `https://[username].github.io/happyrow-front/`
+- **Docker**: Containerized deployment with GitHub Container Registry
+- **Pull Requests**: Automated testing and validation
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+## Docker
+
+```bash
+# Development
+npm run docker:dev
+
+# Production
+npm run docker:prod
+
+# Build specific targets
+npm run docker:build:dev
+npm run docker:build:prod
+```
 
 ## Expanding the ESLint configuration
 
