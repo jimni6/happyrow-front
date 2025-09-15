@@ -1,0 +1,58 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Run linter
+      run: npm run lint
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Build application
+      run: npm run build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        retention-days: 30
+
+    - name: Build summary
+      run: |
+        echo "## 🚀 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Linting passed" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Build completed successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Build Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Build files are available as artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Retention: 30 days" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🌐 Deployment Options" >> $GITHUB_STEP_SUMMARY
+        echo "To deploy to GitHub Pages:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Go to Settings → Pages" >> $GITHUB_STEP_SUMMARY
+        echo "2. Set Source to 'GitHub Actions'" >> $GITHUB_STEP_SUMMARY
+        echo "3. Use the 'Deploy to GitHub Pages' workflow" >> $GITHUB_STEP_SUMMARY
