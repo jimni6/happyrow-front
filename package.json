@@ -8,7 +8,16 @@
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview",
-        "test": "vitest"
+        "test": "vitest",
+        "docker:dev": "docker-compose --profile dev up --build",
+        "docker:prod": "docker-compose --profile prod up --build",
+        "docker:build": "docker build -t happyrow-front .",
+        "docker:build:dev": "docker build --target development -t happyrow-front:dev .",
+        "docker:build:prod": "docker build --target production -t happyrow-front:prod .",
+        "docker:run:dev": "docker run -p 5173:5173 -v $(pwd):/app -v /app/node_modules happyrow-front:dev",
+        "docker:run:prod": "docker run -p 80:80 happyrow-front:prod",
+        "docker:stop": "docker-compose down",
+        "docker:clean": "docker system prune -f && docker volume prune -f"
     },
     "dependencies": {
         "react": "^19.1.1",

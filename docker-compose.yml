@@ -1,0 +1,39 @@
+services:
+  # Development service
+  happyrow-front-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_BASE_URL=/api
+    networks:
+      - happyrow-network
+    profiles:
+      - dev
+
+  # Production service
+  happyrow-front-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - happyrow-network
+    profiles:
+      - prod
+    restart: unless-stopped
+
+networks:
+  happyrow-network:
+    driver: bridge
