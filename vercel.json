@@ -30,10 +30,5 @@
   ],
   "env": {
     "VITE_API_BASE_URL": "https://happyrow-core.onrender.com"
-  },
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "@vercel/node"
-    }
   }
 }
