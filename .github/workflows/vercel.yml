@@ -1,82 +1,82 @@
-name: Deploy to Vercel
-
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test --if-present
-
-      - name: Run linter
-        run: npm run lint --if-present
-
-      - name: Build project
-        run: npm run build --if-present
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Deploy to Vercel
-        id: vercel-deploy
-        run: |
-          # Deploy directly without pre-building (Vercel will build on their servers)
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "🚀 Deploying to production..."
-            url=$(vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes)
-          else
-            echo "🔍 Deploying preview..."
-            url=$(vercel --token=${{ secrets.VERCEL_TOKEN }} --yes)
-          fi
-          echo "preview-url=$url" >> $GITHUB_OUTPUT
-          echo "Deployment URL: $url"
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Comment PR with preview URL
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const deploymentUrl = '${{ steps.vercel-deploy.outputs.preview-url }}';
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 **Vercel Preview Deployment**\n\n✅ Your changes have been deployed!\n\n🔗 **Preview URL:** ${deploymentUrl}\n\n*This preview will be updated automatically with new commits.*`
-            });
-
-      - name: Deployment Summary
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "🚀 **Production Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
-            echo "✅ Production URL: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "🔍 **Preview Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
-            echo "✅ Preview URL: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Build Stats" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Linting passed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Build completed" >> $GITHUB_STEP_SUMMARY
+#name: Deploy to Vercel
+#
+#on:
+#  push:
+#    branches: [ main, master ]
+#  pull_request:
+#    branches: [ main, master ]
+#  workflow_dispatch:
+#
+#jobs:
+#  deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
+#          cache: 'npm'
+#
+#      - name: Install dependencies
+#        run: npm ci
+#
+#      - name: Run tests
+#        run: npm run test --if-present
+#
+#      - name: Run linter
+#        run: npm run lint --if-present
+#
+#      - name: Build project
+#        run: npm run build --if-present
+#
+#      - name: Install Vercel CLI
+#        run: npm install --global vercel@latest
+#
+#      - name: Deploy to Vercel
+#        id: vercel-deploy
+#        run: |
+#          # Deploy directly without pre-building (Vercel will build on their servers)
+#          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+#            echo "🚀 Deploying to production..."
+#            url=$(vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes)
+#          else
+#            echo "🔍 Deploying preview..."
+#            url=$(vercel --token=${{ secrets.VERCEL_TOKEN }} --yes)
+#          fi
+#          echo "preview-url=$url" >> $GITHUB_OUTPUT
+#          echo "Deployment URL: $url"
+#        env:
+#          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+#          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+#
+#      - name: Comment PR with preview URL
+#        if: github.event_name == 'pull_request'
+#        uses: actions/github-script@v7
+#        with:
+#          script: |
+#            const deploymentUrl = '${{ steps.vercel-deploy.outputs.preview-url }}';
+#            github.rest.issues.createComment({
+#              issue_number: context.issue.number,
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              body: `🚀 **Vercel Preview Deployment**\n\n✅ Your changes have been deployed!\n\n🔗 **Preview URL:** ${deploymentUrl}\n\n*This preview will be updated automatically with new commits.*`
+#            });
+#
+#      - name: Deployment Summary
+#        run: |
+#          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+#            echo "🚀 **Production Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
+#            echo "✅ Production URL: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+#          else
+#            echo "🔍 **Preview Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
+#            echo "✅ Preview URL: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+#          fi
+#          echo "" >> $GITHUB_STEP_SUMMARY
+#          echo "### 📊 Build Stats" >> $GITHUB_STEP_SUMMARY
+#          echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+#          echo "- ✅ Linting passed" >> $GITHUB_STEP_SUMMARY
+#          echo "- ✅ Build completed" >> $GITHUB_STEP_SUMMARY
