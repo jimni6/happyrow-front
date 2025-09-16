@@ -14,9 +14,9 @@ interface ApiConfig {
  */
 export const getApiConfig = (): ApiConfig => {
   // For Vite, we can use import.meta.env with proper typing
-  // @ts-ignore - Vite provides this at build time
+  // @ts-expect-error - Vite provides this at build time
   const isProduction = import.meta.env.PROD;
-  // @ts-ignore - Vite provides this at build time
+  // @ts-expect-error - Vite provides this at build time
   const envApiUrl = import.meta.env.VITE_API_BASE_URL;
   
   if (envApiUrl) {
