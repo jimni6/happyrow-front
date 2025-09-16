@@ -31,13 +31,23 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
       - name: Deploy to Vercel (Simple)
-        uses: amondnet/vercel-action@v25
-        if: github.ref == 'refs/heads/main'
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prod'
+        id: vercel-deploy
+        run: |
+          echo "🚀 Deploying to Vercel..."
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Production deployment..."
+            url=$(vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes)
+          else
+            echo "Preview deployment..."
+            url=$(vercel --token=${{ secrets.VERCEL_TOKEN }} --yes)
+          fi
+          echo "Deployment successful!"
+          echo "URL: $url"
+          echo "preview-url=$url" >> $GITHUB_OUTPUT
 
       - name: Deployment Summary
         run: |

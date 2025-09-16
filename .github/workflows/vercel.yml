@@ -36,25 +36,19 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        continue-on-error: true
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Deploy Project Artifacts to Vercel
+      - name: Deploy to Vercel
         id: vercel-deploy
         run: |
+          # Deploy directly without pre-building (Vercel will build on their servers)
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+            echo "🚀 Deploying to production..."
+            url=$(vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes)
           else
-            url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+            echo "🔍 Deploying preview..."
+            url=$(vercel --token=${{ secrets.VERCEL_TOKEN }} --yes)
           fi
           echo "preview-url=$url" >> $GITHUB_OUTPUT
+          echo "Deployment URL: $url"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
