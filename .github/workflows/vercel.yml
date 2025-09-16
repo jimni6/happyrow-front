@@ -1,0 +1,70 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Run linter
+      run: npm run lint
+
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      id: vercel-deploy
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        vercel-args: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: ./
+
+    - name: Comment PR with preview URL
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const deploymentUrl = '${{ steps.vercel-deploy.outputs.preview-url }}';
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 **Vercel Preview Deployment**\n\n✅ Your changes have been deployed!\n\n🔗 **Preview URL:** ${deploymentUrl}\n\n*This preview will be updated automatically with new commits.*`
+          });
+
+    - name: Deployment Summary
+      run: |
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "🚀 **Production Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployed to production: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "🔍 **Preview Deployment Successful!**" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Preview URL: ${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Build Stats" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Linting passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Build completed" >> $GITHUB_STEP_SUMMARY
