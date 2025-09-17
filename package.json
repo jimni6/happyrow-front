@@ -1,44 +1,57 @@
 {
-    "name": "happyrow-front",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "tsc -b && vite build",
-        "lint": "eslint .",
-        "preview": "vite preview",
-        "test": "vitest",
-        "docker:dev": "docker-compose --profile dev up --build",
-        "docker:prod": "docker-compose --profile prod up --build",
-        "docker:build": "docker build -t happyrow-front .",
-        "docker:build:dev": "docker build --target development -t happyrow-front:dev .",
-        "docker:build:prod": "docker build --target production -t happyrow-front:prod .",
-        "docker:run:dev": "docker run -p 5173:5173 -v $(pwd):/app -v /app/node_modules happyrow-front:dev",
-        "docker:run:prod": "docker run -p 80:80 happyrow-front:prod",
-        "docker:stop": "docker-compose down",
-        "docker:clean": "docker system prune -f && docker volume prune -f"
-    },
-    "dependencies": {
-        "react": "^19.1.1",
-        "react-dom": "^19.1.1"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.33.0",
-        "@testing-library/jest-dom": "^6.4.2",
-        "@testing-library/react": "^16.3.0",
-        "@types/node": "^24.4.0",
-        "@types/react": "^19.1.13",
-        "@types/react-dom": "^19.1.7",
-        "@vitejs/plugin-react": "^5.0.0",
-        "eslint": "^9.33.0",
-        "eslint-plugin-react-hooks": "^5.2.0",
-        "eslint-plugin-react-refresh": "^0.4.20",
-        "globals": "^16.3.0",
-        "jsdom": "^27.0.0",
-        "typescript": "~5.8.3",
-        "typescript-eslint": "^8.39.1",
-        "vite": "^7.1.2",
-        "vitest": "^3.2.4"
-    }
+  "name": "happyrow-front",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "docker:dev": "docker-compose --profile dev up --build",
+    "docker:prod": "docker-compose --profile prod up --build",
+    "docker:build": "docker build -t happyrow-front .",
+    "docker:build:dev": "docker build --target development -t happyrow-front:dev .",
+    "docker:build:prod": "docker build --target production -t happyrow-front:prod .",
+    "docker:run:dev": "docker run -p 5173:5173 -v $(pwd):/app -v /app/node_modules happyrow-front:dev",
+    "docker:run:prod": "docker run -p 80:80 happyrow-front:prod",
+    "docker:stop": "docker-compose down",
+    "docker:clean": "docker system prune -f && docker volume prune -f",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.4.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.0.0",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "tsc --noEmit"
+    ],
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write"
+    ]
+  }
 }
