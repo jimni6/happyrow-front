@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import "./HomeScreen.css";
 import { ConnectionButton } from "../components/ConnectionButton";
 import { CheckConnection } from "../../application/checkConnection";
 import { ConnectionApiRepository } from "../../infrastructure/ConnectionApiRepository";
@@ -10,18 +10,8 @@ const checkConnection = new CheckConnection(repo);
 
 export const HomeScreen: React.FC = () => {
     return (
-        <View style={styles.container}>
+        <div className="container">
             <ConnectionButton useCase={checkConnection} />
-        </View>
+        </div>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
-});

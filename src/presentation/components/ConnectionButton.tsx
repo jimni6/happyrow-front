@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ConnectionButton.css";
+import { TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import { CheckConnection } from "../../application/checkConnection";
 
 type Props = {
@@ -13,16 +13,44 @@ export const ConnectionButton: React.FC<Props> = ({ useCase }) => {
         setLoading(true);
         const result = await useCase.execute();
         setLoading(false);
-        alert(result ? "✅ Base de donnée OK" : "❌ Erreur de connexion");
+        
+        // Use React Native Alert instead of web alert
+        Alert.alert(
+            "Résultat du test",
+            result ? "✅ Base de donnée OK" : "❌ Erreur de connexion",
+            [{ text: "OK" }]
+        );
     };
 
     return (
-        <button 
-            className="connection-button" 
-            onClick={handlePress}
+        <TouchableOpacity 
+            style={[styles.button, loading && styles.buttonDisabled]} 
+            onPress={handlePress}
             disabled={loading}
         >
-            {loading ? "Connexion..." : "Tester connexion"}
-        </button>
+            <Text style={styles.buttonText}>
+                {loading ? "Connexion..." : "Tester connexion"}
+            </Text>
+        </TouchableOpacity>
     );
 };
+
+const styles = StyleSheet.create({
+    button: {
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 150,
+    },
+    buttonDisabled: {
+        backgroundColor: '#A0A0A0',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+});

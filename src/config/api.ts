@@ -1,5 +1,5 @@
 /**
- * API Configuration
+ * API Configuration for React Native/Expo
  * Handles different API base URLs for development and production environments
  */
 
@@ -9,28 +9,22 @@ interface ApiConfig {
 
 /**
  * Get API configuration based on environment
- * - Development: Uses proxy configuration (/api -> backend)
+ * - Development: Direct URL to backend service (no proxy in React Native)
  * - Production: Direct URL to backend service
  */
 export const getApiConfig = (): ApiConfig => {
-  // For Vite, we can use import.meta.env with proper typing
-  // @ts-expect-error - Vite provides this at build time
-  const isProduction = import.meta.env.PROD;
-  // @ts-expect-error - Vite provides this at build time
-  const envApiUrl = import.meta.env.VITE_API_BASE_URL;
+  // In React Native/Expo, we use process.env instead of import.meta.env
+  const isDevelopment = __DEV__;
+  const envApiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
   
   if (envApiUrl) {
     // Use environment variable if provided
     return { baseUrl: envApiUrl };
   }
   
-  if (isProduction) {
-    // Production: Direct URL to backend
-    return { baseUrl: 'https://happyrow-core.onrender.com' };
-  } else {
-    // Development: Use proxy configuration
-    return { baseUrl: '/api' };
-  }
+  // Both development and production use direct URL in React Native
+  // (no proxy configuration like in web development)
+  return { baseUrl: 'https://happyrow-core.onrender.com' };
 };
 
 /**
