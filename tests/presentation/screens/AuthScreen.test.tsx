@@ -1,9 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthScreen } from '../../../presentation/screens/AuthScreen';
+import { AuthScreen } from '../../../src/presentation/screens/AuthScreen';
 import { MockAuthRepository } from '../../utils/testUtils';
-import type { UserCredentials, UserRegistration } from '../../../domain/User';
+import type {
+  UserCredentials,
+  UserRegistration,
+} from '../../../src/domain/User';
+import '@testing-library/jest-dom';
 
 // Types for mock component props
 interface MockLoginFormProps {
@@ -29,7 +33,7 @@ interface MockForgotPasswordFormProps {
 }
 
 // Mock the hooks and components that AuthScreen uses
-vi.mock('../../../presentation/hooks/useAuthActions', () => ({
+vi.mock('../../../src/presentation/hooks/useAuthActions', () => ({
   useAuthActions: () => ({
     signIn: {
       execute: vi.fn(),
@@ -49,7 +53,7 @@ vi.mock('../../../presentation/hooks/useAuthActions', () => ({
   }),
 }));
 
-vi.mock('../../../presentation/components/LoginForm', () => ({
+vi.mock('../../../src/presentation/components/LoginForm', () => ({
   LoginForm: ({
     onSubmit,
     onSwitchToRegister,
@@ -69,7 +73,7 @@ vi.mock('../../../presentation/components/LoginForm', () => ({
   ),
 }));
 
-vi.mock('../../../presentation/components/RegisterForm', () => ({
+vi.mock('../../../src/presentation/components/RegisterForm', () => ({
   RegisterForm: ({ onSubmit, onSwitchToLogin }: MockRegisterFormProps) => (
     <div data-testid="register-form">
       <button
@@ -84,7 +88,7 @@ vi.mock('../../../presentation/components/RegisterForm', () => ({
   ),
 }));
 
-vi.mock('../../../presentation/components/ForgotPasswordForm', () => ({
+vi.mock('../../../src/presentation/components/ForgotPasswordForm', () => ({
   ForgotPasswordForm: ({
     onSubmit,
     onBackToLogin,
@@ -98,21 +102,21 @@ vi.mock('../../../presentation/components/ForgotPasswordForm', () => ({
   ),
 }));
 
-vi.mock('../../../presentation/components/ConnectionButton', () => ({
+vi.mock('../../../src/presentation/components/ConnectionButton', () => ({
   ConnectionButton: () => (
     <button data-testid="connection-button">Test Connection</button>
   ),
 }));
 
-vi.mock('../../../application/checkConnection', () => ({
+vi.mock('../../../src/application/checkConnection', () => ({
   CheckConnection: vi.fn(),
 }));
 
-vi.mock('../../../infrastructure/ConnectionApiRepository', () => ({
+vi.mock('../../../src/infrastructure/ConnectionApiRepository', () => ({
   ConnectionApiRepository: vi.fn(),
 }));
 
-vi.mock('../../../config/api', () => ({
+vi.mock('../../../src/config/api', () => ({
   apiConfig: { baseUrl: 'http://localhost:3000' },
 }));
 
