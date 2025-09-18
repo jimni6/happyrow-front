@@ -88,6 +88,11 @@ export class SupabaseAuthRepository implements AuthRepository {
     } = await this.supabase.auth.getUser();
 
     if (error) {
+      // Handle session_not_found errors gracefully
+      if (error.message.includes('session_not_found') || error.status === 403) {
+        console.log('Session not found, user needs to re-authenticate');
+        return null;
+      }
       throw new Error(error.message);
     }
 
@@ -101,6 +106,11 @@ export class SupabaseAuthRepository implements AuthRepository {
     } = await this.supabase.auth.getSession();
 
     if (error) {
+      // Handle session_not_found errors gracefully
+      if (error.message.includes('session_not_found') || error.status === 403) {
+        console.log('Session not found, returning null');
+        return null;
+      }
       throw new Error(error.message);
     }
 
@@ -113,6 +123,14 @@ export class SupabaseAuthRepository implements AuthRepository {
     const { data, error } = await this.supabase.auth.refreshSession();
 
     if (error) {
+      // Handle refresh token errors gracefully
+      if (
+        error.message.includes('refresh_token_not_found') ||
+        error.message.includes('session_not_found') ||
+        error.status === 403
+      ) {
+        throw new Error('session_expired');
+      }
       throw new Error(error.message);
     }
 
@@ -120,6 +138,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       throw new Error('Session refresh failed: No session data returned');
     }
 
+    console.log('Session refreshed successfully');
     return this.mapSupabaseSessionToAuthSession(data.session, data.user);
   }
 
