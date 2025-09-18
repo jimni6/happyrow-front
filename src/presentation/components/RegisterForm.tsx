@@ -17,6 +17,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   const [formData, setFormData] = useState<UserRegistration>({
     email: '',
     password: '',
+    firstname: '',
+    lastname: '',
     confirmPassword: '',
   });
 
@@ -37,6 +39,36 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     <div className="auth-form">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="firstname">First Name</label>
+          <input
+            type="text"
+            id="firstname"
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleChange}
+            required
+            disabled={loading}
+            placeholder="Enter your first name"
+            minLength={2}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="lastname">Last Name</label>
+          <input
+            type="text"
+            id="lastname"
+            name="lastname"
+            value={formData.lastname}
+            onChange={handleChange}
+            required
+            disabled={loading}
+            placeholder="Enter your last name"
+            minLength={2}
+          />
+        </div>
+
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input

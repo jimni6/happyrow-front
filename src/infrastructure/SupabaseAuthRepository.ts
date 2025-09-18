@@ -30,7 +30,11 @@ export class SupabaseAuthRepository implements AuthRepository {
       email: userData.email,
       password: userData.password,
       options: {
-        data: userData.metadata || {},
+        data: {
+          firstname: userData.firstname,
+          lastname: userData.lastname,
+          ...userData.metadata,
+        },
       },
     });
 
@@ -159,13 +163,16 @@ export class SupabaseAuthRepository implements AuthRepository {
    * Maps Supabase user to domain User entity
    */
   private mapSupabaseUserToUser(supabaseUser: SupabaseUser): User {
+    const userMetadata = supabaseUser.user_metadata || {};
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
       emailConfirmed: supabaseUser.email_confirmed_at !== null,
+      firstname: userMetadata.firstname || '',
+      lastname: userMetadata.lastname || '',
       createdAt: new Date(supabaseUser.created_at || new Date()),
       updatedAt: new Date(supabaseUser.updated_at || new Date()),
-      metadata: supabaseUser.user_metadata || {},
+      metadata: userMetadata,
     };
   }
 
