@@ -11,6 +11,8 @@ export interface User {
   id: string;
   email: string;
   emailConfirmed: boolean;
+  firstname: string;
+  lastname: string;
   createdAt: Date;
   updatedAt: Date;
   metadata?: Record<string, UserMetadataValue>;
@@ -28,6 +30,8 @@ export interface UserCredentials {
  * User registration data
  */
 export interface UserRegistration extends UserCredentials {
+  firstname: string;
+  lastname: string;
   confirmPassword?: string;
   metadata?: Record<string, UserMetadataValue>;
 }

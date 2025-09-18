@@ -56,7 +56,9 @@ describe('SupabaseAuthRepository', () => {
       const userData: UserRegistration = {
         email: 'test@example.com',
         password: 'password123',
-        metadata: { firstName: 'Test' },
+        firstname: 'Test',
+        lastname: 'User',
+        metadata: { additionalInfo: 'test' },
       };
 
       const mockSupabaseUser = {
@@ -65,7 +67,11 @@ describe('SupabaseAuthRepository', () => {
         email_confirmed_at: null,
         created_at: '2023-01-01T00:00:00.000Z',
         updated_at: '2023-01-01T00:00:00.000Z',
-        user_metadata: { firstName: 'Test' },
+        user_metadata: {
+          firstname: 'Test',
+          lastname: 'User',
+          additionalInfo: 'test',
+        },
       };
 
       mockSupabaseClient.auth.signUp.mockResolvedValue({
@@ -79,7 +85,11 @@ describe('SupabaseAuthRepository', () => {
         email: userData.email,
         password: userData.password,
         options: {
-          data: userData.metadata,
+          data: {
+            firstname: userData.firstname,
+            lastname: userData.lastname,
+            ...userData.metadata,
+          },
         },
       });
 
@@ -87,9 +97,15 @@ describe('SupabaseAuthRepository', () => {
         id: 'user-id',
         email: 'test@example.com',
         emailConfirmed: false,
+        firstname: 'Test',
+        lastname: 'User',
         createdAt: new Date('2023-01-01T00:00:00.000Z'),
         updatedAt: new Date('2023-01-01T00:00:00.000Z'),
-        metadata: { firstName: 'Test' },
+        metadata: {
+          firstname: 'Test',
+          lastname: 'User',
+          additionalInfo: 'test',
+        },
       });
     });
 
@@ -97,6 +113,8 @@ describe('SupabaseAuthRepository', () => {
       const userData: UserRegistration = {
         email: 'test@example.com',
         password: 'password123',
+        firstname: 'Test',
+        lastname: 'User',
       };
 
       mockSupabaseClient.auth.signUp.mockResolvedValue({
@@ -113,6 +131,8 @@ describe('SupabaseAuthRepository', () => {
       const userData: UserRegistration = {
         email: 'test@example.com',
         password: 'password123',
+        firstname: 'Test',
+        lastname: 'User',
       };
 
       mockSupabaseClient.auth.signUp.mockResolvedValue({
@@ -129,6 +149,8 @@ describe('SupabaseAuthRepository', () => {
       const userData: UserRegistration = {
         email: 'test@example.com',
         password: 'password123',
+        firstname: 'Test',
+        lastname: 'User',
       };
 
       const mockSupabaseUser = {
@@ -165,7 +187,7 @@ describe('SupabaseAuthRepository', () => {
         email_confirmed_at: '2023-01-01T00:00:00.000Z',
         created_at: '2023-01-01T00:00:00.000Z',
         updated_at: '2023-01-01T00:00:00.000Z',
-        user_metadata: {},
+        user_metadata: { firstname: 'Test', lastname: 'User' },
       };
 
       const mockSupabaseSession = {
@@ -192,9 +214,11 @@ describe('SupabaseAuthRepository', () => {
           id: 'user-id',
           email: 'test@example.com',
           emailConfirmed: true,
+          firstname: 'Test',
+          lastname: 'User',
           createdAt: new Date('2023-01-01T00:00:00.000Z'),
           updatedAt: new Date('2023-01-01T00:00:00.000Z'),
-          metadata: {},
+          metadata: { firstname: 'Test', lastname: 'User' },
         },
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -280,7 +304,7 @@ describe('SupabaseAuthRepository', () => {
         email_confirmed_at: '2023-01-01T00:00:00.000Z',
         created_at: '2023-01-01T00:00:00.000Z',
         updated_at: '2023-01-01T00:00:00.000Z',
-        user_metadata: {},
+        user_metadata: { firstname: 'Test', lastname: 'User' },
       };
 
       mockSupabaseClient.auth.getUser.mockResolvedValue({
@@ -294,9 +318,11 @@ describe('SupabaseAuthRepository', () => {
         id: 'user-id',
         email: 'test@example.com',
         emailConfirmed: true,
+        firstname: 'Test',
+        lastname: 'User',
         createdAt: new Date('2023-01-01T00:00:00.000Z'),
         updatedAt: new Date('2023-01-01T00:00:00.000Z'),
-        metadata: {},
+        metadata: { firstname: 'Test', lastname: 'User' },
       });
     });
 

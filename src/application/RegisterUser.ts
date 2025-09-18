@@ -18,6 +18,18 @@ export class RegisterUser {
       throw new Error('Email and password are required');
     }
 
+    if (!userData.firstname || !userData.lastname) {
+      throw new Error('First name and last name are required');
+    }
+
+    if (userData.firstname.trim().length < 2) {
+      throw new Error('First name must be at least 2 characters long');
+    }
+
+    if (userData.lastname.trim().length < 2) {
+      throw new Error('Last name must be at least 2 characters long');
+    }
+
     if (userData.password.length < 8) {
       throw new Error('Password must be at least 8 characters long');
     }

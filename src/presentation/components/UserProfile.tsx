@@ -25,11 +25,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   return (
     <div className="user-profile">
       <div className="user-info">
-        <h3>Welcome back!</h3>
-        <p>{user.email}</p>
-        <p className="user-status">
-          {user.emailConfirmed ? '✅ Email verified' : '⚠️ Email not verified'}
-        </p>
+        <h3>Welcome back, {user.firstname}!</h3>
+        <div className="user-details">
+          <p className="user-name">
+            {user.firstname} {user.lastname}
+          </p>
+          <p className="user-email">{user.email}</p>
+          <p className="user-status">
+            {user.emailConfirmed
+              ? '✅ Email verified'
+              : '⚠️ Email not verified'}
+          </p>
+        </div>
       </div>
       <button
         onClick={handleSignOut}
