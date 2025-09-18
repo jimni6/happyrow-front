@@ -31,16 +31,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session with better error handling
     const getInitialSession = async () => {
       try {
         const currentSession = await authRepository.getCurrentSession();
         if (currentSession) {
-          setSession(currentSession);
-          setUser(currentSession.user);
+          // Check if session is expired
+          const now = new Date();
+          if (currentSession.expiresAt && currentSession.expiresAt > now) {
+            setSession(currentSession);
+            setUser(currentSession.user);
+          } else {
+            // Session expired, try to refresh
+            console.log('Session expired, attempting refresh...');
+            try {
+              const refreshedSession = await authRepository.refreshSession();
+              setSession(refreshedSession);
+              setUser(refreshedSession.user);
+            } catch (refreshError) {
+              console.error('Session refresh failed:', refreshError);
+              // Clear expired session
+              setSession(null);
+              setUser(null);
+            }
+          }
         }
       } catch (error) {
         console.error('Error getting initial session:', error);
+        // If session is invalid (403 error), clear it
+        if (
+          error instanceof Error &&
+          error.message.includes('session_not_found')
+        ) {
+          console.log('Invalid session detected, clearing auth state');
+          setSession(null);
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
