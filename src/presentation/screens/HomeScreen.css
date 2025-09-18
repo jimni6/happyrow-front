@@ -292,3 +292,39 @@
     padding: 1.5rem;
   }
 }
+
+/* Error Toast */
+.error-toast {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: #dc3545;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3);
+  z-index: 1001;
+  animation: slideInRight 0.3s ease-out;
+  max-width: 400px;
+  word-wrap: break-word;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .error-toast {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+}

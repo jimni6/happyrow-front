@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './HomeScreen.css';
 import type { User } from '../../domain/User';
+import { Modal } from '../components/Modal';
+import { CreateEventForm } from '../components/CreateEventForm';
+import { CreateEvent } from '../../application/CreateEvent';
+import { HttpEventRepository } from '../../infrastructure/HttpEventRepository';
 
 interface HomeScreenProps {
   user: User;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
+  const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [createEventError, setCreateEventError] = useState<string | null>(null);
+
   const currentTime = new Date();
   const hour = currentTime.getHours();
 
@@ -23,6 +31,37 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const handleCreateEvent = async (eventData: {
+    name: string;
+    date: Date;
+    location: string;
+    type: string;
+  }) => {
+    setIsCreatingEvent(true);
+    setCreateEventError(null);
+
+    try {
+      const eventRepository = new HttpEventRepository();
+      const createEventUseCase = new CreateEvent(eventRepository);
+
+      await createEventUseCase.execute({
+        ...eventData,
+        organizerId: user.id, // Assuming user.id exists, you may need to adjust this
+      });
+
+      // Success - modal will close automatically
+      console.log('Event created successfully!');
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create event';
+      setCreateEventError(errorMessage);
+      console.error('Error creating event:', error);
+      throw error; // Re-throw to let modal handle it
+    } finally {
+      setIsCreatingEvent(false);
+    }
   };
 
   return (
@@ -104,9 +143,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
         <div className="quick-actions">
           <h3>Quick Actions</h3>
           <div className="action-buttons">
-            <button className="action-button primary">
-              <span>🚀</span>
-              Get Started
+            <button
+              className="action-button primary"
+              onClick={() => setIsCreateEventModalOpen(true)}
+            >
+              <span>🎉</span>
+              Create Event
             </button>
             <button className="action-button secondary">
               <span>📚</span>
@@ -119,6 +161,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isCreateEventModalOpen}
+        onClose={() => {
+          setIsCreateEventModalOpen(false);
+          setCreateEventError(null);
+        }}
+        title="Create New Event"
+        size="medium"
+      >
+        <CreateEventForm
+          onSubmit={handleCreateEvent}
+          onCancel={() => {
+            setIsCreateEventModalOpen(false);
+            setCreateEventError(null);
+          }}
+          isLoading={isCreatingEvent}
+        />
+      </Modal>
+
+      {createEventError && (
+        <div className="error-toast">{createEventError}</div>
+      )}
     </div>
   );
 };
