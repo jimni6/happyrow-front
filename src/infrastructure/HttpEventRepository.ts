@@ -1,4 +1,4 @@
-import type { Event, EventCreationRequest } from '../domain/Event';
+import type { Event, EventCreationRequest, EventType } from '../domain/Event';
 import type { EventRepository } from '../domain/EventRepository';
 
 // API request body format that matches backend
@@ -30,6 +30,9 @@ export class HttpEventRepository implements EventRepository {
   ) {
     this.baseUrl = baseUrl;
   }
+
+  private mapStringToEventType = (type: string): EventType =>
+    type.toUpperCase() as EventType;
 
   async createEvent(eventData: EventCreationRequest): Promise<Event> {
     // Map frontend format to backend format
@@ -66,7 +69,7 @@ export class HttpEventRepository implements EventRepository {
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
-      type: eventResponse.type,
+      type: this.mapStringToEventType(eventResponse.type),
       organizerId: eventData.organizerId,
     };
   }
@@ -89,7 +92,7 @@ export class HttpEventRepository implements EventRepository {
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
-      type: eventResponse.type,
+      type: this.mapStringToEventType(eventResponse.type),
       organizerId: eventResponse.organizerId || '',
     };
   }
@@ -110,7 +113,7 @@ export class HttpEventRepository implements EventRepository {
       description: event.description,
       date: new Date(event.event_date),
       location: event.location,
-      type: event.type,
+      type: this.mapStringToEventType(event.type),
       organizerId: event.organizerId || '',
     }));
   }
@@ -154,7 +157,7 @@ export class HttpEventRepository implements EventRepository {
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
-      type: eventResponse.type,
+      type: this.mapStringToEventType(eventResponse.type),
       organizerId: eventResponse.organizerId || eventData.organizerId || '',
     };
   }

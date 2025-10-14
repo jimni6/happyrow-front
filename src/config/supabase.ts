@@ -13,9 +13,7 @@ interface SupabaseConfig {
  * Returns default values if environment variables are not set (for development)
  */
 export const getSupabaseConfig = (): SupabaseConfig => {
-  // @ts-expect-error - Vite provides this at build time
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  // @ts-expect-error - Vite provides this at build time
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   // Use placeholder values if environment variables are not set
