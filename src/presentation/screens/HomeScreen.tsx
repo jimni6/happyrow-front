@@ -3,6 +3,7 @@ import './HomeScreen.css';
 import type { User } from '../../domain/User';
 import { Modal } from '../components/Modal';
 import { CreateEventForm } from '../components/CreateEventForm';
+import { EventType } from '../../domain/Event';
 import { CreateEvent } from '../../application/CreateEvent';
 import { HttpEventRepository } from '../../infrastructure/HttpEventRepository';
 
@@ -35,9 +36,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
 
   const handleCreateEvent = async (eventData: {
     name: string;
+    description: string;
     date: Date;
     location: string;
-    type: string;
+    type: EventType;
   }) => {
     setIsCreatingEvent(true);
     setCreateEventError(null);
@@ -48,10 +50,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ user }) => {
 
       await createEventUseCase.execute({
         ...eventData,
-        organizerId: user.id, // Assuming user.id exists, you may need to adjust this
+        organizerId: user.id,
       });
 
-      // Success - modal will close automatically
+      // Success - close modal
+      setIsCreateEventModalOpen(false);
       console.log('Event created successfully!');
     } catch (error) {
       const errorMessage =

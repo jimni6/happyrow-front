@@ -1,35 +1,53 @@
 import type { Event, EventCreationRequest } from '../domain/Event';
 import type { EventRepository } from '../domain/EventRepository';
 
+// API request body format that matches backend
+interface EventApiRequest {
+  name: string;
+  description: string;
+  event_date: string;
+  location: string;
+  type: string;
+}
+
 // API response interface for events
 interface EventApiResponse {
   id: number;
   name: string;
-  date: string; // ISO string from API
+  description: string;
+  event_date: string;
   location: string;
   type: string;
-  organizerId: string;
+  organizerId?: string;
 }
 
 export class HttpEventRepository implements EventRepository {
   private baseUrl: string;
 
   constructor(
-    baseUrl: string = process.env.VITE_API_BASE_URL ||
-      'http://localhost:8080/api'
+    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
+      'https://happyrow-core.onrender.com/event/configuration/api/v1'
   ) {
     this.baseUrl = baseUrl;
   }
 
   async createEvent(eventData: EventCreationRequest): Promise<Event> {
+    // Map frontend format to backend format
+    const apiRequest: EventApiRequest = {
+      name: eventData.name,
+      description: eventData.description,
+      event_date: eventData.date,
+      location: eventData.location,
+      type: eventData.type,
+    };
+
     const response = await fetch(`${this.baseUrl}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Add authorization header if needed
-        // 'Authorization': `Bearer ${token}`,
+        'x-user-id': eventData.organizerId,
       },
-      body: JSON.stringify(eventData),
+      body: JSON.stringify(apiRequest),
     });
 
     if (!response.ok) {
@@ -41,10 +59,15 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
 
-    // Convert date string back to Date object
+    // Convert backend format to frontend format
     return {
-      ...eventResponse,
-      date: new Date(eventResponse.date),
+      id: eventResponse.id,
+      name: eventResponse.name,
+      description: eventResponse.description,
+      date: new Date(eventResponse.event_date),
+      location: eventResponse.location,
+      type: eventResponse.type,
+      organizerId: eventData.organizerId,
     };
   }
 
@@ -61,8 +84,13 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
     return {
-      ...eventResponse,
-      date: new Date(eventResponse.date),
+      id: eventResponse.id,
+      name: eventResponse.name,
+      description: eventResponse.description,
+      date: new Date(eventResponse.event_date),
+      location: eventResponse.location,
+      type: eventResponse.type,
+      organizerId: eventResponse.organizerId || '',
     };
   }
 
@@ -77,8 +105,13 @@ export class HttpEventRepository implements EventRepository {
 
     const eventsResponse: EventApiResponse[] = await response.json();
     return eventsResponse.map(event => ({
-      ...event,
-      date: new Date(event.date),
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      date: new Date(event.event_date),
+      location: event.location,
+      type: event.type,
+      organizerId: event.organizerId || '',
     }));
   }
 
@@ -86,12 +119,25 @@ export class HttpEventRepository implements EventRepository {
     id: number,
     eventData: Partial<EventCreationRequest>
   ): Promise<Event> {
+    // Map frontend format to backend format
+    const apiRequest: Partial<EventApiRequest> = {};
+    if (eventData.name) apiRequest.name = eventData.name;
+    if (eventData.description) apiRequest.description = eventData.description;
+    if (eventData.date) apiRequest.event_date = eventData.date;
+    if (eventData.location) apiRequest.location = eventData.location;
+    if (eventData.type) apiRequest.type = eventData.type;
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (eventData.organizerId) {
+      headers['x-user-id'] = eventData.organizerId;
+    }
+
     const response = await fetch(`${this.baseUrl}/events/${id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(eventData),
+      headers,
+      body: JSON.stringify(apiRequest),
     });
 
     if (!response.ok) {
@@ -103,8 +149,13 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
     return {
-      ...eventResponse,
-      date: new Date(eventResponse.date),
+      id: eventResponse.id,
+      name: eventResponse.name,
+      description: eventResponse.description,
+      date: new Date(eventResponse.event_date),
+      location: eventResponse.location,
+      type: eventResponse.type,
+      organizerId: eventResponse.organizerId || eventData.organizerId || '',
     };
   }
 

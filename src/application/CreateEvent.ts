@@ -1,11 +1,12 @@
-import type { Event, EventCreationRequest } from '../domain/Event';
+import type { Event, EventCreationRequest, EventType } from '../domain/Event';
 import type { EventRepository } from '../domain/EventRepository';
 
 export interface CreateEventInput {
   name: string;
+  description: string;
   date: Date;
   location: string;
-  type: string;
+  type: EventType;
   organizerId: string;
 }
 
@@ -19,9 +20,10 @@ export class CreateEvent {
     // Convert to API request format
     const eventRequest: EventCreationRequest = {
       name: input.name.trim(),
+      description: input.description.trim(),
       date: input.date.toISOString(),
       location: input.location.trim(),
-      type: input.type.trim(),
+      type: input.type,
       organizerId: input.organizerId,
     };
 
@@ -39,12 +41,16 @@ export class CreateEvent {
       throw new Error('Event name must be at least 3 characters long');
     }
 
+    if (!input.description || input.description.trim().length < 3) {
+      throw new Error('Event description must be at least 3 characters long');
+    }
+
     if (!input.location || input.location.trim().length < 3) {
       throw new Error('Event location must be at least 3 characters long');
     }
 
-    if (!input.type || input.type.trim().length < 2) {
-      throw new Error('Event type must be at least 2 characters long');
+    if (!input.type) {
+      throw new Error('Event type is required');
     }
 
     if (!input.date) {

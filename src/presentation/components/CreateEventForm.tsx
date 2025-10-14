@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { EventType } from '../../domain/Event';
 import './CreateEventForm.css';
 
 interface CreateEventFormProps {
   onSubmit: (eventData: {
     name: string;
+    description: string;
     date: Date;
     location: string;
-    type: string;
+    type: EventType;
   }) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -19,14 +21,18 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     name: '',
+    description: '',
     date: '',
+    time: '19:00', // Default to 7 PM
     location: '',
-    type: '',
+    type: '' as EventType | '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -44,6 +50,13 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
       newErrors.name = 'Event name must be at least 3 characters long';
     }
 
+    if (
+      !formData.description.trim() ||
+      formData.description.trim().length < 3
+    ) {
+      newErrors.description = 'Description must be at least 3 characters long';
+    }
+
     if (!formData.location.trim() || formData.location.trim().length < 3) {
       newErrors.location = 'Location must be at least 3 characters long';
     }
@@ -54,10 +67,17 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
     if (!formData.date) {
       newErrors.date = 'Event date is required';
-    } else {
-      const selectedDate = new Date(formData.date);
-      if (selectedDate <= new Date()) {
-        newErrors.date = 'Event date must be in the future';
+    }
+
+    if (!formData.time) {
+      newErrors.time = 'Event time is required';
+    }
+
+    // Validate date/time is in the future
+    if (formData.date && formData.time) {
+      const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
+      if (selectedDateTime <= new Date()) {
+        newErrors.date = 'Event date and time must be in the future';
       }
     }
 
@@ -73,15 +93,26 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
     }
 
     try {
+      // Combine date and time into a single Date object
+      const combinedDateTime = new Date(`${formData.date}T${formData.time}`);
+
       await onSubmit({
         name: formData.name.trim(),
-        date: new Date(formData.date),
+        description: formData.description.trim(),
+        date: combinedDateTime,
         location: formData.location.trim(),
-        type: formData.type.trim(),
+        type: formData.type as EventType,
       });
 
       // Reset form on success
-      setFormData({ name: '', date: '', location: '', type: '' });
+      setFormData({
+        name: '',
+        description: '',
+        date: '',
+        time: '',
+        location: '',
+        type: '',
+      });
       setErrors({});
     } catch (error) {
       console.error('Error creating event:', error);
@@ -89,7 +120,14 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
   };
 
   const handleCancel = () => {
-    setFormData({ name: '', date: '', location: '', type: '' });
+    setFormData({
+      name: '',
+      description: '',
+      date: '',
+      time: '',
+      location: '',
+      type: '',
+    });
     setErrors({});
     onCancel();
   };
@@ -112,17 +150,50 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
       </div>
 
       <div className="form-group">
-        <label htmlFor="date">Event Date *</label>
-        <input
-          type="datetime-local"
-          id="date"
-          name="date"
-          value={formData.date}
+        <label htmlFor="description">Description *</label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description}
           onChange={handleInputChange}
-          className={errors.date ? 'error' : ''}
+          className={errors.description ? 'error' : ''}
+          placeholder="Enter event description"
           disabled={isLoading}
+          rows={3}
         />
-        {errors.date && <span className="error-message">{errors.date}</span>}
+        {errors.description && (
+          <span className="error-message">{errors.description}</span>
+        )}
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="date">Event Date *</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            className={errors.date ? 'error' : ''}
+            disabled={isLoading}
+          />
+          {errors.date && <span className="error-message">{errors.date}</span>}
+        </div>
+        <div className="form-group">
+          <label htmlFor="time">Event Time *</label>
+          <input
+            type="time"
+            id="time"
+            name="time"
+            value={formData.time}
+            onChange={handleInputChange}
+            className={errors.time ? 'error' : ''}
+            disabled={isLoading}
+            step="300"
+          />
+          {errors.time && <span className="error-message">{errors.time}</span>}
+        </div>
       </div>
 
       <div className="form-group">
@@ -153,13 +224,10 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
           disabled={isLoading}
         >
           <option value="">Select event type</option>
-          <option value="party">Party</option>
-          <option value="meeting">Meeting</option>
-          <option value="conference">Conference</option>
-          <option value="workshop">Workshop</option>
-          <option value="social">Social Gathering</option>
-          <option value="sports">Sports Event</option>
-          <option value="other">Other</option>
+          <option value={EventType.PARTY}>Party</option>
+          <option value={EventType.BIRTHDAY}>Birthday</option>
+          <option value={EventType.DINER}>Diner</option>
+          <option value={EventType.SNACK}>Snack</option>
         </select>
         {errors.type && <span className="error-message">{errors.type}</span>}
       </div>
