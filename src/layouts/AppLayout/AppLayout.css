@@ -1,0 +1,24 @@
+/* App layout */
+.app {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.app-main {
+  min-height: calc(100vh - 60px);
+}
+
+/* Loading screen */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loading-spinner {
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+}
