@@ -1,12 +1,11 @@
 import React from 'react';
-import { AuthProvider, useAuth } from './presentation/contexts/AuthContext';
-import { AuthScreen } from './presentation/screens/AuthScreen';
-import { HomeScreen } from './presentation/screens/HomeScreen';
-import { AuthServiceFactory } from './infrastructure/AuthServiceFactory';
-import type { AuthRepository } from './domain/AuthRepository';
-import type { User } from './domain/User';
-import { useAuthActions } from './presentation/hooks/useAuthActions';
-import './presentation/styles/Auth.css';
+import { AuthProvider, useAuth } from '@/features/auth/hooks';
+import { AuthView } from '@/features/auth/views';
+import { HomeView } from '@/features/home/views';
+import { AuthServiceFactory } from '@/features/auth/services';
+import type { AuthRepository } from '@/features/auth/types';
+import { AppLayout } from '@/layouts';
+import '@/core/styles/index.css';
 
 // Error boundary component
 class ErrorBoundary extends React.Component<
@@ -41,52 +40,13 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+// Initialize auth repository
 let authRepository: AuthRepository | null = null;
 try {
   authRepository = AuthServiceFactory.getAuthRepository();
 } catch (error) {
   console.error('Failed to initialize auth repository:', error);
 }
-
-// App Header Component
-interface AppHeaderProps {
-  user: User;
-  authRepository: AuthRepository;
-}
-
-const AppHeader: React.FC<AppHeaderProps> = ({ user, authRepository }) => {
-  const authActions = useAuthActions({ authRepository });
-
-  const handleSignOut = async () => {
-    try {
-      await authActions.signOut.execute();
-    } catch (error) {
-      console.error('Sign out failed:', error);
-    }
-  };
-
-  return (
-    <header className="app-header">
-      <div className="header-content">
-        <div className="logo">
-          <h2>HappyRow</h2>
-        </div>
-        <div className="header-user">
-          <span className="user-greeting">
-            {user.firstname} {user.lastname}
-          </span>
-          <button
-            onClick={handleSignOut}
-            disabled={authActions.signOut.loading}
-            className="sign-out-button"
-          >
-            {authActions.signOut.loading ? 'Signing out...' : 'Sign Out'}
-          </button>
-        </div>
-      </div>
-    </header>
-  );
-};
 
 const AppContent: React.FC = () => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -100,14 +60,13 @@ const AppContent: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <AuthScreen authRepository={authRepository!} />;
+    return <AuthView authRepository={authRepository!} />;
   }
 
   return (
-    <div className="app">
-      <AppHeader user={user!} authRepository={authRepository!} />
-      <HomeScreen user={user!} />
-    </div>
+    <AppLayout user={user!} authRepository={authRepository!}>
+      <HomeView user={user!} />
+    </AppLayout>
   );
 };
 
