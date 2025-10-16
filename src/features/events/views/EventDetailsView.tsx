@@ -12,7 +12,9 @@ import {
 } from '@/features/contributions';
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
+import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
 import { UpdateEvent } from '../use-cases/UpdateEvent';
+import { DeleteEvent } from '../use-cases/DeleteEvent';
 import { HttpEventRepository } from '../services/HttpEventRepository';
 import './EventDetailsView.css';
 
@@ -20,12 +22,14 @@ interface EventDetailsViewProps {
   event: Event;
   onBack: () => void;
   onEventUpdated?: (updatedEvent: Event) => void;
+  onEventDeleted?: () => void;
 }
 
 export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   event,
   onBack,
   onEventUpdated,
+  onEventDeleted,
 }) => {
   const { user } = useAuth();
   const [contributions, setContributions] = useState<Contribution[]>([]);
@@ -33,6 +37,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
   // Memoize repository and use cases to prevent recreation on every render
@@ -51,6 +57,17 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const deleteContributionUseCase = useMemo(
     () => new DeleteContribution(contributionRepository),
     [contributionRepository]
+  );
+
+  // Event repository and use cases
+  const eventRepository = useMemo(() => new HttpEventRepository(), []);
+  const updateEventUseCase = useMemo(
+    () => new UpdateEvent(eventRepository),
+    [eventRepository]
+  );
+  const deleteEventUseCase = useMemo(
+    () => new DeleteEvent(eventRepository),
+    [eventRepository]
   );
 
   const loadContributions = useCallback(async () => {
@@ -154,9 +171,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       setIsUpdating(true);
       setError(null);
 
-      const eventRepository = new HttpEventRepository();
-      const updateEventUseCase = new UpdateEvent(eventRepository);
-
       const updatedEvent = await updateEventUseCase.execute({
         id: currentEvent.id,
         name: eventData.name,
@@ -183,6 +197,32 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   };
 
+  const handleDeleteEvent = async () => {
+    if (!user) return;
+
+    try {
+      setIsDeleting(true);
+      setError(null);
+
+      await deleteEventUseCase.execute({
+        id: currentEvent.id,
+        userId: user.id,
+      });
+
+      setIsDeleteModalOpen(false);
+
+      // Notify parent component if callback provided
+      if (onEventDeleted) {
+        onEventDeleted();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete event');
+      console.error('Error deleting event:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const foodContributions = contributions.filter(
     c => c.type === ContributionType.FOOD
   );
@@ -203,13 +243,22 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         </button>
         <h1 className="event-name">{currentEvent.name}</h1>
         {isOrganizer && (
-          <button
-            className="edit-button"
-            onClick={() => setIsEditModalOpen(true)}
-            aria-label="Edit event"
-          >
-            ✏️ Edit
-          </button>
+          <div className="event-actions">
+            <button
+              className="edit-button"
+              onClick={() => setIsEditModalOpen(true)}
+              aria-label="Edit event"
+            >
+              ✏️ Edit
+            </button>
+            <button
+              className="delete-button-header"
+              onClick={() => setIsDeleteModalOpen(true)}
+              aria-label="Delete event"
+            >
+              🗑️ Delete
+            </button>
+          </div>
         )}
       </div>
 
@@ -273,6 +322,17 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           isLoading={isUpdating}
         />
       </Modal>
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        eventName={currentEvent.name}
+        onConfirm={handleDeleteEvent}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setError(null);
+        }}
+        loading={isDeleting}
+      />
     </div>
   );
 };

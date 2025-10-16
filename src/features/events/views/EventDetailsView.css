@@ -45,11 +45,17 @@
   flex: 1;
 }
 
-.edit-button {
+.event-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-button,
+.delete-button-header {
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
-  background: #547c8c;
   color: white;
   font-size: 14px;
   font-weight: 600;
@@ -57,8 +63,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 2px 8px rgba(84, 124, 140, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
+}
+
+.edit-button {
+  background: #547c8c;
 }
 
 .edit-button:hover {
@@ -68,6 +78,20 @@
 }
 
 .edit-button:active {
+  transform: translateY(0);
+}
+
+.delete-button-header {
+  background: #dc2626;
+}
+
+.delete-button-header:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.delete-button-header:active {
   transform: translateY(0);
 }
 

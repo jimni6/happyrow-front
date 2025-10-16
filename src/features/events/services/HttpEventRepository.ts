@@ -166,9 +166,12 @@ export class HttpEventRepository implements EventRepository {
     };
   }
 
-  async deleteEvent(id: string): Promise<void> {
+  async deleteEvent(id: string, userId: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/events/${id}`, {
       method: 'DELETE',
+      headers: {
+        'x-user-id': userId,
+      },
     });
 
     if (!response.ok) {

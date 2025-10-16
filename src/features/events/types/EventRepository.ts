@@ -8,5 +8,5 @@ export interface EventRepository {
     id: string,
     eventData: Partial<EventCreationRequest>
   ): Promise<Event>;
-  deleteEvent(id: string): Promise<void>;
+  deleteEvent(id: string, userId: string): Promise<void>;
 }

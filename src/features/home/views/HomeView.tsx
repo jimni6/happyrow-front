@@ -118,6 +118,16 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
     setSelectedEvent(updatedEvent);
   };
 
+  const handleEventDeleted = () => {
+    if (!selectedEvent) return;
+
+    // Remove the event from the local list
+    setEvents(prevEvents => prevEvents.filter(e => e.id !== selectedEvent.id));
+
+    // Go back to home screen
+    setSelectedEvent(null);
+  };
+
   // Show event details if an event is selected
   if (selectedEvent) {
     return (
@@ -125,6 +135,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
         event={selectedEvent}
         onBack={() => setSelectedEvent(null)}
         onEventUpdated={handleEventUpdated}
+        onEventDeleted={handleEventDeleted}
       />
     );
   }
