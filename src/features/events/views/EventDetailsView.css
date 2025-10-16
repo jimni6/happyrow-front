@@ -45,6 +45,32 @@
   flex: 1;
 }
 
+.edit-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #547c8c;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(84, 124, 140, 0.2);
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover {
+  background: #456a78;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(84, 124, 140, 0.3);
+}
+
+.edit-button:active {
+  transform: translateY(0);
+}
+
 .event-info-bar {
   display: flex;
   gap: 16px;

@@ -1,14 +1,14 @@
 import type { Contribution, ContributionRepository } from '../types';
 
 export interface GetContributionsInput {
-  eventId: number;
+  eventId: string;
 }
 
 export class GetContributions {
   constructor(private contributionRepository: ContributionRepository) {}
 
   async execute(input: GetContributionsInput): Promise<Contribution[]> {
-    if (!input.eventId || input.eventId < 1) {
+    if (!input.eventId || input.eventId.trim().length === 0) {
       throw new Error('Valid event ID is required');
     }
 

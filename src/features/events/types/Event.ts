@@ -6,7 +6,7 @@ export enum EventType {
 }
 
 export interface Event {
-  id: number;
+  id: string; // Backend uses UUID string identifiers
   name: string;
   description: string;
   date: Date;

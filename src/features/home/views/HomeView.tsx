@@ -109,12 +109,22 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
     }
   };
 
+  const handleEventUpdated = (updatedEvent: Event) => {
+    // Update the event in the local list
+    setEvents(prevEvents =>
+      prevEvents.map(e => (e.id === updatedEvent.id ? updatedEvent : e))
+    );
+    // Update the selected event
+    setSelectedEvent(updatedEvent);
+  };
+
   // Show event details if an event is selected
   if (selectedEvent) {
     return (
       <EventDetailsView
         event={selectedEvent}
         onBack={() => setSelectedEvent(null)}
+        onEventUpdated={handleEventUpdated}
       />
     );
   }
@@ -168,9 +178,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
             </div>
           ) : (
             <div className="events-grid">
-              {events.map(event => (
+              {events.map((event, index) => (
                 <div
-                  key={event.id}
+                  key={event.id || `event-${index}`}
                   className="event-card"
                   onClick={() => setSelectedEvent(event)}
                 >

@@ -5,7 +5,7 @@ import type {
 } from './Contribution';
 
 export interface ContributionRepository {
-  getContributionsByEvent(eventId: number): Promise<Contribution[]>;
+  getContributionsByEvent(eventId: string): Promise<Contribution[]>;
   createContribution(data: ContributionCreationRequest): Promise<Contribution>;
   updateContribution(
     id: number,

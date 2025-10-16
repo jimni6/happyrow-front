@@ -14,15 +14,18 @@ interface EventApiRequest {
   type: string;
 }
 
-// API response interface for events
+// API response interface for events (matches backend format)
 interface EventApiResponse {
-  id: number;
+  identifier: string; // Backend uses 'identifier' not 'id'
   name: string;
   description: string;
-  event_date: string;
+  event_date: number; // Backend returns timestamp
   location: string;
   type: string;
-  organizerId?: string;
+  creator?: string; // Backend uses 'creator' not 'organizerId'
+  creation_date?: number;
+  update_date?: number;
+  members?: string[];
 }
 
 export class HttpEventRepository implements EventRepository {
@@ -68,17 +71,17 @@ export class HttpEventRepository implements EventRepository {
 
     // Convert backend format to frontend format
     return {
-      id: eventResponse.id,
+      id: eventResponse.identifier,
       name: eventResponse.name,
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
       type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventData.organizerId,
+      organizerId: eventResponse.creator || eventData.organizerId,
     };
   }
 
-  async getEventById(id: number): Promise<Event | null> {
+  async getEventById(id: string): Promise<Event | null> {
     const response = await fetch(`${this.baseUrl}/events/${id}`);
 
     if (response.status === 404) {
@@ -91,13 +94,13 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
     return {
-      id: eventResponse.id,
+      id: eventResponse.identifier,
       name: eventResponse.name,
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
       type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventResponse.organizerId || '',
+      organizerId: eventResponse.creator || '',
     };
   }
 
@@ -112,18 +115,19 @@ export class HttpEventRepository implements EventRepository {
 
     const eventsResponse: EventApiResponse[] = await response.json();
     return eventsResponse.map(event => ({
-      id: event.id,
+      id: event.identifier,
       name: event.name,
       description: event.description,
       date: new Date(event.event_date),
       location: event.location,
       type: this.mapStringToEventType(event.type),
-      organizerId: event.organizerId || '',
+      // Backend uses 'creator' field for organizerId
+      organizerId: event.creator || organizerId,
     }));
   }
 
   async updateEvent(
-    id: number,
+    id: string,
     eventData: Partial<EventCreationRequest>
   ): Promise<Event> {
     // Map frontend format to backend format
@@ -156,17 +160,17 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
     return {
-      id: eventResponse.id,
+      id: eventResponse.identifier,
       name: eventResponse.name,
       description: eventResponse.description,
       date: new Date(eventResponse.event_date),
       location: eventResponse.location,
       type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventResponse.organizerId || eventData.organizerId || '',
+      organizerId: eventResponse.creator || eventData.organizerId || '',
     };
   }
 
-  async deleteEvent(id: number): Promise<void> {
+  async deleteEvent(id: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/events/${id}`, {
       method: 'DELETE',
     });

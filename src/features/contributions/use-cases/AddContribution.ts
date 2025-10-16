@@ -6,7 +6,7 @@ import type {
 } from '../types';
 
 export interface AddContributionInput {
-  eventId: number;
+  eventId: string;
   userId: string;
   name: string;
   quantity: number;
@@ -28,7 +28,6 @@ export class AddContribution {
       quantity: input.quantity,
       type: input.type,
     };
-
     try {
       return await this.contributionRepository.createContribution(
         contributionRequest
@@ -57,7 +56,7 @@ export class AddContribution {
       throw new Error('Valid user ID is required');
     }
 
-    if (!input.eventId || input.eventId < 1) {
+    if (!input.eventId || input.eventId.trim().length === 0) {
       throw new Error('Valid event ID is required');
     }
   }

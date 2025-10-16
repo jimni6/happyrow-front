@@ -5,7 +5,7 @@ export enum ContributionType {
 
 export interface Contribution {
   id: number;
-  eventId: number;
+  eventId: string; // Event IDs are now UUID strings
   userId: string;
   name: string;
   quantity: number;
@@ -14,7 +14,7 @@ export interface Contribution {
 }
 
 export interface ContributionCreationRequest {
-  eventId: number;
+  eventId: string; // Event IDs are now UUID strings
   userId: string;
   name: string;
   quantity: number;

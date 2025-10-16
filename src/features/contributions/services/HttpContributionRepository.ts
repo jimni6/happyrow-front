@@ -8,7 +8,7 @@ import type {
 
 // API request body format that matches backend
 interface ContributionApiRequest {
-  eventId: number;
+  eventId: string; // Event IDs are UUID strings
   name: string;
   quantity: number;
   type: string;
@@ -17,7 +17,7 @@ interface ContributionApiRequest {
 // API response interface for contributions
 interface ContributionApiResponse {
   id: number;
-  eventId: number;
+  eventId: string; // Event IDs are UUID strings
   userId: string;
   name: string;
   quantity: number;
@@ -38,7 +38,7 @@ export class HttpContributionRepository implements ContributionRepository {
   private mapStringToContributionType = (type: string): ContributionType =>
     type.toUpperCase() as ContributionType;
 
-  async getContributionsByEvent(eventId: number): Promise<Contribution[]> {
+  async getContributionsByEvent(eventId: string): Promise<Contribution[]> {
     const response = await fetch(
       `${this.baseUrl}/events/${eventId}/contributions`
     );
