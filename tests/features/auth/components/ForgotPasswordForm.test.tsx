@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { ForgotPasswordForm } from '../../../src/presentation/components/ForgotPasswordForm';
+import { ForgotPasswordForm } from '@/features/auth/components';
 
 describe('ForgotPasswordForm', () => {
   const mockOnSubmit = vi.fn();

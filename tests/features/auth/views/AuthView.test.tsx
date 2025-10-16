@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthScreen } from '../../../src/presentation/screens/AuthScreen';
-import { MockAuthRepository } from '../../utils/testUtils';
-import type {
-  UserCredentials,
-  UserRegistration,
-} from '../../../src/domain/User';
+import { AuthView } from '@/features/auth/views';
+import { MockAuthRepository } from '../../../utils/testUtils';
+import type { UserCredentials, UserRegistration } from '@/features/auth/types';
 import '@testing-library/jest-dom';
 
 // Types for mock component props
@@ -32,8 +29,8 @@ interface MockForgotPasswordFormProps {
   error?: string | null;
 }
 
-// Mock the hooks and components that AuthScreen uses
-vi.mock('../../../src/presentation/hooks/useAuthActions', () => ({
+// Mock the hooks and components that AuthView uses
+vi.mock('@/features/auth/hooks/useAuthActions', () => ({
   useAuthActions: () => ({
     signIn: {
       execute: vi.fn(),
@@ -53,7 +50,7 @@ vi.mock('../../../src/presentation/hooks/useAuthActions', () => ({
   }),
 }));
 
-vi.mock('../../../src/presentation/components/LoginForm', () => ({
+vi.mock('@/features/auth/components/LoginForm', () => ({
   LoginForm: ({
     onSubmit,
     onSwitchToRegister,
@@ -73,12 +70,17 @@ vi.mock('../../../src/presentation/components/LoginForm', () => ({
   ),
 }));
 
-vi.mock('../../../src/presentation/components/RegisterForm', () => ({
+vi.mock('@/features/auth/components/RegisterForm', () => ({
   RegisterForm: ({ onSubmit, onSwitchToLogin }: MockRegisterFormProps) => (
     <div data-testid="register-form">
       <button
         onClick={() =>
-          onSubmit({ email: 'test@example.com', password: 'password' })
+          onSubmit({
+            email: 'test@example.com',
+            password: 'password',
+            firstname: 'john',
+            lastname: 'doe',
+          })
         }
       >
         Register
@@ -88,7 +90,7 @@ vi.mock('../../../src/presentation/components/RegisterForm', () => ({
   ),
 }));
 
-vi.mock('../../../src/presentation/components/ForgotPasswordForm', () => ({
+vi.mock('@/features/auth/components/ForgotPasswordForm', () => ({
   ForgotPasswordForm: ({
     onSubmit,
     onBackToLogin,
@@ -102,25 +104,7 @@ vi.mock('../../../src/presentation/components/ForgotPasswordForm', () => ({
   ),
 }));
 
-vi.mock('../../../src/presentation/components/ConnectionButton', () => ({
-  ConnectionButton: () => (
-    <button data-testid="connection-button">Test Connection</button>
-  ),
-}));
-
-vi.mock('../../../src/application/checkConnection', () => ({
-  CheckConnection: vi.fn(),
-}));
-
-vi.mock('../../../src/infrastructure/ConnectionApiRepository', () => ({
-  ConnectionApiRepository: vi.fn(),
-}));
-
-vi.mock('../../../src/config/api', () => ({
-  apiConfig: { baseUrl: 'http://localhost:3000' },
-}));
-
-describe('AuthScreen', () => {
+describe('AuthView', () => {
   let mockAuthRepository: MockAuthRepository;
 
   beforeEach(() => {
@@ -129,7 +113,7 @@ describe('AuthScreen', () => {
   });
 
   it('should render login form by default', () => {
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     expect(screen.getByTestId('login-form')).toBeInTheDocument();
     expect(screen.queryByTestId('register-form')).not.toBeInTheDocument();
@@ -138,17 +122,10 @@ describe('AuthScreen', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should render connection test button', () => {
-    render(<AuthScreen authRepository={mockAuthRepository} />);
-
-    expect(screen.getByTestId('connection-button')).toBeInTheDocument();
-    expect(screen.getByText(/test api connection/i)).toBeInTheDocument();
-  });
-
   it('should switch to register form when requested', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     const switchButton = screen.getByText('Switch to Register');
     await user.click(switchButton);
@@ -160,7 +137,7 @@ describe('AuthScreen', () => {
   it('should switch to forgot password form when requested', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     const forgotButton = screen.getByText('Forgot Password');
     await user.click(forgotButton);
@@ -172,7 +149,7 @@ describe('AuthScreen', () => {
   it('should switch back to login from register form', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Go to register
     await user.click(screen.getByText('Switch to Register'));
@@ -187,7 +164,7 @@ describe('AuthScreen', () => {
   it('should switch back to login from forgot password form', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Go to forgot password
     await user.click(screen.getByText('Forgot Password'));
@@ -204,7 +181,7 @@ describe('AuthScreen', () => {
   it('should handle login form submission', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     const signInButton = screen.getByText('Sign In');
     await user.click(signInButton);
@@ -218,7 +195,7 @@ describe('AuthScreen', () => {
   it('should handle register form submission', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Switch to register form
     await user.click(screen.getByText('Switch to Register'));
@@ -236,7 +213,7 @@ describe('AuthScreen', () => {
   it('should handle forgot password form submission', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Switch to forgot password form
     await user.click(screen.getByText('Forgot Password'));
@@ -249,7 +226,7 @@ describe('AuthScreen', () => {
   });
 
   it('should maintain auth repository reference', () => {
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // The component should render without errors, indicating it properly
     // received and is using the auth repository
@@ -259,7 +236,7 @@ describe('AuthScreen', () => {
   it('should render all auth modes correctly', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Test login mode
     expect(screen.getByTestId('login-form')).toBeInTheDocument();
@@ -277,7 +254,7 @@ describe('AuthScreen', () => {
   it('should handle navigation between all forms', async () => {
     const user = userEvent.setup();
 
-    render(<AuthScreen authRepository={mockAuthRepository} />);
+    render(<AuthView authRepository={mockAuthRepository} />);
 
     // Start with login
     expect(screen.getByTestId('login-form')).toBeInTheDocument();

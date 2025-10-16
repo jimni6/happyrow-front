@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { AuthProvider } from '../../src/presentation/contexts/AuthContext';
-import type { AuthRepository } from '../../src/domain/AuthRepository';
+import { AuthProvider } from '@/features/auth/hooks';
+import type { AuthRepository } from '@/features/auth/types';
 import type {
   User,
   UserCredentials,
   UserRegistration,
   AuthSession,
-} from '../../src/domain/User';
+} from '@/features/auth/types';
 
 /**
  * Mock AuthRepository for testing
