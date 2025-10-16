@@ -32,6 +32,9 @@ jobs:
     - name: Run tests
       run: npm run test
 
+    - name: Clean install
+      run: npm run clean
+
     - name: Build application
       run: npm run build
 
