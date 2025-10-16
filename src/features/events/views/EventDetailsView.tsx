@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from '@/features/auth/hooks';
-import type { Event, EventType } from '../types';
-import type { Contribution } from '@/features/contributions/types';
-import { ContributionType } from '@/features/contributions/types';
-import { ContributionList } from '@/features/contributions/components';
-import { HttpContributionRepository } from '@/features/contributions/services';
+import { useAuth } from '@/features/auth';
+import type { Event, EventType } from '../types/Event';
+import type { Contribution } from '@/features/contributions';
+import { ContributionType } from '@/features/contributions';
+import { ContributionList } from '@/features/contributions';
+import { HttpContributionRepository } from '@/features/contributions';
 import {
   AddContribution,
   DeleteContribution,
   GetContributions,
-} from '@/features/contributions/use-cases';
+} from '@/features/contributions';
 import { Modal } from '@/shared/components/Modal';
-import { UpdateEventForm } from '../components';
-import { UpdateEvent } from '../use-cases';
-import { HttpEventRepository } from '../services';
+import { UpdateEventForm } from '../components/UpdateEventForm';
+import { UpdateEvent } from '../use-cases/UpdateEvent';
+import { HttpEventRepository } from '../services/HttpEventRepository';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {

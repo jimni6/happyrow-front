@@ -2,8 +2,8 @@ import type {
   Contribution,
   ContributionCreationRequest,
   ContributionType,
-  ContributionRepository,
-} from '../types';
+} from '../types/Contribution';
+import type { ContributionRepository } from '../types/ContributionRepository';
 
 export interface AddContributionInput {
   eventId: string;

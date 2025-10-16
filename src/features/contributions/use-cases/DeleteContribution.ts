@@ -1,4 +1,4 @@
-import type { ContributionRepository } from '../types';
+import type { ContributionRepository } from '../types/ContributionRepository';
 
 export interface DeleteContributionInput {
   id: number;

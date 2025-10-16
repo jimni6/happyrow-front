@@ -1,7 +1,6 @@
 import React from 'react';
-import type { User } from '@/features/auth/types';
-import type { AuthRepository } from '@/features/auth/types';
-import { useAuthActions } from '@/features/auth/hooks';
+import type { User, AuthRepository } from '@/features/auth';
+import { useAuthActions } from '@/features/auth';
 import './AppHeader.css';
 
 interface AppHeaderProps {

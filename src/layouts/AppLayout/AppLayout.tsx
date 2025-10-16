@@ -1,5 +1,5 @@
 import React from 'react';
-import type { User, AuthRepository } from '@/features/auth/types';
+import type { User, AuthRepository } from '@/features/auth';
 import { AppHeader } from '@/layouts/AppHeader';
 import './AppLayout.css';
 

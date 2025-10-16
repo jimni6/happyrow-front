@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SupabaseAuthRepository } from '@/features/auth/services';
-import type { UserCredentials, UserRegistration } from '@/features/auth/types';
+import { SupabaseAuthRepository } from '@/features/auth';
+import type { UserCredentials, UserRegistration } from '@/features/auth';
 
 // Types for Supabase auth state change callback
 type AuthChangeEvent =

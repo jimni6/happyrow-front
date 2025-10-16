@@ -1,15 +1,10 @@
 import { useState } from 'react';
-import type {
-  AuthRepository,
-  UserCredentials,
-  UserRegistration,
-} from '../types';
-import {
-  RegisterUser,
-  SignInUser,
-  SignOutUser,
-  ResetPassword,
-} from '../use-cases';
+import type { UserCredentials, UserRegistration } from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
+import { RegisterUser } from '../use-cases/RegisterUser';
+import { SignInUser } from '../use-cases/SignInUser';
+import { SignOutUser } from '../use-cases/SignOutUser';
+import { ResetPassword } from '../use-cases/ResetPassword';
 
 interface UseAuthActionsProps {
   authRepository: AuthRepository;

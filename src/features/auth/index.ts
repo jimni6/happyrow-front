@@ -4,26 +4,29 @@ export type {
   UserCredentials,
   UserRegistration,
   AuthSession,
-  AuthRepository,
-} from './types';
+} from './types/User';
+export type { AuthRepository } from './types/AuthRepository';
 
 // Services
-export { SupabaseAuthRepository, AuthServiceFactory } from './services';
+export { SupabaseAuthRepository } from './services/SupabaseAuthRepository';
+export { AuthServiceFactory } from './services/AuthServiceFactory';
 
 // Hooks
-export { AuthProvider, useAuth, useAuthActions } from './hooks';
+export { AuthProvider } from './hooks/AuthProvider';
+export { useAuth } from './hooks/useAuth';
+export { useAuthActions } from './hooks/useAuthActions';
 
 // Components
-export { LoginForm, RegisterForm, ForgotPasswordForm } from './components';
+export { LoginForm } from './components/LoginForm';
+export { RegisterForm } from './components/RegisterForm';
+export { ForgotPasswordForm } from './components/ForgotPasswordForm';
 
 // Views
-export { AuthView } from './views';
+export { AuthView } from './views/AuthView';
 
 // Use Cases
-export {
-  RegisterUser,
-  SignInUser,
-  SignOutUser,
-  GetCurrentUser,
-  ResetPassword,
-} from './use-cases';
+export { RegisterUser } from './use-cases/RegisterUser';
+export { SignInUser } from './use-cases/SignInUser';
+export { SignOutUser } from './use-cases/SignOutUser';
+export { GetCurrentUser } from './use-cases/GetCurrentUser';
+export { ResetPassword } from './use-cases/ResetPassword';

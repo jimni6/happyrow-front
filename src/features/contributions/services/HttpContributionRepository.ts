@@ -2,9 +2,9 @@ import type {
   Contribution,
   ContributionCreationRequest,
   ContributionUpdateRequest,
-  ContributionRepository,
   ContributionType,
-} from '../types';
+} from '../types/Contribution';
+import type { ContributionRepository } from '../types/ContributionRepository';
 
 // API request body format that matches backend
 interface ContributionApiRequest {

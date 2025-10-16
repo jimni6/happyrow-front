@@ -1,26 +1,23 @@
 // Types
-export { ContributionType } from './types';
+export { ContributionType } from './types/Contribution';
 export type {
   Contribution,
   ContributionCreationRequest,
   ContributionUpdateRequest,
-  ContributionRepository,
-} from './types';
+} from './types/Contribution';
+export type { ContributionRepository } from './types/ContributionRepository';
 
 // Services
-export { HttpContributionRepository } from './services';
+export { HttpContributionRepository } from './services/HttpContributionRepository';
 
 // Use Cases
-export {
-  AddContribution,
-  DeleteContribution,
-  GetContributions,
-} from './use-cases';
-export type {
-  AddContributionInput,
-  DeleteContributionInput,
-  GetContributionsInput,
-} from './use-cases';
+export { AddContribution } from './use-cases/AddContribution';
+export type { AddContributionInput } from './use-cases/AddContribution';
+export { DeleteContribution } from './use-cases/DeleteContribution';
+export type { DeleteContributionInput } from './use-cases/DeleteContribution';
+export { GetContributions } from './use-cases/GetContributions';
+export type { GetContributionsInput } from './use-cases/GetContributions';
 
 // Components
-export { ContributionItem, ContributionList } from './components';
+export { ContributionItem } from './components/ContributionItem';
+export { ContributionList } from './components/ContributionList';

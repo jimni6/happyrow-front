@@ -2,13 +2,13 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { AuthProvider, useAuth } from '@/features/auth/hooks';
+import { AuthProvider, useAuth } from '@/features/auth';
 import {
   MockAuthRepository,
   createMockSession,
   createMockUser,
 } from '../../../utils/testUtils';
-import type { AuthSession } from '@/features/auth/types';
+import type { AuthSession } from '@/features/auth';
 
 // Test component that uses the useAuth hook
 const TestComponent: React.FC = () => {

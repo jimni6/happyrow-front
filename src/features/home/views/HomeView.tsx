@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './HomeView.css';
-import type { User } from '@/features/auth/types';
-import type { Event } from '@/features/events/types';
+import type { User } from '@/features/auth';
+import type { Event } from '@/features/events';
 import { Modal } from '@/shared/components/Modal';
-import { CreateEventForm } from '@/features/events/components';
-import { EventType } from '@/features/events/types';
-import { CreateEvent, GetEventsByOrganizer } from '@/features/events/use-cases';
-import { HttpEventRepository } from '@/features/events/services';
-import { EventDetailsView } from '@/features/events/views';
+import { CreateEventForm } from '@/features/events';
+import { EventType } from '@/features/events';
+import { CreateEvent, GetEventsByOrganizer } from '@/features/events';
+import { HttpEventRepository } from '@/features/events';
+import { EventDetailsView } from '@/features/events';
 
 interface HomeViewProps {
   user: User;

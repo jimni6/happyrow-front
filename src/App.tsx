@@ -1,9 +1,9 @@
 import React from 'react';
-import { AuthProvider, useAuth } from '@/features/auth/hooks';
-import { AuthView } from '@/features/auth/views';
-import { HomeView } from '@/features/home/views';
-import { AuthServiceFactory } from '@/features/auth/services';
-import type { AuthRepository } from '@/features/auth/types';
+import { AuthProvider, useAuth } from '@/features/auth';
+import { AuthView } from '@/features/auth';
+import { HomeView } from '@/features/home';
+import { AuthServiceFactory } from '@/features/auth';
+import type { AuthRepository } from '@/features/auth';
 import { AppLayout } from '@/layouts';
 import '@/core/styles/index.css';
 

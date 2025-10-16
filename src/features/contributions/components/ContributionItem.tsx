@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Contribution } from '../types';
+import type { Contribution } from '../types/Contribution';
 import './ContributionItem.css';
 
 interface ContributionItemProps {

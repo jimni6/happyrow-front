@@ -1,4 +1,5 @@
-import type { Event, EventRepository } from '../types';
+import type { Event } from '../types/Event';
+import type { EventRepository } from '../types/EventRepository';
 
 export interface GetEventByIdInput {
   id: string;

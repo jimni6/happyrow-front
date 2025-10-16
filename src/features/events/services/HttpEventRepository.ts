@@ -1,9 +1,5 @@
-import type {
-  Event,
-  EventCreationRequest,
-  EventType,
-  EventRepository,
-} from '../types';
+import type { Event, EventCreationRequest, EventType } from '../types/Event';
+import type { EventRepository } from '../types/EventRepository';
 
 // API request body format that matches backend
 interface EventApiRequest {

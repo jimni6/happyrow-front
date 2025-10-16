@@ -1,4 +1,5 @@
-import type { AuthRepository, User } from '../types';
+import type { User } from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Get Current User Use Case

@@ -1,4 +1,5 @@
-import type { AuthRepository, UserCredentials, AuthSession } from '../types';
+import type { UserCredentials, AuthSession } from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Sign In User Use Case

@@ -5,12 +5,12 @@ import {
   type Session as SupabaseSession,
 } from '@supabase/supabase-js';
 import type {
-  AuthRepository,
   User,
   UserCredentials,
   UserRegistration,
   AuthSession,
-} from '../types';
+} from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Supabase implementation of AuthRepository

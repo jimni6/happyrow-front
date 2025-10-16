@@ -1,6 +1,6 @@
-import { SupabaseAuthRepository } from '@/features/auth/services/SupabaseAuthRepository';
+import { SupabaseAuthRepository } from './SupabaseAuthRepository';
 import { supabaseConfig } from '@/core/config/supabase';
-import type { AuthRepository } from '../types';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Authentication Service Factory

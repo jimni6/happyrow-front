@@ -1,4 +1,5 @@
-import type { AuthRepository, User, UserRegistration } from '../types';
+import type { User, UserRegistration } from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Register User Use Case

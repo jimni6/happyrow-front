@@ -1,4 +1,4 @@
-import type { AuthRepository } from '../types';
+import type { AuthRepository } from '../types/AuthRepository';
 
 /**
  * Sign Out User Use Case

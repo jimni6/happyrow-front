@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthView } from '@/features/auth/views';
+import { AuthView } from '@/features/auth';
 import { MockAuthRepository } from '../../../utils/testUtils';
-import type { UserCredentials, UserRegistration } from '@/features/auth/types';
+import type { UserCredentials, UserRegistration } from '@/features/auth';
 import '@testing-library/jest-dom';
 
 // Types for mock component props

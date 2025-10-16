@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import type { AuthRepository, UserRegistration } from '../types';
-import { LoginForm, RegisterForm, ForgotPasswordForm } from '../components';
-import { useAuthActions } from '../hooks';
+import type { UserRegistration } from '../types/User';
+import type { AuthRepository } from '../types/AuthRepository';
+import { LoginForm } from '../components/LoginForm';
+import { RegisterForm } from '../components/RegisterForm';
+import { ForgotPasswordForm } from '../components/ForgotPasswordForm';
+import { useAuthActions } from '../hooks/useAuthActions';
 import './AuthView.css';
 
 interface AuthViewProps {

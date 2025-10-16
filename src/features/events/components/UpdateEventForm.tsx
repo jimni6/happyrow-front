@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Event } from '../types';
+import type { Event } from '../types/Event';
 import { EventType } from '../types/Event';
 import './CreateEventForm.css'; // Reuse the same styles
 

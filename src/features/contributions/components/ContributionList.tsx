@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Contribution, ContributionType } from '../types';
+import type { Contribution, ContributionType } from '../types/Contribution';
 import { ContributionItem } from './ContributionItem';
 import './ContributionList.css';
 
