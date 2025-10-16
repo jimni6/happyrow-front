@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './HomeView.css';
 import type { User } from '@/features/auth/types';
+import type { Event } from '@/features/events/types';
 import { Modal } from '@/shared/components/Modal';
 import { CreateEventForm } from '@/features/events/components';
 import { EventType } from '@/features/events/types';
-import { CreateEvent } from '@/features/events/use-cases';
+import { CreateEvent, GetEventsByOrganizer } from '@/features/events/use-cases';
 import { HttpEventRepository } from '@/features/events/services';
+import { EventDetailsView } from '@/features/events/views';
 
 interface HomeViewProps {
   user: User;
@@ -15,9 +17,48 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  // Ref to track if we're currently loading to prevent duplicate calls
+  const loadingRef = useRef(false);
+  const loadedUserIdRef = useRef<string | null>(null);
 
   const currentTime = new Date();
   const hour = currentTime.getHours();
+
+  const loadEvents = useCallback(async () => {
+    // Prevent duplicate calls for the same user
+    if (loadingRef.current || loadedUserIdRef.current === user.id) {
+      return;
+    }
+
+    // Set flags immediately to prevent concurrent calls
+    loadingRef.current = true;
+    loadedUserIdRef.current = user.id;
+
+    try {
+      setLoadingEvents(true);
+      const eventRepository = new HttpEventRepository();
+      const getEventsUseCase = new GetEventsByOrganizer(eventRepository);
+      const userEvents = await getEventsUseCase.execute({
+        organizerId: user.id,
+      });
+      setEvents(userEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+      // Reset on error to allow retry
+      loadedUserIdRef.current = null;
+    } finally {
+      setLoadingEvents(false);
+      loadingRef.current = false;
+    }
+  }, [user.id]);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   const getGreeting = () => {
     if (hour < 12) return 'Good morning';
@@ -53,8 +94,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
         organizerId: user.id,
       });
 
-      // Success - close modal
+      // Success - close modal and reload events
       setIsCreateEventModalOpen(false);
+      loadEvents();
       console.log('Event created successfully!');
     } catch (error) {
       const errorMessage =
@@ -66,6 +108,16 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
       setIsCreatingEvent(false);
     }
   };
+
+  // Show event details if an event is selected
+  if (selectedEvent) {
+    return (
+      <EventDetailsView
+        event={selectedEvent}
+        onBack={() => setSelectedEvent(null)}
+      />
+    );
+  }
 
   return (
     <div className="home-screen">
@@ -105,42 +157,34 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
           </p>
         </div>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <div className="card-icon">📊</div>
-            <h3>Dashboard</h3>
-            <p>View your activity and statistics</p>
-            <button className="card-button" disabled>
-              Coming Soon
-            </button>
-          </div>
-
-          <div className="dashboard-card">
-            <div className="card-icon">⚙️</div>
-            <h3>Settings</h3>
-            <p>Manage your account preferences</p>
-            <button className="card-button" disabled>
-              Coming Soon
-            </button>
-          </div>
-
-          <div className="dashboard-card">
-            <div className="card-icon">📝</div>
-            <h3>Projects</h3>
-            <p>Create and manage your projects</p>
-            <button className="card-button" disabled>
-              Coming Soon
-            </button>
-          </div>
-
-          <div className="dashboard-card">
-            <div className="card-icon">👥</div>
-            <h3>Team</h3>
-            <p>Collaborate with your team members</p>
-            <button className="card-button" disabled>
-              Coming Soon
-            </button>
-          </div>
+        <div className="events-section">
+          <h2>Your Events</h2>
+          {loadingEvents ? (
+            <div className="loading-events">Loading events...</div>
+          ) : events.length === 0 ? (
+            <div className="no-events">
+              <p>You haven't created any events yet.</p>
+              <p>Click "Create Event" below to get started!</p>
+            </div>
+          ) : (
+            <div className="events-grid">
+              {events.map(event => (
+                <div
+                  key={event.id}
+                  className="event-card"
+                  onClick={() => setSelectedEvent(event)}
+                >
+                  <div className="event-card-icon">🎉</div>
+                  <h3>{event.name}</h3>
+                  <p className="event-location">📍 {event.location}</p>
+                  <p className="event-date">
+                    📅 {new Date(event.date).toLocaleDateString()}
+                  </p>
+                  <button className="view-event-button">View Details →</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="quick-actions">

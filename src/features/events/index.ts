@@ -6,8 +6,15 @@ export type { Event, EventCreationRequest, EventRepository } from './types';
 export { HttpEventRepository } from './services';
 
 // Use Cases
-export { CreateEvent } from './use-cases';
-export type { CreateEventInput } from './use-cases';
+export { CreateEvent, GetEventsByOrganizer, GetEventById } from './use-cases';
+export type {
+  CreateEventInput,
+  GetEventsByOrganizerInput,
+  GetEventByIdInput,
+} from './use-cases';
 
 // Components
 export { CreateEventForm } from './components';
+
+// Views
+export { EventDetailsView } from './views';
