@@ -1,0 +1,55 @@
+.contribution-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.contribution-name {
+  flex: 1;
+  font-size: 15px;
+  color: #2c3e50;
+  font-weight: 400;
+}
+
+.contribution-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.contribution-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: #547c8c;
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.contribution-btn:hover {
+  background: #426373;
+  transform: scale(1.05);
+}
+
+.contribution-btn:active {
+  transform: scale(0.95);
+}
+
+.contribution-btn.decrement {
+  background: #7a9baa;
+}
+
+.contribution-btn.decrement:hover {
+  background: #658595;
+}
