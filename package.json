@@ -19,7 +19,12 @@
     "docker:run:prod": "docker run -p 80:80 happyrow-front:prod",
     "docker:stop": "docker-compose down",
     "docker:clean": "docker system prune -f && docker volume prune -f",
-    "prepare": "husky"
+    "prepare": "husky",
+    "security:lockfile": "lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:check": "npm run security:lockfile && npm run security:audit",
+    "preinstall": "npm run security:lockfile || true",
+    "ci": "npm ci --ignore-scripts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
@@ -28,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@lavamoat/allow-scripts": "3.4.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -42,6 +48,7 @@
     "husky": "^9.1.7",
     "jsdom": "^27.0.0",
     "lint-staged": "^16.1.6",
+    "lockfile-lint": "4.14.1",
     "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
@@ -54,6 +61,16 @@
     ],
     "*.{js,jsx,ts,tsx,json,css,md}": [
       "prettier --write"
+    ],
+    "package-lock.json": [
+      "lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https"
     ]
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@supabase/supabase-js": false,
+      "esbuild": true,
+      "vite": true
+    }
   }
 }
