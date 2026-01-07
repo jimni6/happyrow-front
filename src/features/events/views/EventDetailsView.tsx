@@ -118,22 +118,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     if (!user) return;
 
     try {
-      const newResource = await createResourceUseCase.execute({
+      await createResourceUseCase.execute({
         eventId: event.id,
         ...data,
       });
 
-      // If user provided initial quantity, create a contribution
-      if (data.quantity > 0) {
-        await addContributionUseCase.execute({
-          eventId: event.id,
-          resourceId: newResource.id,
-          userId: user.id,
-          quantity: data.quantity,
-        });
-      }
-
-      // Reload resources to get updated data with contributions
+      // Reload resources to get updated data
       await loadResources();
 
       setIsAddResourceModalOpen(false);
