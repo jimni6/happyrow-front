@@ -6,13 +6,20 @@ export enum ResourceCategory {
   OTHER = 'OTHER',
 }
 
+export interface ResourceContributor {
+  userId: string;
+  quantity: number;
+  contributedAt: Date;
+}
+
 export interface Resource {
   id: string;
   eventId: string;
   name: string;
   category: ResourceCategory;
-  quantity: number;
+  currentQuantity: number;
   suggestedQuantity?: number;
+  contributors: ResourceContributor[];
   createdAt: Date;
   updatedAt?: Date;
 }

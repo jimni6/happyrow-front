@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import type { Resource } from '../types/Resource';
-import type { Contribution } from '@/features/contributions';
 import './ResourceItem.css';
 
 interface ResourceItemProps {
   resource: Resource;
-  contributions: Contribution[];
   currentUserId: string;
   onAddContribution: (resourceId: string, quantity: number) => Promise<void>;
   onDeleteContribution: (resourceId: string) => Promise<void>;
@@ -13,7 +11,6 @@ interface ResourceItemProps {
 
 export const ResourceItem: React.FC<ResourceItemProps> = ({
   resource,
-  contributions,
   currentUserId,
   onAddContribution,
   onDeleteContribution,
@@ -21,9 +18,11 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
   const [isAdding, setIsAdding] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  const totalQuantity = contributions.reduce((sum, c) => sum + c.quantity, 0);
   const progressPercentage = resource.suggestedQuantity
-    ? Math.min((totalQuantity / resource.suggestedQuantity) * 100, 100)
+    ? Math.min(
+        (resource.currentQuantity / resource.suggestedQuantity) * 100,
+        100
+      )
     : 0;
 
   const handleAdd = async () => {
@@ -57,7 +56,7 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
           <span className="resource-category">{resource.category}</span>
         </div>
         <div className="resource-quantity">
-          {totalQuantity}
+          {resource.currentQuantity}
           {resource.suggestedQuantity && ` / ${resource.suggestedQuantity}`}
         </div>
       </div>
@@ -72,18 +71,21 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
       )}
 
       <div className="contributions-list">
-        {contributions.length === 0 ? (
+        {resource.contributors.length === 0 ? (
           <p className="no-contributions">No contributions yet</p>
         ) : (
-          contributions.map(contribution => (
-            <div key={contribution.id} className="contribution-item">
+          resource.contributors.map((contributor, index) => (
+            <div
+              key={`${contributor.userId}-${index}`}
+              className="contribution-item"
+            >
               <span className="contribution-user">
-                {contribution.userId === currentUserId ? 'You' : 'Someone'}
+                {contributor.userId === currentUserId ? 'You' : 'Someone'}
               </span>
               <span className="contribution-quantity">
-                {contribution.quantity}
+                {contributor.quantity}
               </span>
-              {contribution.userId === currentUserId && (
+              {contributor.userId === currentUserId && (
                 <button
                   className="delete-contribution-btn"
                   onClick={handleDelete}

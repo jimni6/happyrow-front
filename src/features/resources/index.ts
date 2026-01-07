@@ -1,6 +1,7 @@
 // Types
 export type {
   Resource,
+  ResourceContributor,
   ResourceCreationRequest,
   ResourceUpdateRequest,
 } from './types/Resource';

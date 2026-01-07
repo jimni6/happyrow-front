@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
 import type { Event, EventType } from '../types/Event';
 import type { Resource, ResourceCategory } from '@/features/resources';
-import type { Contribution } from '@/features/contributions';
 import {
   HttpResourceRepository,
   CreateResource,
@@ -30,11 +29,6 @@ interface EventDetailsViewProps {
   onEventDeleted?: () => void;
 }
 
-interface ResourceWithContributions {
-  resource: Resource;
-  contributions: Contribution[];
-}
-
 export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   event,
   onBack,
@@ -42,9 +36,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventDeleted,
 }) => {
   const { user, session } = useAuth();
-  const [resourcesWithContributions, setResourcesWithContributions] = useState<
-    ResourceWithContributions[]
-  >([]);
+  const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -94,49 +86,28 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     [eventRepository]
   );
 
-  const loadResourcesWithContributions = useCallback(async () => {
+  const loadResources = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Load all resources for the event
-      const resources = await getResourcesUseCase.execute({
+      // Load all resources for the event (includes contributors)
+      const loadedResources = await getResourcesUseCase.execute({
         eventId: event.id,
       });
 
-      // For each resource, load its contributions
-      const resourcesWithContribs: ResourceWithContributions[] =
-        await Promise.all(
-          resources.map(async resource => {
-            try {
-              const contributions =
-                await contributionRepository.getContributionsByResource({
-                  eventId: event.id,
-                  resourceId: resource.id,
-                });
-              return { resource, contributions };
-            } catch (err) {
-              console.error(
-                `Failed to load contributions for resource ${resource.id}:`,
-                err
-              );
-              return { resource, contributions: [] };
-            }
-          })
-        );
-
-      setResourcesWithContributions(resourcesWithContribs);
+      setResources(loadedResources);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load resources');
     } finally {
       setLoading(false);
     }
-  }, [event.id, getResourcesUseCase, contributionRepository]);
+  }, [event.id, getResourcesUseCase]);
 
   useEffect(() => {
     setCurrentEvent(event);
-    loadResourcesWithContributions();
-  }, [event, loadResourcesWithContributions]);
+    loadResources();
+  }, [event, loadResources]);
 
   const handleAddResource = async (data: {
     name: string;
@@ -154,22 +125,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
       // If user provided initial quantity, create a contribution
       if (data.quantity > 0) {
-        const contribution = await addContributionUseCase.execute({
+        await addContributionUseCase.execute({
           eventId: event.id,
           resourceId: newResource.id,
           userId: user.id,
           quantity: data.quantity,
         });
-        setResourcesWithContributions(prev => [
-          ...prev,
-          { resource: newResource, contributions: [contribution] },
-        ]);
-      } else {
-        setResourcesWithContributions(prev => [
-          ...prev,
-          { resource: newResource, contributions: [] },
-        ]);
       }
+
+      // Reload resources to get updated data with contributions
+      await loadResources();
 
       setIsAddResourceModalOpen(false);
     } catch (err) {
@@ -185,23 +150,15 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     if (!user) return;
 
     try {
-      const newContribution = await addContributionUseCase.execute({
+      await addContributionUseCase.execute({
         eventId: event.id,
         resourceId,
         userId: user.id,
         quantity,
       });
 
-      setResourcesWithContributions(prev =>
-        prev.map(item =>
-          item.resource.id === resourceId
-            ? {
-                ...item,
-                contributions: [...item.contributions, newContribution],
-              }
-            : item
-        )
-      );
+      // Reload resources to get updated data with contributions
+      await loadResources();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add contribution'
@@ -219,18 +176,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         resourceId,
       });
 
-      setResourcesWithContributions(prev =>
-        prev.map(item =>
-          item.resource.id === resourceId
-            ? {
-                ...item,
-                contributions: item.contributions.filter(
-                  c => c.userId !== user.id
-                ),
-              }
-            : item
-        )
-      );
+      // Reload resources to get updated data
+      await loadResources();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to delete contribution'
@@ -303,8 +250,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   };
 
   const participantIds = new Set<string>();
-  resourcesWithContributions.forEach(({ contributions }) => {
-    contributions.forEach(c => participantIds.add(c.userId));
+  resources.forEach(resource => {
+    resource.contributors.forEach(c => participantIds.add(c.userId));
   });
   const participantCount = participantIds.size;
 
@@ -365,17 +312,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
         {loading ? (
           <div className="loading-state">Loading resources...</div>
-        ) : resourcesWithContributions.length === 0 ? (
+        ) : resources.length === 0 ? (
           <div className="empty-state">
             <p>No resources yet. Add the first resource to get started!</p>
           </div>
         ) : (
           <div className="resources-list">
-            {resourcesWithContributions.map(({ resource, contributions }) => (
+            {resources.map(resource => (
               <ResourceItem
                 key={resource.id}
                 resource={resource}
-                contributions={contributions}
                 currentUserId={user?.id || ''}
                 onAddContribution={handleAddContribution}
                 onDeleteContribution={handleDeleteContribution}
