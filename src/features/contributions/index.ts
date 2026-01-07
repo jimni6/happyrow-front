@@ -1,5 +1,4 @@
 // Types
-export { ContributionType } from './types/Contribution';
 export type {
   Contribution,
   ContributionCreationRequest,
@@ -17,7 +16,3 @@ export { DeleteContribution } from './use-cases/DeleteContribution';
 export type { DeleteContributionInput } from './use-cases/DeleteContribution';
 export { GetContributions } from './use-cases/GetContributions';
 export type { GetContributionsInput } from './use-cases/GetContributions';
-
-// Components
-export { ContributionItem } from './components/ContributionItem';
-export { ContributionList } from './components/ContributionList';
