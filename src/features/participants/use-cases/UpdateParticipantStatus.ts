@@ -7,7 +7,7 @@ import type { ParticipantRepository } from '../types/ParticipantRepository';
 
 export interface UpdateParticipantStatusInput {
   eventId: string;
-  userId: string;
+  userEmail: string;
   status: string;
 }
 
@@ -19,8 +19,8 @@ export class UpdateParticipantStatus {
       throw new Error('Valid event ID is required');
     }
 
-    if (!input.userId || input.userId.trim().length === 0) {
-      throw new Error('Valid user ID is required');
+    if (!input.userEmail || input.userEmail.trim().length === 0) {
+      throw new Error('Valid user email is required');
     }
 
     if (!input.status || input.status.trim().length === 0) {
@@ -34,7 +34,7 @@ export class UpdateParticipantStatus {
     try {
       return await this.participantRepository.updateParticipantStatus(
         input.eventId,
-        input.userId,
+        input.userEmail,
         request
       );
     } catch (error) {

@@ -2,7 +2,7 @@ import type { ParticipantRepository } from '../types/ParticipantRepository';
 
 export interface RemoveParticipantInput {
   eventId: string;
-  userId: string;
+  userEmail: string;
 }
 
 export class RemoveParticipant {
@@ -13,14 +13,14 @@ export class RemoveParticipant {
       throw new Error('Valid event ID is required');
     }
 
-    if (!input.userId || input.userId.trim().length === 0) {
-      throw new Error('Valid user ID is required');
+    if (!input.userEmail || input.userEmail.trim().length === 0) {
+      throw new Error('Valid user email is required');
     }
 
     try {
       await this.participantRepository.removeParticipant(
         input.eventId,
-        input.userId
+        input.userEmail
       );
     } catch (error) {
       throw new Error(

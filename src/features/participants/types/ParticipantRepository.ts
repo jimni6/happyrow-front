@@ -9,8 +9,8 @@ export interface ParticipantRepository {
   getParticipantsByEvent(eventId: string): Promise<Participant[]>;
   updateParticipantStatus(
     eventId: string,
-    userId: string,
+    userEmail: string,
     data: ParticipantUpdateRequest
   ): Promise<Participant>;
-  removeParticipant(eventId: string, userId: string): Promise<void>;
+  removeParticipant(eventId: string, userEmail: string): Promise<void>;
 }

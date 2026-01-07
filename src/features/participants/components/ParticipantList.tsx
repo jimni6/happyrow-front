@@ -4,13 +4,13 @@ import './ParticipantList.css';
 
 interface ParticipantListProps {
   participants: Participant[];
-  currentUserId: string;
-  onRemove?: (userId: string) => void;
+  currentUserEmail: string;
+  onRemove?: (userEmail: string) => void;
 }
 
 export const ParticipantList: React.FC<ParticipantListProps> = ({
   participants,
-  currentUserId,
+  currentUserEmail,
   onRemove,
 }) => {
   const getStatusIcon = (status: ParticipantStatus) => {
@@ -43,13 +43,13 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
   return (
     <div className="participant-list">
       {participants.map(participant => (
-        <div key={participant.userId} className="participant-item">
+        <div key={participant.userEmail} className="participant-item">
           <div className="participant-info">
             <span className="participant-icon">👤</span>
             <span className="participant-id">
-              {participant.userId === currentUserId
+              {participant.userEmail === currentUserEmail
                 ? 'You'
-                : participant.userId.substring(0, 8)}
+                : participant.userEmail}
             </span>
             <span
               className={`participant-status ${getStatusClass(participant.status)}`}
@@ -57,10 +57,10 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
               {getStatusIcon(participant.status)} {participant.status}
             </span>
           </div>
-          {participant.userId !== currentUserId && onRemove && (
+          {participant.userEmail !== currentUserEmail && onRemove && (
             <button
               className="remove-btn"
-              onClick={() => onRemove(participant.userId)}
+              onClick={() => onRemove(participant.userEmail)}
               aria-label="Remove participant"
             >
               ✕

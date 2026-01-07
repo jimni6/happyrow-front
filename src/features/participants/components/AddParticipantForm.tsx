@@ -3,7 +3,7 @@ import { ParticipantStatus } from '../types/Participant';
 import './AddParticipantForm.css';
 
 interface AddParticipantFormProps {
-  onSubmit: (userId: string, status: ParticipantStatus) => Promise<void>;
+  onSubmit: (userEmail: string, status: ParticipantStatus) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -11,7 +11,7 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [status, setStatus] = useState<ParticipantStatus>(
     ParticipantStatus.INVITED
   );
@@ -22,16 +22,16 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
     e.preventDefault();
     setError(null);
 
-    if (!userId.trim()) {
-      setError('User ID is required');
+    if (!userEmail.trim()) {
+      setError('User email is required');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await onSubmit(userId.trim(), status);
-      setUserId('');
+      await onSubmit(userEmail.trim(), status);
+      setUserEmail('');
       setStatus(ParticipantStatus.INVITED);
     } catch (err) {
       setError(
@@ -49,13 +49,13 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
       {error && <div className="form-error">{error}</div>}
 
       <div className="form-group">
-        <label htmlFor="userId">User ID</label>
+        <label htmlFor="userEmail">User Email</label>
         <input
-          id="userId"
-          type="text"
-          value={userId}
-          onChange={e => setUserId(e.target.value)}
-          placeholder="Enter user ID"
+          id="userEmail"
+          type="email"
+          value={userEmail}
+          onChange={e => setUserEmail(e.target.value)}
+          placeholder="Enter user email"
           disabled={isSubmitting}
           required
         />

@@ -7,12 +7,12 @@ import type {
 import type { ParticipantRepository } from '../types/ParticipantRepository';
 
 interface ParticipantApiRequest {
-  user_id: string;
+  user_email: string;
   status: string;
 }
 
 interface ParticipantApiResponse {
-  user_id: string;
+  user_email: string;
   event_id: string;
   status: string;
   joined_at: number;
@@ -34,7 +34,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
 
   async addParticipant(data: ParticipantCreationRequest): Promise<Participant> {
     const apiRequest: ParticipantApiRequest = {
-      user_id: data.userId,
+      user_email: data.userEmail,
       status: data.status,
     };
 
@@ -95,7 +95,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
 
   async updateParticipantStatus(
     eventId: string,
-    userId: string,
+    userEmail: string,
     data: ParticipantUpdateRequest
   ): Promise<Participant> {
     const apiRequest = {
@@ -108,7 +108,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/participants/${userId}`,
+      `${this.baseUrl}/events/${eventId}/participants/${userEmail}`,
       {
         method: 'PUT',
         headers: {
@@ -130,14 +130,14 @@ export class HttpParticipantRepository implements ParticipantRepository {
     return this.mapApiResponseToParticipant(participantResponse);
   }
 
-  async removeParticipant(eventId: string, userId: string): Promise<void> {
+  async removeParticipant(eventId: string, userEmail: string): Promise<void> {
     const token = this.getToken();
     if (!token) {
       throw new Error('Authentication required');
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/participants/${userId}`,
+      `${this.baseUrl}/events/${eventId}/participants/${userEmail}`,
       {
         method: 'DELETE',
         headers: {
@@ -155,7 +155,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     response: ParticipantApiResponse
   ): Participant {
     return {
-      userId: response.user_id,
+      userEmail: response.user_email,
       eventId: response.event_id,
       status: response.status as ParticipantStatus,
       joinedAt: new Date(response.joined_at),

@@ -7,7 +7,7 @@ import type { ParticipantRepository } from '../types/ParticipantRepository';
 
 export interface AddParticipantInput {
   eventId: string;
-  userId: string;
+  userEmail: string;
   status: string;
 }
 
@@ -19,8 +19,8 @@ export class AddParticipant {
       throw new Error('Valid event ID is required');
     }
 
-    if (!input.userId || input.userId.trim().length === 0) {
-      throw new Error('Valid user ID is required');
+    if (!input.userEmail || input.userEmail.trim().length === 0) {
+      throw new Error('Valid user email is required');
     }
 
     if (!input.status || input.status.trim().length === 0) {
@@ -29,7 +29,7 @@ export class AddParticipant {
 
     const request: ParticipantCreationRequest = {
       eventId: input.eventId,
-      userId: input.userId,
+      userEmail: input.userEmail,
       status: input.status as ParticipantStatus,
     };
 

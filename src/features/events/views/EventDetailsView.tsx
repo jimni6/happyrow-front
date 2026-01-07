@@ -284,13 +284,13 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   };
 
   const handleAddParticipant = async (
-    userId: string,
+    userEmail: string,
     status: ParticipantStatus
   ) => {
     try {
       await addParticipantUseCase.execute({
         eventId: event.id,
-        userId,
+        userEmail,
         status,
       });
 
@@ -304,13 +304,13 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   };
 
-  const handleRemoveParticipant = async (userId: string) => {
+  const handleRemoveParticipant = async (userEmail: string) => {
     if (!user) return;
 
     try {
       await removeParticipantUseCase.execute({
         eventId: event.id,
-        userId,
+        userEmail,
       });
 
       await loadParticipants();
@@ -385,7 +385,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         ) : (
           <ParticipantList
             participants={participants}
-            currentUserId={user?.id || ''}
+            currentUserEmail={user?.email || ''}
             onRemove={isOrganizer ? handleRemoveParticipant : undefined}
           />
         )}
