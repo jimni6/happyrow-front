@@ -95,14 +95,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
       );
       const createEventUseCase = new CreateEvent(eventRepository);
 
-      await createEventUseCase.execute({
+      const newEvent = await createEventUseCase.execute({
         ...eventData,
         organizerId: user.id,
       });
 
-      // Success - close modal and reload events
+      // Success - add the new event to the list and close modal
+      setEvents(prevEvents => [...prevEvents, newEvent]);
       setIsCreateEventModalOpen(false);
-      loadEvents();
       console.log('Event created successfully!');
     } catch (error) {
       const errorMessage =
