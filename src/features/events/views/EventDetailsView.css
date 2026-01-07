@@ -200,6 +200,49 @@
   gap: 16px;
 }
 
+/* Participants Section */
+.participants-section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.participants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.participants-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #212529;
+}
+
+.add-participant-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-participant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.add-participant-btn:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 768px) {
   .event-details-view {
     padding: 16px;

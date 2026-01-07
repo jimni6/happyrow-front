@@ -14,6 +14,15 @@ import {
   AddContribution,
   DeleteContribution,
 } from '@/features/contributions';
+import type { Participant, ParticipantStatus } from '@/features/participants';
+import {
+  HttpParticipantRepository,
+  AddParticipant,
+  GetParticipants,
+  RemoveParticipant,
+  ParticipantList,
+  AddParticipantForm,
+} from '@/features/participants';
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
@@ -37,13 +46,17 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 }) => {
   const { user, session } = useAuth();
   const [resources, setResources] = useState<Resource[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [participantsLoading, setParticipantsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddResourceModalOpen, setIsAddResourceModalOpen] = useState(false);
+  const [isAddParticipantModalOpen, setIsAddParticipantModalOpen] =
+    useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
   // Repositories
@@ -53,6 +66,10 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   );
   const contributionRepository = useMemo(
     () => new HttpContributionRepository(() => session?.accessToken || null),
+    [session]
+  );
+  const participantRepository = useMemo(
+    () => new HttpParticipantRepository(() => session?.accessToken || null),
     [session]
   );
   const eventRepository = useMemo(
@@ -85,6 +102,18 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     () => new DeleteEvent(eventRepository),
     [eventRepository]
   );
+  const getParticipantsUseCase = useMemo(
+    () => new GetParticipants(participantRepository),
+    [participantRepository]
+  );
+  const addParticipantUseCase = useMemo(
+    () => new AddParticipant(participantRepository),
+    [participantRepository]
+  );
+  const removeParticipantUseCase = useMemo(
+    () => new RemoveParticipant(participantRepository),
+    [participantRepository]
+  );
 
   const loadResources = useCallback(async () => {
     try {
@@ -104,10 +133,25 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   }, [event.id, getResourcesUseCase]);
 
+  const loadParticipants = useCallback(async () => {
+    try {
+      setParticipantsLoading(true);
+      const loadedParticipants = await getParticipantsUseCase.execute({
+        eventId: event.id,
+      });
+      setParticipants(loadedParticipants);
+    } catch (err) {
+      console.error('Failed to load participants:', err);
+    } finally {
+      setParticipantsLoading(false);
+    }
+  }, [event.id, getParticipantsUseCase]);
+
   useEffect(() => {
     setCurrentEvent(event);
     loadResources();
-  }, [event, loadResources]);
+    loadParticipants();
+  }, [event, loadResources, loadParticipants]);
 
   const handleAddResource = async (data: {
     name: string;
@@ -239,11 +283,45 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   };
 
-  const participantIds = new Set<string>();
-  resources.forEach(resource => {
-    resource.contributors.forEach(c => participantIds.add(c.userId));
-  });
-  const participantCount = participantIds.size;
+  const handleAddParticipant = async (
+    userId: string,
+    status: ParticipantStatus
+  ) => {
+    try {
+      await addParticipantUseCase.execute({
+        eventId: event.id,
+        userId,
+        status,
+      });
+
+      await loadParticipants();
+      setIsAddParticipantModalOpen(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to add participant'
+      );
+      throw err;
+    }
+  };
+
+  const handleRemoveParticipant = async (userId: string) => {
+    if (!user) return;
+
+    try {
+      await removeParticipantUseCase.execute({
+        eventId: event.id,
+        userId,
+      });
+
+      await loadParticipants();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to remove participant'
+      );
+    }
+  };
+
+  const participantCount = participants.length;
 
   const isOrganizer = user?.id === currentEvent.organizerId;
 
@@ -288,6 +366,30 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      <div className="participants-section">
+        <div className="participants-header">
+          <h2>Participants</h2>
+          {isOrganizer && (
+            <button
+              className="add-participant-btn"
+              onClick={() => setIsAddParticipantModalOpen(true)}
+            >
+              + Add Participant
+            </button>
+          )}
+        </div>
+
+        {participantsLoading ? (
+          <div className="loading-state">Loading participants...</div>
+        ) : (
+          <ParticipantList
+            participants={participants}
+            currentUserId={user?.id || ''}
+            onRemove={isOrganizer ? handleRemoveParticipant : undefined}
+          />
+        )}
+      </div>
 
       <div className="resources-section">
         <div className="resources-header">
@@ -350,6 +452,18 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             setError(null);
           }}
           isLoading={isUpdating}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isAddParticipantModalOpen}
+        onClose={() => setIsAddParticipantModalOpen(false)}
+        title="Add Participant"
+        size="medium"
+      >
+        <AddParticipantForm
+          onSubmit={handleAddParticipant}
+          onCancel={() => setIsAddParticipantModalOpen(false)}
         />
       </Modal>
 
