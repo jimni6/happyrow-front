@@ -13,12 +13,6 @@ interface ResourceApiRequest {
   suggested_quantity?: number;
 }
 
-interface ContributorApiResponse {
-  user_id: string;
-  quantity: number;
-  contributed_at: number;
-}
-
 interface ResourceApiResponse {
   identifier: string;
   event_id: string;
@@ -26,9 +20,9 @@ interface ResourceApiResponse {
   category: string;
   current_quantity: number;
   suggested_quantity?: number;
-  contributors: ContributorApiResponse[];
-  creation_date: number;
-  update_date?: number;
+  version: number;
+  created_at: number;
+  updated_at?: number;
 }
 
 export class HttpResourceRepository implements ResourceRepository {
@@ -190,16 +184,12 @@ export class HttpResourceRepository implements ResourceRepository {
       eventId: response.event_id,
       name: response.name,
       category: this.mapStringToResourceCategory(response.category),
-      currentQuantity: response.current_quantity,
+      currentQuantity: response.current_quantity || 0,
       suggestedQuantity: response.suggested_quantity,
-      contributors: response.contributors.map(c => ({
-        userId: c.user_id,
-        quantity: c.quantity,
-        contributedAt: new Date(c.contributed_at),
-      })),
-      createdAt: new Date(response.creation_date),
-      updatedAt: response.update_date
-        ? new Date(response.update_date)
+      contributors: [],
+      createdAt: new Date(response.created_at),
+      updatedAt: response.updated_at
+        ? new Date(response.updated_at)
         : undefined,
     };
   }
