@@ -31,7 +31,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventUpdated,
   onEventDeleted,
 }) => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +43,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
   // Memoize repository and use cases to prevent recreation on every render
   const contributionRepository = useMemo(
-    () => new HttpContributionRepository(),
-    []
+    () => new HttpContributionRepository(() => session?.accessToken || null),
+    [session]
   );
   const getContributionsUseCase = useMemo(
     () => new GetContributions(contributionRepository),
@@ -60,7 +60,10 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   );
 
   // Event repository and use cases
-  const eventRepository = useMemo(() => new HttpEventRepository(), []);
+  const eventRepository = useMemo(
+    () => new HttpEventRepository(() => session?.accessToken || null),
+    [session]
+  );
   const updateEventUseCase = useMemo(
     () => new UpdateEvent(eventRepository),
     [eventRepository]

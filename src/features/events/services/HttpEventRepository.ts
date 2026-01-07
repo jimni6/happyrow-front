@@ -26,12 +26,15 @@ interface EventApiResponse {
 
 export class HttpEventRepository implements EventRepository {
   private baseUrl: string;
+  private getToken: () => string | null;
 
   constructor(
+    getToken: () => string | null,
     baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
       'https://happyrow-core.onrender.com/event/configuration/api/v1'
   ) {
     this.baseUrl = baseUrl;
+    this.getToken = getToken;
   }
 
   private mapStringToEventType = (type: string): EventType =>
@@ -47,11 +50,16 @@ export class HttpEventRepository implements EventRepository {
       type: eventData.type,
     };
 
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(`${this.baseUrl}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-user-id': eventData.organizerId,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(apiRequest),
     });
@@ -78,7 +86,16 @@ export class HttpEventRepository implements EventRepository {
   }
 
   async getEventById(id: string): Promise<Event | null> {
-    const response = await fetch(`${this.baseUrl}/events/${id}`);
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
+    const response = await fetch(`${this.baseUrl}/events/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.status === 404) {
       return null;
@@ -101,9 +118,16 @@ export class HttpEventRepository implements EventRepository {
   }
 
   async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
-    const response = await fetch(
-      `${this.baseUrl}/events?organizerId=${organizerId}`
-    );
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
+    const response = await fetch(`${this.baseUrl}/events`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -134,16 +158,17 @@ export class HttpEventRepository implements EventRepository {
     if (eventData.location) apiRequest.location = eventData.location;
     if (eventData.type) apiRequest.type = eventData.type;
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (eventData.organizerId) {
-      headers['x-user-id'] = eventData.organizerId;
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
     }
 
     const response = await fetch(`${this.baseUrl}/events/${id}`, {
       method: 'PUT',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(apiRequest),
     });
 
@@ -166,11 +191,16 @@ export class HttpEventRepository implements EventRepository {
     };
   }
 
-  async deleteEvent(id: string, userId: string): Promise<void> {
+  async deleteEvent(id: string): Promise<void> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(`${this.baseUrl}/events/${id}`, {
       method: 'DELETE',
       headers: {
-        'x-user-id': userId,
+        Authorization: `Bearer ${token}`,
       },
     });
 

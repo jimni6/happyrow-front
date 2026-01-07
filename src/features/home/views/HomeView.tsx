@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './HomeView.css';
 import type { User } from '@/features/auth';
+import { useAuth } from '@/features/auth';
 import type { Event } from '@/features/events';
 import { Modal } from '@/shared/components/Modal';
 import { CreateEventForm } from '@/features/events';
@@ -14,6 +15,7 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
+  const { session } = useAuth();
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
@@ -40,7 +42,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
 
     try {
       setLoadingEvents(true);
-      const eventRepository = new HttpEventRepository();
+      const eventRepository = new HttpEventRepository(
+        () => session?.accessToken || null
+      );
       const getEventsUseCase = new GetEventsByOrganizer(eventRepository);
       const userEvents = await getEventsUseCase.execute({
         organizerId: user.id,
@@ -54,7 +58,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
       setLoadingEvents(false);
       loadingRef.current = false;
     }
-  }, [user.id]);
+  }, [user.id, session]);
 
   useEffect(() => {
     loadEvents();
@@ -86,7 +90,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
     setCreateEventError(null);
 
     try {
-      const eventRepository = new HttpEventRepository();
+      const eventRepository = new HttpEventRepository(
+        () => session?.accessToken || null
+      );
       const createEventUseCase = new CreateEvent(eventRepository);
 
       await createEventUseCase.execute({

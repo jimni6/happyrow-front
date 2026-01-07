@@ -1,0 +1,428 @@
+# ============================================================================
+# HappyRow Core API - HTTP Client Endpoints
+# ============================================================================
+# Use IntelliJ's environment selector to switch between:
+#   - local (localhost:8080)
+#   - render (Render.com deployment)
+#   - raspberry (Raspberry Pi deployment)
+#
+# Variables are defined in http-client.env.json
+# ============================================================================
+
+# ============================================================================
+# Health Check Endpoints
+# ============================================================================
+
+### Get Server Info
+GET {{baseUrl}}/info
+
+### Health Check
+GET {{baseUrl}}/health
+
+# ============================================================================
+# Event Management Endpoints
+# ============================================================================
+
+### Create Event - Party
+POST {{baseUrl}}{{apiPath}}/events
+#x-user-id: {{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Summer Party 2025",
+  "description": "Annual summer celebration with friends",
+  "event_date": "2025-06-15T19:00:00Z",
+  "location": "Backyard Garden",
+  "type": "PARTY"
+}
+
+### Create Event - Birthday
+POST {{baseUrl}}{{apiPath}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "John's 30th Birthday",
+  "description": "Birthday celebration dinner",
+  "event_date": "2025-03-20T18:30:00Z",
+  "location": "Italian Restaurant",
+  "type": "BIRTHDAY"
+}
+
+### Create Event - Dinner
+POST {{baseUrl}}{{apiPath}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Team Dinner",
+  "description": "Quarterly team dinner",
+  "event_date": "2025-04-10T19:00:00Z",
+  "location": "Downtown Restaurant",
+  "type": "DINER"
+}
+
+### Create Event - Snack
+POST {{baseUrl}}{{apiPath}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Coffee Break",
+  "description": "Afternoon snack and coffee",
+  "event_date": "2025-02-05T15:00:00Z",
+  "location": "Office Lounge",
+  "type": "SNACK"
+}
+
+### Get Events by Organizer
+GET {{baseUrl}}{{apiPath}}/events
+Authorization: Bearer {{token}}
+
+### Get Event by ID (replace {eventId} with actual ID)
+GET {{baseUrl}}{{apiPath}}/events/{eventId}
+Authorization: Bearer {{token}}
+
+### Update Event (replace {eventId} with actual ID from a created event)
+PUT {{baseUrl}}{{apiPath}}/events/b0ad9e97-6a23-4d3d-ba30-5b79db695cc1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Event Name",
+  "description": "Updated description",
+  "event_date": "2025-10-25T17:00:00.000Z",
+  "location": "Updated Location",
+  "type": "SNACK"
+}
+
+### Delete Event (replace {eventId} with actual ID)
+DELETE {{baseUrl}}{{apiPath}}/events/{eventId}
+Authorization: Bearer {{token}}
+
+# ============================================================================
+# Participant Management Endpoints
+# ============================================================================
+
+### Create Participant - Confirmed (replace {eventId} with actual event ID)
+POST {{baseUrl}}{{apiPath}}/events/06f92b25-0cc4-4709-86c6-b556f304e876/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "ab70634a-345e-415e-8417-60841b6bcb21",
+  "status": "CONFIRMED"
+}
+
+### Create Participant - Invited
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "cd80734b-456f-526f-9528-71952c7cdc31",
+  "status": "INVITED"
+}
+
+### Create Participant - Maybe
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "ef90845c-567g-637g-0639-82063d8ded42",
+  "status": "MAYBE"
+}
+
+### Create Participant - Declined
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "gh01956d-678h-748h-1740-93174e9efe53",
+  "status": "DECLINED"
+}
+
+### Get All Participants for Event
+GET {{baseUrl}}{{apiPath}}/events/06f92b25-0cc4-4709-86c6-b556f304e876/participants
+Authorization: Bearer {{token}}
+
+### Update Participant Status - Change to CONFIRMED
+PUT {{baseUrl}}{{apiPath}}/events/{eventId}/participants/{userId}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "CONFIRMED"
+}
+
+### Update Participant Status - Change to DECLINED
+PUT {{baseUrl}}{{apiPath}}/events/{eventId}/participants/{userId}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "DECLINED"
+}
+
+### Update Participant Status - Change to MAYBE
+PUT {{baseUrl}}{{apiPath}}/events/{eventId}/participants/{userId}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "MAYBE"
+}
+###
+# ============================================================================
+# Resource Management Endpoints
+# ============================================================================
+
+### Create Resource - Food (replace {eventId} with actual event ID)
+POST {{baseUrl}}{{apiPath}}/events/06f92b25-0cc4-4709-86c6-b556f304e876/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "steak",
+  "category": "FOOD",
+  "quantity": 1
+}
+
+### Create Resource - Drink
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Soda (2L bottles)",
+  "category": "DRINK",
+  "quantity": 10
+}
+
+### Create Resource - Utensil
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Plates",
+  "category": "UTENSIL",
+  "quantity": 30
+}
+
+### Create Resource - Decoration
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Balloons",
+  "category": "DECORATION",
+  "quantity": 20
+}
+
+### Create Resource - Other
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Music Playlist",
+  "category": "OTHER",
+  "quantity": 1
+}
+
+### Get All Resources for Event
+GET {{baseUrl}}{{apiPath}}/events/06f92b25-0cc4-4709-86c6-b556f304e876/resources
+Authorization: Bearer {{token}}
+
+# ============================================================================
+# Contribution Management Endpoints
+# ============================================================================
+
+### Add Contribution - User 1 brings 2 pizzas
+POST {{baseUrl}}{{apiPath}}/events/06f92b25-0cc4-4709-86c6-b556f304e876/resources/0acf72a9-a8cc-4ffa-be5c-331b0c6003be/contributions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 2
+}
+
+### Add Contribution - User 2 brings 3 sodas
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources/{resourceId}/contributions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### Update Contribution - User 1 changes to 3 pizzas (optimistic locking test)
+POST {{baseUrl}}{{apiPath}}/events/{eventId}/resources/{resourceId}/contributions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### Delete Contribution - User 1 removes contribution
+DELETE {{baseUrl}}{{apiPath}}/events/{eventId}/resources/{resourceId}/contributions
+Authorization: Bearer {{token}}
+
+# ============================================================================
+# Complete Flow Example
+# ============================================================================
+# This demonstrates the full collaborative resource management flow:
+# 1. Create an event
+# 2. Add participants to the event
+# 3. Add resources to the event
+# 4. Multiple users contribute quantities
+# 5. View updated resources with current quantities
+# 6. Test optimistic locking with concurrent updates
+
+### STEP 1: Create Event for Party
+POST {{baseUrl}}{{apiPath}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Community BBQ 2025",
+  "description": "Neighborhood barbecue party",
+  "event_date": "2025-07-20T17:00:00Z",
+  "location": "Central Park",
+  "type": "PARTY"
+}
+
+### STEP 2a: Add Participant User 1 (copy eventId from step 1 response)
+POST {{baseUrl}}{{apiPath}}/events/9de31e71-135a-4a82-a301-6d2c90af2f81/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "ab70634a-345e-415e-8417-60841b6bcb20",
+  "status": "INVITED"
+}
+
+### STEP 2b: Add Participant User 2
+POST {{baseUrl}}{{apiPath}}/events/9de31e71-135a-4a82-a301-6d2c90af2f81/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user_id": "cd80734b-456f-526f-9528-71952c7aaaa",
+  "status": "INVITED"
+}
+
+### STEP 2c: Update Participant User 2 Status to DECLINED
+PUT {{baseUrl}}{{apiPath}}/events/9de31e71-135a-4a82-a301-6d2c90af2f81/participants/cd80734b-456f-526f-9528-71952c7cdc31
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "DECLINED"
+}
+
+### STEP 2d: View all participants
+GET {{baseUrl}}{{apiPath}}/events/9de31e71-135a-4a82-a301-6d2c90af2f81/participants
+Authorization: Bearer {{token}}
+
+### STEP 3: Add Pizza Resource (User 1 brings 3 pizzas)
+POST {{baseUrl}}{{apiPath}}/events/9de31e71-135a-4a82-a301-6d2c90af2f81/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Pizzas",
+  "category": "FOOD",
+  "quantity": 3,
+  "suggested_quantity": 10
+}
+
+### STEP 4: User 2 adds more pizzas (copy resourceId from step 3 response)
+POST {{baseUrl}}{{apiPath}}/events/PASTE_EVENT_ID_HERE/resources/PASTE_RESOURCE_ID_HERE/contributions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 2
+}
+
+### STEP 5: View all resources (should show current_quantity: 5, suggested_quantity: 10)
+GET {{baseUrl}}{{apiPath}}/events/PASTE_EVENT_ID_HERE/resources
+Authorization: Bearer {{token}}
+
+### STEP 6: User 1 updates their contribution to 4 pizzas (tests update logic)
+POST {{baseUrl}}{{apiPath}}/events/PASTE_EVENT_ID_HERE/resources/PASTE_RESOURCE_ID_HERE/contributions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 4
+}
+
+### STEP 7: View resources again (should show current_quantity: 6)
+GET {{baseUrl}}{{apiPath}}/events/PASTE_EVENT_ID_HERE/resources
+Authorization: Bearer {{token}}
+
+###
+# ============================================================================
+# cURL Examples (for command line usage)
+# ============================================================================
+
+### Example: Create Event via cURL (localhost)
+# curl -X POST http://localhost:8080/event/configuration/api/v1/events \
+#   -H "Content-Type: application/json" \
+#   -H "x-user-id: ab70634a-345e-415e-8417-60841b6bcb20" \
+#   -d '{
+#     "name": "Summer Party 2025",
+#     "description": "Annual summer celebration",
+#     "event_date": "2025-06-15T19:00:00Z",
+#     "location": "Backyard Garden",
+#     "type": "PARTY"
+#   }'
+
+### Example: Get Events via cURL (localhost)
+# curl -X GET "http://localhost:8080/event/configuration/api/v1/events?organizerId=ab70634a-345e-415e-8417-60841b6bcb20" \
+#   -H "x-user-id: ab70634a-345e-415e-8417-60841b6bcb20"
+
+### Example: Create Participant via cURL (localhost)
+# curl -X POST http://localhost:8080/event/configuration/api/v1/events/{eventId}/participants \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "user_id": "ab70634a-345e-415e-8417-60841b6bcb20",
+#     "status": "CONFIRMED"
+#   }'
+
+### Example: Get Participants via cURL (localhost)
+# curl -X GET http://localhost:8080/event/configuration/api/v1/events/{eventId}/participants
+
+### Example: Create Resource via cURL (localhost)
+# curl -X POST http://localhost:8080/event/configuration/api/v1/events/{eventId}/resources \
+#   -H "Content-Type: application/json" \
+#   -H "x-user-id: ab70634a-345e-415e-8417-60841b6bcb20" \
+#   -d '{
+#     "name": "Pizza",
+#     "category": "FOOD",
+#     "quantity": 5,
+#     "suggested_quantity": 10
+#   }'
+
+### Example: Get Resources via cURL (localhost)
+# curl -X GET http://localhost:8080/event/configuration/api/v1/events/{eventId}/resources
+
+### Example: Add Contribution via cURL (localhost)
+# curl -X POST http://localhost:8080/event/configuration/api/v1/events/{eventId}/resources/{resourceId}/contributions \
+#   -H "Content-Type: application/json" \
+#   -H "x-user-id: ab70634a-345e-415e-8417-60841b6bcb20" \
+#   -d '{
+#     "quantity": 3
+#   }'
+
+### Example: Delete Contribution via cURL (localhost)
+# curl -X DELETE http://localhost:8080/event/configuration/api/v1/events/{eventId}/resources/{resourceId}/contributions \
+#   -H "x-user-id: ab70634a-345e-415e-8417-60841b6bcb20"

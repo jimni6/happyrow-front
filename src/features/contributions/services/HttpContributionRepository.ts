@@ -27,20 +27,33 @@ interface ContributionApiResponse {
 
 export class HttpContributionRepository implements ContributionRepository {
   private baseUrl: string;
+  private getToken: () => string | null;
 
   constructor(
+    getToken: () => string | null,
     baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
       'https://happyrow-core.onrender.com/event/configuration/api/v1'
   ) {
     this.baseUrl = baseUrl;
+    this.getToken = getToken;
   }
 
   private mapStringToContributionType = (type: string): ContributionType =>
     type.toUpperCase() as ContributionType;
 
   async getContributionsByEvent(eventId: string): Promise<Contribution[]> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/contributions`
+      `${this.baseUrl}/events/${eventId}/contributions`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     if (!response.ok) {
@@ -70,13 +83,18 @@ export class HttpContributionRepository implements ContributionRepository {
       type: data.type,
     };
 
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(
       `${this.baseUrl}/events/${data.eventId}/contributions`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': data.userId,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(apiRequest),
       }
@@ -105,10 +123,16 @@ export class HttpContributionRepository implements ContributionRepository {
     id: number,
     data: ContributionUpdateRequest
   ): Promise<Contribution> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(`${this.baseUrl}/contributions/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });
@@ -133,8 +157,16 @@ export class HttpContributionRepository implements ContributionRepository {
   }
 
   async deleteContribution(id: number): Promise<void> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
     const response = await fetch(`${this.baseUrl}/contributions/${id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {

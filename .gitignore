@@ -116,3 +116,4 @@ storybook-static/
 
 # Chromatic
 chromatic-*.log
+/.http/http-client.env.json
