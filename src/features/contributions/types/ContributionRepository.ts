@@ -5,11 +5,18 @@ import type {
 } from './Contribution';
 
 export interface ContributionRepository {
-  getContributionsByEvent(eventId: string): Promise<Contribution[]>;
+  getContributionsByResource(params: {
+    eventId: string;
+    resourceId: string;
+  }): Promise<Contribution[]>;
   createContribution(data: ContributionCreationRequest): Promise<Contribution>;
-  updateContribution(
-    id: number,
-    data: ContributionUpdateRequest
-  ): Promise<Contribution>;
-  deleteContribution(id: number): Promise<void>;
+  updateContribution(params: {
+    eventId: string;
+    resourceId: string;
+    data: ContributionUpdateRequest;
+  }): Promise<Contribution>;
+  deleteContribution(params: {
+    eventId: string;
+    resourceId: string;
+  }): Promise<void>;
 }

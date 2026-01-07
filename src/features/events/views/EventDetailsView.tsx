@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
 import type { Event, EventType } from '../types/Event';
+import type { Resource, ResourceCategory } from '@/features/resources';
 import type { Contribution } from '@/features/contributions';
-import { ContributionType } from '@/features/contributions';
-import { ContributionList } from '@/features/contributions';
-import { HttpContributionRepository } from '@/features/contributions';
 import {
+  HttpResourceRepository,
+  CreateResource,
+  GetResources,
+  ResourceItem,
+  AddResourceForm,
+} from '@/features/resources';
+import {
+  HttpContributionRepository,
   AddContribution,
   DeleteContribution,
-  GetContributions,
 } from '@/features/contributions';
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
@@ -25,6 +30,11 @@ interface EventDetailsViewProps {
   onEventDeleted?: () => void;
 }
 
+interface ResourceWithContributions {
+  resource: Resource;
+  contributions: Contribution[];
+}
+
 export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   event,
   onBack,
@@ -32,23 +42,40 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventDeleted,
 }) => {
   const { user, session } = useAuth();
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [resourcesWithContributions, setResourcesWithContributions] = useState<
+    ResourceWithContributions[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAddResourceModalOpen, setIsAddResourceModalOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
-  // Memoize repository and use cases to prevent recreation on every render
+  // Repositories
+  const resourceRepository = useMemo(
+    () => new HttpResourceRepository(() => session?.accessToken || null),
+    [session]
+  );
   const contributionRepository = useMemo(
     () => new HttpContributionRepository(() => session?.accessToken || null),
     [session]
   );
-  const getContributionsUseCase = useMemo(
-    () => new GetContributions(contributionRepository),
-    [contributionRepository]
+  const eventRepository = useMemo(
+    () => new HttpEventRepository(() => session?.accessToken || null),
+    [session]
+  );
+
+  // Use cases
+  const getResourcesUseCase = useMemo(
+    () => new GetResources(resourceRepository),
+    [resourceRepository]
+  );
+  const createResourceUseCase = useMemo(
+    () => new CreateResource(resourceRepository),
+    [resourceRepository]
   );
   const addContributionUseCase = useMemo(
     () => new AddContribution(contributionRepository),
@@ -57,12 +84,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const deleteContributionUseCase = useMemo(
     () => new DeleteContribution(contributionRepository),
     [contributionRepository]
-  );
-
-  // Event repository and use cases
-  const eventRepository = useMemo(
-    () => new HttpEventRepository(() => session?.accessToken || null),
-    [session]
   );
   const updateEventUseCase = useMemo(
     () => new UpdateEvent(eventRepository),
@@ -73,91 +94,148 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     [eventRepository]
   );
 
-  const loadContributions = useCallback(async () => {
+  const loadResourcesWithContributions = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getContributionsUseCase.execute({ eventId: event.id });
-      setContributions(data);
+
+      // Load all resources for the event
+      const resources = await getResourcesUseCase.execute({
+        eventId: event.id,
+      });
+
+      // For each resource, load its contributions
+      const resourcesWithContribs: ResourceWithContributions[] =
+        await Promise.all(
+          resources.map(async resource => {
+            try {
+              const contributions =
+                await contributionRepository.getContributionsByResource({
+                  eventId: event.id,
+                  resourceId: resource.id,
+                });
+              return { resource, contributions };
+            } catch (err) {
+              console.error(
+                `Failed to load contributions for resource ${resource.id}:`,
+                err
+              );
+              return { resource, contributions: [] };
+            }
+          })
+        );
+
+      setResourcesWithContributions(resourcesWithContribs);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load contributions'
-      );
+      setError(err instanceof Error ? err.message : 'Failed to load resources');
     } finally {
       setLoading(false);
     }
-  }, [event.id, getContributionsUseCase]);
+  }, [event.id, getResourcesUseCase, contributionRepository]);
 
   useEffect(() => {
     setCurrentEvent(event);
-    loadContributions();
-  }, [event, loadContributions]);
+    loadResourcesWithContributions();
+  }, [event, loadResourcesWithContributions]);
+
+  const handleAddResource = async (data: {
+    name: string;
+    category: ResourceCategory;
+    quantity: number;
+    suggestedQuantity?: number;
+  }) => {
+    if (!user) return;
+
+    try {
+      const newResource = await createResourceUseCase.execute({
+        eventId: event.id,
+        ...data,
+      });
+
+      // If user provided initial quantity, create a contribution
+      if (data.quantity > 0) {
+        const contribution = await addContributionUseCase.execute({
+          eventId: event.id,
+          resourceId: newResource.id,
+          userId: user.id,
+          quantity: data.quantity,
+        });
+        setResourcesWithContributions(prev => [
+          ...prev,
+          { resource: newResource, contributions: [contribution] },
+        ]);
+      } else {
+        setResourcesWithContributions(prev => [
+          ...prev,
+          { resource: newResource, contributions: [] },
+        ]);
+      }
+
+      setIsAddResourceModalOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add resource');
+      throw err;
+    }
+  };
 
   const handleAddContribution = async (
-    name: string,
-    quantity: number,
-    type: ContributionType
+    resourceId: string,
+    quantity: number
   ) => {
     if (!user) return;
 
     try {
       const newContribution = await addContributionUseCase.execute({
         eventId: event.id,
+        resourceId,
         userId: user.id,
-        name,
         quantity,
-        type,
       });
-      setContributions(prev => [...prev, newContribution]);
+
+      setResourcesWithContributions(prev =>
+        prev.map(item =>
+          item.resource.id === resourceId
+            ? {
+                ...item,
+                contributions: [...item.contributions, newContribution],
+              }
+            : item
+        )
+      );
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add contribution'
       );
+      throw err;
     }
   };
 
-  const handleIncrementContribution = async (id: number) => {
-    const contribution = contributions.find(c => c.id === id);
-    if (!contribution) return;
+  const handleDeleteContribution = async (resourceId: string) => {
+    if (!user) return;
 
     try {
-      // Optimistic update
-      setContributions(prev =>
-        prev.map(c => (c.id === id ? { ...c, quantity: c.quantity + 1 } : c))
+      await deleteContributionUseCase.execute({
+        eventId: event.id,
+        resourceId,
+      });
+
+      setResourcesWithContributions(prev =>
+        prev.map(item =>
+          item.resource.id === resourceId
+            ? {
+                ...item,
+                contributions: item.contributions.filter(
+                  c => c.userId !== user.id
+                ),
+              }
+            : item
+        )
       );
-      // In a real app, you'd call an update API here
-    } catch (err) {
-      setError('Failed to update contribution');
-      console.error('Error updating contribution:', err);
-      loadContributions(); // Reload on error
-    }
-  };
-
-  const handleDecrementContribution = async (id: number) => {
-    const contribution = contributions.find(c => c.id === id);
-    if (!contribution) return;
-
-    try {
-      // Optimistic update
-      setContributions(prev =>
-        prev.map(c => (c.id === id ? { ...c, quantity: c.quantity - 1 } : c))
-      );
-      // In a real app, you'd call an update API here
-    } catch (err) {
-      setError('Failed to update contribution');
-      console.error('Error updating contribution:', err);
-      loadContributions(); // Reload on error
-    }
-  };
-
-  const handleDeleteContribution = async (id: number) => {
-    try {
-      await deleteContributionUseCase.execute({ id });
-      setContributions(prev => prev.filter(c => c.id !== id));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to delete contribution'
       );
+      throw err;
     }
   };
 
@@ -187,7 +265,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       setCurrentEvent(updatedEvent);
       setIsEditModalOpen(false);
 
-      // Notify parent component if callback provided
       if (onEventUpdated) {
         onEventUpdated(updatedEvent);
       }
@@ -214,7 +291,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
       setIsDeleteModalOpen(false);
 
-      // Notify parent component if callback provided
       if (onEventDeleted) {
         onEventDeleted();
       }
@@ -226,16 +302,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   };
 
-  const foodContributions = contributions.filter(
-    c => c.type === ContributionType.FOOD
-  );
-  const drinkContributions = contributions.filter(
-    c => c.type === ContributionType.DRINK
-  );
+  const participantIds = new Set<string>();
+  resourcesWithContributions.forEach(({ contributions }) => {
+    contributions.forEach(c => participantIds.add(c.userId));
+  });
+  const participantCount = participantIds.size;
 
-  const participantCount = new Set(contributions.map(c => c.userId)).size;
-
-  // Check if current user is the event organizer
   const isOrganizer = user?.id === currentEvent.organizerId;
 
   return (
@@ -280,31 +352,50 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
       {error && <div className="error-message">{error}</div>}
 
-      {loading ? (
-        <div className="loading-state">Loading contributions...</div>
-      ) : (
-        <div className="contributions-container">
-          <ContributionList
-            title="Food"
-            contributions={foodContributions}
-            type={ContributionType.FOOD}
-            onAdd={handleAddContribution}
-            onIncrement={handleIncrementContribution}
-            onDecrement={handleDecrementContribution}
-            onDelete={handleDeleteContribution}
-          />
-
-          <ContributionList
-            title="Drinks"
-            contributions={drinkContributions}
-            type={ContributionType.DRINK}
-            onAdd={handleAddContribution}
-            onIncrement={handleIncrementContribution}
-            onDecrement={handleDecrementContribution}
-            onDelete={handleDeleteContribution}
-          />
+      <div className="resources-section">
+        <div className="resources-header">
+          <h2>Resources</h2>
+          <button
+            className="add-resource-btn"
+            onClick={() => setIsAddResourceModalOpen(true)}
+          >
+            + Add Resource
+          </button>
         </div>
-      )}
+
+        {loading ? (
+          <div className="loading-state">Loading resources...</div>
+        ) : resourcesWithContributions.length === 0 ? (
+          <div className="empty-state">
+            <p>No resources yet. Add the first resource to get started!</p>
+          </div>
+        ) : (
+          <div className="resources-list">
+            {resourcesWithContributions.map(({ resource, contributions }) => (
+              <ResourceItem
+                key={resource.id}
+                resource={resource}
+                contributions={contributions}
+                currentUserId={user?.id || ''}
+                onAddContribution={handleAddContribution}
+                onDeleteContribution={handleDeleteContribution}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Modal
+        isOpen={isAddResourceModalOpen}
+        onClose={() => setIsAddResourceModalOpen(false)}
+        title="Add Resource"
+        size="medium"
+      >
+        <AddResourceForm
+          onSubmit={handleAddResource}
+          onCancel={() => setIsAddResourceModalOpen(false)}
+        />
+      </Modal>
 
       <Modal
         isOpen={isEditModalOpen}

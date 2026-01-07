@@ -1,16 +1,14 @@
 import type {
   Contribution,
   ContributionCreationRequest,
-  ContributionType,
 } from '../types/Contribution';
 import type { ContributionRepository } from '../types/ContributionRepository';
 
 export interface AddContributionInput {
   eventId: string;
+  resourceId: string;
   userId: string;
-  name: string;
   quantity: number;
-  type: ContributionType;
 }
 
 export class AddContribution {
@@ -23,10 +21,9 @@ export class AddContribution {
     // Convert to API request format
     const contributionRequest: ContributionCreationRequest = {
       eventId: input.eventId,
+      resourceId: input.resourceId,
       userId: input.userId,
-      name: input.name.trim(),
       quantity: input.quantity,
-      type: input.type,
     };
     try {
       return await this.contributionRepository.createContribution(
@@ -40,16 +37,8 @@ export class AddContribution {
   }
 
   private validateInput(input: AddContributionInput): void {
-    if (!input.name || input.name.trim().length < 2) {
-      throw new Error('Contribution name must be at least 2 characters long');
-    }
-
     if (!input.quantity || input.quantity < 1) {
       throw new Error('Quantity must be at least 1');
-    }
-
-    if (!input.type) {
-      throw new Error('Contribution type is required');
     }
 
     if (!input.userId || input.userId.trim().length === 0) {
@@ -58,6 +47,10 @@ export class AddContribution {
 
     if (!input.eventId || input.eventId.trim().length === 0) {
       throw new Error('Valid event ID is required');
+    }
+
+    if (!input.resourceId || input.resourceId.trim().length === 0) {
+      throw new Error('Valid resource ID is required');
     }
   }
 }

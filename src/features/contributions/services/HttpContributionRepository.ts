@@ -2,27 +2,22 @@ import type {
   Contribution,
   ContributionCreationRequest,
   ContributionUpdateRequest,
-  ContributionType,
 } from '../types/Contribution';
 import type { ContributionRepository } from '../types/ContributionRepository';
 
 // API request body format that matches backend
 interface ContributionApiRequest {
-  eventId: string; // Event IDs are UUID strings
-  name: string;
   quantity: number;
-  type: string;
 }
 
 // API response interface for contributions
 interface ContributionApiResponse {
-  id: number;
-  eventId: string; // Event IDs are UUID strings
-  userId: string;
-  name: string;
+  identifier: string;
+  event_id: string;
+  resource_id: string;
+  user_id: string;
   quantity: number;
-  type: string;
-  createdAt: string;
+  creation_date: number;
 }
 
 export class HttpContributionRepository implements ContributionRepository {
@@ -38,17 +33,17 @@ export class HttpContributionRepository implements ContributionRepository {
     this.getToken = getToken;
   }
 
-  private mapStringToContributionType = (type: string): ContributionType =>
-    type.toUpperCase() as ContributionType;
-
-  async getContributionsByEvent(eventId: string): Promise<Contribution[]> {
+  async getContributionsByResource(params: {
+    eventId: string;
+    resourceId: string;
+  }): Promise<Contribution[]> {
     const token = this.getToken();
     if (!token) {
       throw new Error('Authentication required');
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/contributions`,
+      `${this.baseUrl}/events/${params.eventId}/resources/${params.resourceId}/contributions`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,25 +57,14 @@ export class HttpContributionRepository implements ContributionRepository {
 
     const contributionsResponse: ContributionApiResponse[] =
       await response.json();
-    return contributionsResponse.map(contribution => ({
-      id: contribution.id,
-      eventId: contribution.eventId,
-      userId: contribution.userId,
-      name: contribution.name,
-      quantity: contribution.quantity,
-      type: this.mapStringToContributionType(contribution.type),
-      createdAt: new Date(contribution.createdAt),
-    }));
+    return contributionsResponse.map(c => this.mapApiResponseToContribution(c));
   }
 
   async createContribution(
     data: ContributionCreationRequest
   ): Promise<Contribution> {
     const apiRequest: ContributionApiRequest = {
-      eventId: data.eventId,
-      name: data.name,
       quantity: data.quantity,
-      type: data.type,
     };
 
     const token = this.getToken();
@@ -89,7 +73,7 @@ export class HttpContributionRepository implements ContributionRepository {
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${data.eventId}/contributions`,
+      `${this.baseUrl}/events/${data.eventId}/resources/${data.resourceId}/contributions`,
       {
         method: 'POST',
         headers: {
@@ -108,34 +92,34 @@ export class HttpContributionRepository implements ContributionRepository {
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
-    return {
-      id: contributionResponse.id,
-      eventId: contributionResponse.eventId,
-      userId: contributionResponse.userId,
-      name: contributionResponse.name,
-      quantity: contributionResponse.quantity,
-      type: this.mapStringToContributionType(contributionResponse.type),
-      createdAt: new Date(contributionResponse.createdAt),
-    };
+    return this.mapApiResponseToContribution(contributionResponse);
   }
 
-  async updateContribution(
-    id: number,
-    data: ContributionUpdateRequest
-  ): Promise<Contribution> {
+  async updateContribution(params: {
+    eventId: string;
+    resourceId: string;
+    data: ContributionUpdateRequest;
+  }): Promise<Contribution> {
     const token = this.getToken();
     if (!token) {
       throw new Error('Authentication required');
     }
 
-    const response = await fetch(`${this.baseUrl}/contributions/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
+    const apiRequest: ContributionApiRequest = {
+      quantity: params.data.quantity || 0,
+    };
+
+    const response = await fetch(
+      `${this.baseUrl}/events/${params.eventId}/resources/${params.resourceId}/contributions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(apiRequest),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -145,32 +129,43 @@ export class HttpContributionRepository implements ContributionRepository {
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
-    return {
-      id: contributionResponse.id,
-      eventId: contributionResponse.eventId,
-      userId: contributionResponse.userId,
-      name: contributionResponse.name,
-      quantity: contributionResponse.quantity,
-      type: this.mapStringToContributionType(contributionResponse.type),
-      createdAt: new Date(contributionResponse.createdAt),
-    };
+    return this.mapApiResponseToContribution(contributionResponse);
   }
 
-  async deleteContribution(id: number): Promise<void> {
+  async deleteContribution(params: {
+    eventId: string;
+    resourceId: string;
+  }): Promise<void> {
     const token = this.getToken();
     if (!token) {
       throw new Error('Authentication required');
     }
 
-    const response = await fetch(`${this.baseUrl}/contributions/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${this.baseUrl}/events/${params.eventId}/resources/${params.resourceId}/contributions`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+  }
+
+  private mapApiResponseToContribution(
+    response: ContributionApiResponse
+  ): Contribution {
+    return {
+      id: response.identifier,
+      eventId: response.event_id,
+      resourceId: response.resource_id,
+      userId: response.user_id,
+      quantity: response.quantity,
+      createdAt: new Date(response.creation_date),
+    };
   }
 }
