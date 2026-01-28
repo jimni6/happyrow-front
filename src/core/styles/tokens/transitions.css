@@ -1,0 +1,25 @@
+/* Design Tokens - Transitions */
+:root {
+  /* Timing Functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-smooth: ease;
+
+  /* Durations */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-medium: 0.25s;
+  --duration-slow: 0.3s;
+  --duration-slower: 0.5s;
+
+  /* Common Transitions */
+  --transition-all: all var(--duration-normal) var(--ease-in-out);
+  --transition-colors:
+    color var(--duration-normal) var(--ease-in-out),
+    background-color var(--duration-normal) var(--ease-in-out),
+    border-color var(--duration-normal) var(--ease-in-out);
+  --transition-transform: transform var(--duration-normal) var(--ease-in-out);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-in-out);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-in-out);
+}

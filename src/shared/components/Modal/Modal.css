@@ -5,23 +5,23 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: var(--space-3);
 }
 
 /* Modal Content */
 .modal-content {
-  background: white;
-  border-radius: 16px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: modalSlideIn 0.3s ease-out;
+  box-shadow: var(--shadow-3xl);
+  animation: modalSlideIn var(--duration-slow) var(--ease-out);
 }
 
 /* Modal Sizes */
@@ -53,22 +53,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 2rem 1rem 2rem;
-  border-bottom: 1px solid #e9ecef;
+  padding: var(--space-5) var(--space-5) var(--space-3) var(--space-5);
+  border-bottom: var(--border-width-thin) solid var(--border-light);
 }
 
 .modal-title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-gray-700);
 }
 
 .modal-close-button {
   background: none;
   border: none;
-  font-size: 2rem;
-  color: #999;
+  font-size: var(--text-5xl);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -76,41 +76,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-full);
+  transition: var(--transition-all);
 }
 
 .modal-close-button:hover {
-  background: #f8f9fa;
-  color: #666;
+  background: var(--bg-secondary);
+  color: var(--color-text-secondary);
 }
 
 .modal-close-button:disabled {
-  opacity: 0.5;
+  opacity: var(--state-disabled-opacity);
   cursor: not-allowed;
 }
 
 /* Modal Body */
 .modal-body {
-  padding: 1rem 2rem 2rem 2rem;
+  padding: var(--space-3) var(--space-5) var(--space-5) var(--space-5);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .modal-content {
-    margin: 1rem;
+    margin: var(--space-3);
     max-width: none;
   }
 
   .modal-header {
-    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    padding: var(--space-4) var(--space-4) var(--space-3) var(--space-4);
   }
 
   .modal-title {
-    font-size: 1.3rem;
+    font-size: var(--text-xl);
   }
 
   .modal-body {
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    padding: var(--space-3) var(--space-4) var(--space-4) var(--space-4);
   }
 }

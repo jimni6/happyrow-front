@@ -1,0 +1,96 @@
+/* Design Tokens - Colors */
+:root {
+  /* Primary Colors */
+  --color-primary-gradient-start: #667eea;
+  --color-primary-gradient-end: #764ba2;
+  --color-primary-light: #747bff;
+  --color-primary-dark: #535bf2;
+  --color-primary: #667eea;
+
+  /* Semantic Colors */
+  --color-danger: #dc3545;
+  --color-danger-hover: #c82333;
+  --color-danger-dark: #bd2130;
+  --color-success: #4caf50;
+  --color-success-light: #d1f4e0;
+  --color-success-dark: #0d6832;
+  --color-warning: #ff9800;
+  --color-warning-light: #fff4d9;
+  --color-warning-dark: #856404;
+  --color-info: #1565c0;
+  --color-info-light: #e3f2fd;
+
+  /* Neutral Grays (8-step scale) */
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #f1f3f5;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-400: #ced4da;
+  --color-gray-500: #6c757d;
+  --color-gray-600: #495057;
+  --color-gray-700: #333;
+  --color-gray-800: #2c3e50;
+  --color-gray-900: #212529;
+
+  /* Text Colors */
+  --color-text-primary: #333;
+  --color-text-secondary: #666;
+  --color-text-muted: #999;
+  --color-text-light: rgba(255, 255, 255, 0.87);
+  --color-text-white: white;
+
+  /* Background Colors */
+  --bg-primary: white;
+  --bg-secondary: #f8f9fa;
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg-gradient-light: linear-gradient(135deg, #e8f4f8 0%, #f5f9fb 100%);
+  --bg-gradient-soft: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+
+  /* Border Colors */
+  --border-light: #e9ecef;
+  --border-medium: #dee2e6;
+  --border-dark: #ced4da;
+  --border-focus: #667eea;
+  --border-error: #dc3545;
+
+  /* State Colors */
+  --state-hover-bg: #f1f3f5;
+  --state-disabled-bg: #f8f9fa;
+  --state-disabled-opacity: 0.7;
+
+  /* Status Badge Colors */
+  --status-confirmed-bg: #d1f4e0;
+  --status-confirmed-text: #0d6832;
+  --status-declined-bg: #ffd7d7;
+  --status-declined-text: #c41e3a;
+  --status-maybe-bg: #fff4d9;
+  --status-maybe-text: #856404;
+  --status-invited-bg: #e3f2fd;
+  --status-invited-text: #1565c0;
+  --status-verified-bg: rgba(76, 175, 80, 0.2);
+  --status-verified-text: #4caf50;
+  --status-verified-border: rgba(76, 175, 80, 0.3);
+  --status-unverified-bg: rgba(255, 152, 0, 0.2);
+  --status-unverified-text: #ff9800;
+  --status-unverified-border: rgba(255, 152, 0, 0.3);
+
+  /* Error/Success Message Colors */
+  --error-bg: #fee;
+  --error-text: #c53030;
+  --error-border: #fed7d7;
+  --success-bg: #f0fff4;
+  --success-text: #22543d;
+  --success-border: #c6f6d5;
+
+  /* Overlay Colors */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+
+  /* Special Colors */
+  --color-teal: #547c8c;
+  --color-teal-dark: #456a78;
+  --color-indigo: #6366f1;
+  --color-indigo-dark: #4f46e5;
+  --color-accent-gradient: linear-gradient(135deg, #ff6b6b, #feca57);
+}

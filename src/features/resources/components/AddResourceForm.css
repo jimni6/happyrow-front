@@ -3,93 +3,94 @@
 }
 
 .form-error {
-  background: #fee;
-  color: #c33;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
+  background: var(--error-bg);
+  color: var(--error-text);
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-3);
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-medium);
+  color: var(--color-gray-600);
+  font-size: var(--text-sm);
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
+  padding: var(--space-2);
+  border: var(--border-light-normal);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  transition: var(--transition-all);
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--color-indigo);
+  box-shadow: var(--shadow-focus);
 }
 
 .form-group input:disabled,
 .form-group select:disabled {
-  background: #f9fafb;
+  background: var(--state-disabled-bg);
   cursor: not-allowed;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--space-3);
 }
 
 .form-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
 }
 
 .cancel-button,
 .submit-button {
   flex: 1;
-  padding: 12px 24px;
+  padding: var(--space-2) var(--space-5);
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
+  transition: var(--transition-all);
+  font-size: var(--text-sm);
 }
 
 .cancel-button {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--bg-secondary);
+  color: var(--color-gray-500);
 }
 
 .cancel-button:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--color-gray-200);
 }
 
 .submit-button {
-  background: #6366f1;
-  color: white;
+  background: var(--color-indigo);
+  color: var(--color-text-white);
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #4f46e5;
+  background: var(--color-indigo-dark);
 }
 
 .cancel-button:disabled,
 .submit-button:disabled {
-  opacity: 0.5;
+  opacity: var(--state-disabled-opacity);
   cursor: not-allowed;
 }
 

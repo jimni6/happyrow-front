@@ -1,7 +1,7 @@
 /* App layout */
 .app {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
 }
 
 .app-main {
@@ -14,11 +14,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-gradient);
 }
 
 .loading-spinner {
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
+  color: var(--color-text-white);
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
 }

@@ -1,0 +1,28 @@
+/* Design Tokens - Shadows */
+:root {
+  /* Elevation System */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 15px 35px rgba(0, 0, 0, 0.1);
+  --shadow-3xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  /* Colored Shadows */
+  --shadow-primary: 0 4px 15px rgba(102, 126, 234, 0.4);
+  --shadow-primary-lg: 0 6px 20px rgba(102, 126, 234, 0.6);
+  --shadow-primary-xl: 0 8px 25px rgba(102, 126, 234, 0.3);
+  --shadow-danger: 0 4px 20px rgba(220, 53, 69, 0.3);
+  --shadow-teal: 0 4px 12px rgba(84, 124, 140, 0.3);
+  --shadow-indigo: 0 4px 12px rgba(99, 102, 241, 0.3);
+
+  /* Focus Shadow */
+  --shadow-focus: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  --shadow-focus-ring: 0 0 0 4px rgba(102, 126, 234, 0.2);
+
+  /* Text Shadows */
+  --text-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --text-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --text-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
