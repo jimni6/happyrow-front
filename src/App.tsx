@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { AuthView } from '@/features/auth';
 import { HomeView } from '@/features/home';
+import { WelcomeView } from '@/features/welcome';
 import { AuthServiceFactory } from '@/features/auth';
 import type { AuthRepository } from '@/features/auth';
 import { AppLayout } from '@/layouts';
@@ -50,6 +51,8 @@ try {
 
 const AppContent: React.FC = () => {
   const { user, loading, isAuthenticated } = useAuth();
+  const [showAuthView, setShowAuthView] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   if (loading) {
     return (
@@ -60,7 +63,21 @@ const AppContent: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <AuthView authRepository={authRepository!} />;
+    if (!showAuthView) {
+      return (
+        <WelcomeView
+          onCreateAccount={() => {
+            setAuthMode('register');
+            setShowAuthView(true);
+          }}
+          onLogin={() => {
+            setAuthMode('login');
+            setShowAuthView(true);
+          }}
+        />
+      );
+    }
+    return <AuthView authRepository={authRepository!} initialMode={authMode} />;
   }
 
   return (
