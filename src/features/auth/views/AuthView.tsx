@@ -9,12 +9,16 @@ import './AuthView.css';
 
 interface AuthViewProps {
   authRepository: AuthRepository;
+  initialMode?: 'login' | 'register';
 }
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
-export const AuthView: React.FC<AuthViewProps> = ({ authRepository }) => {
-  const [mode, setMode] = useState<AuthMode>('login');
+export const AuthView: React.FC<AuthViewProps> = ({
+  authRepository,
+  initialMode = 'login',
+}) => {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const authActions = useAuthActions({ authRepository });
 
   const handleLoginSuccess = () => {

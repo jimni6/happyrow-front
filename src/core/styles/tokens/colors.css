@@ -1,11 +1,19 @@
 /* Design Tokens - Colors */
 :root {
-  /* Primary Colors */
+  /* Brand Colors - Happy Row */
+  --color-teal: #5fbdb4;
+  --color-navy: #3d5a6c;
+  --color-coral: #e6a19a;
+
+  /* Primary Colors (using new brand colors) */
+  --color-primary: #5fbdb4;
+  --color-primary-dark: #3d5a6c;
+  --color-primary-light: #7dd3cb;
+  --color-accent: #e6a19a;
+
+  /* Legacy gradient (keeping for backward compatibility) */
   --color-primary-gradient-start: #667eea;
   --color-primary-gradient-end: #764ba2;
-  --color-primary-light: #747bff;
-  --color-primary-dark: #535bf2;
-  --color-primary: #667eea;
 
   /* Semantic Colors */
   --color-danger: #dc3545;
@@ -42,6 +50,7 @@
   /* Background Colors */
   --bg-primary: white;
   --bg-secondary: #f8f9fa;
+  --bg-welcome: linear-gradient(180deg, #f5f9fb 0%, #fff5f4 50%, #f0f8f7 100%);
   --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --bg-gradient-light: linear-gradient(135deg, #e8f4f8 0%, #f5f9fb 100%);
   --bg-gradient-soft: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
