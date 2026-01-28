@@ -1,0 +1,25 @@
+# Security aliases for npm package management
+# Source this file in your ~/.zshrc: source /path/to/.zshrc_security
+
+# NPQ - Security auditor for npm installs
+# Install globally: npm install -g npq
+# Usage: Instead of 'npm install <package>', use 'npq install <package>'
+
+# Make npq-hero the default for npm (drop-in replacement)
+# Uncomment after installing npq globally
+# alias npm='npq-hero'
+
+# For pnpm users
+# alias pnpm="NPQ_PKG_MGR=pnpm npq-hero"
+
+# For yarn users  
+# alias yarn="NPQ_PKG_MGR=yarn npq-hero"
+
+# Safe install with cooldown (7 days)
+alias npm-safe='npm install --before="$(date -v -7d +%Y-%m-%d)"'
+
+# Always use npm ci in CI/CD
+alias npm-ci='npm ci --ignore-scripts'
+
+# Audit before installing
+alias npm-audit-install='npm audit && npm install --ignore-scripts'

@@ -1,0 +1,37 @@
+
+MLD (Modèle Logique de Données)
+
+Entities and Relationships:
+1. User
+   - id (PK)
+   - lastName
+   - firstName
+   - email
+   - password
+
+2. Event
+   - id (PK)
+   - name
+   - date
+   - location
+   - type
+   - organizerId (FK -> User.id)
+
+3. Participant
+   - id (PK)
+   - status
+   - userId (FK -> User.id)
+   - eventId (FK -> Event.id)
+
+4. Resource
+   - id (PK)
+   - name
+   - category
+   - suggestedQuantity
+   - eventId (FK -> Event.id)
+
+5. Contribution
+   - id (PK)
+   - participantId (FK -> Participant.id)
+   - resourceId (FK -> Resource.id)
+   - quantity

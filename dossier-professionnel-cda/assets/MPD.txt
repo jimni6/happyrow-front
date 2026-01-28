@@ -1,0 +1,53 @@
+
+MPD (Modèle Physique de Données)
+
+SQL Table Definitions:
+1. User
+CREATE TABLE User (
+    id INT PRIMARY KEY,
+    lastName VARCHAR(255),
+    firstName VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255)
+);
+
+2. Event
+CREATE TABLE Event (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    date DATE,
+    location VARCHAR(255),
+    type VARCHAR(255),
+    organizerId INT,
+    FOREIGN KEY (organizerId) REFERENCES User(id)
+);
+
+3. Participant
+CREATE TABLE Participant (
+    id INT PRIMARY KEY,
+    status VARCHAR(255),
+    userId INT,
+    eventId INT,
+    FOREIGN KEY (userId) REFERENCES User(id),
+    FOREIGN KEY (eventId) REFERENCES Event(id)
+);
+
+4. Resource
+CREATE TABLE Resource (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    category VARCHAR(255),
+    suggestedQuantity INT,
+    eventId INT,
+    FOREIGN KEY (eventId) REFERENCES Event(id)
+);
+
+5. Contribution
+CREATE TABLE Contribution (
+    id INT PRIMARY KEY,
+    participantId INT,
+    resourceId INT,
+    quantity INT,
+    FOREIGN KEY (participantId) REFERENCES Participant(id),
+    FOREIGN KEY (resourceId) REFERENCES Resource(id)
+);
