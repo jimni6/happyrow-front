@@ -27,6 +27,10 @@ coverage/
 .nyc_output/
 test-results/
 playwright-report/
+.doc/
+.cursorrules
+context.md
+.titre/
 
 # Cache directories
 .cache/

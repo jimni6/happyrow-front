@@ -14,6 +14,7 @@
   --duration-slower: 0.5s;
 
   /* Common Transitions */
+  --transition-base: all var(--duration-normal) var(--ease-smooth);
   --transition-all: all var(--duration-normal) var(--ease-in-out);
   --transition-colors:
     color var(--duration-normal) var(--ease-in-out),

@@ -72,7 +72,7 @@ docker-compose*
 
 # Documentation
 README.md
-PLAN_IMPLEMENTATION.md
+.doc/PLAN_IMPLEMENTATION.md
 *.md
 
 # Temporary folders

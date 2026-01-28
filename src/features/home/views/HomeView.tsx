@@ -9,6 +9,9 @@ import { EventType } from '@/features/events';
 import { CreateEvent, GetEventsByOrganizer } from '@/features/events';
 import { HttpEventRepository } from '@/features/events';
 import { EventDetailsView } from '@/features/events';
+import { EventCard } from '../components/EventCard';
+import { GetParticipants } from '@/features/participants';
+import { HttpParticipantRepository } from '@/features/participants';
 
 interface HomeViewProps {
   user: User;
@@ -22,13 +25,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [participantCounts, setParticipantCounts] = useState<
+    Record<string, number>
+  >({});
 
   // Ref to track if we're currently loading to prevent duplicate calls
   const loadingRef = useRef(false);
   const loadedUserIdRef = useRef<string | null>(null);
-
-  const currentTime = new Date();
-  const hour = currentTime.getHours();
 
   const loadEvents = useCallback(async () => {
     // Prevent duplicate calls for the same user
@@ -50,6 +53,31 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
         organizerId: user.id,
       });
       setEvents(userEvents);
+
+      // Load participant counts for each event
+      const participantRepository = new HttpParticipantRepository(
+        () => session?.accessToken || null
+      );
+      const getParticipantsUseCase = new GetParticipants(participantRepository);
+
+      const counts: Record<string, number> = {};
+      await Promise.all(
+        userEvents.map(async event => {
+          try {
+            const participants = await getParticipantsUseCase.execute({
+              eventId: event.id,
+            });
+            counts[event.id] = participants.length;
+          } catch (error) {
+            console.error(
+              `Error loading participants for event ${event.id}:`,
+              error
+            );
+            counts[event.id] = 0;
+          }
+        })
+      );
+      setParticipantCounts(counts);
     } catch (error) {
       console.error('Error loading events:', error);
       // Reset on error to allow retry
@@ -63,21 +91,6 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);
-
-  const getGreeting = () => {
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   const handleCreateEvent = async (eventData: {
     name: string;
@@ -148,92 +161,34 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
 
   return (
     <div className="home-screen">
-      <div className="home-header">
-        <div className="greeting-section">
-          <h1 className="greeting">
-            {getGreeting()}, {user.firstname}! 👋
-          </h1>
-          <p className="date">{formatDate(currentTime)}</p>
-        </div>
-        <div className="user-info-card">
-          <div className="user-avatar">
-            {user.firstname.charAt(0).toUpperCase()}
-            {user.lastname.charAt(0).toUpperCase()}
-          </div>
-          <div className="user-details">
-            <h3>
-              {user.firstname} {user.lastname}
-            </h3>
-            <p>{user.email}</p>
-            <span
-              className={`status ${user.emailConfirmed ? 'verified' : 'unverified'}`}
-            >
-              {user.emailConfirmed ? '✅ Verified' : '⚠️ Unverified'}
-            </span>
-          </div>
-        </div>
-      </div>
-
       <div className="home-content">
-        <div className="welcome-card">
-          <h2>Welcome to HappyRow! 🎉</h2>
-          <p>
-            You're successfully logged in and ready to explore all the features
-            we have to offer. This is your personal dashboard where you can
-            manage your account and access various tools.
-          </p>
-        </div>
-
-        <div className="events-section">
-          <h2>Your Events</h2>
-          {loadingEvents ? (
-            <div className="loading-events">Loading events...</div>
-          ) : events.length === 0 ? (
-            <div className="no-events">
-              <p>You haven't created any events yet.</p>
-              <p>Click "Create Event" below to get started!</p>
-            </div>
-          ) : (
-            <div className="events-grid">
-              {events.map((event, index) => (
-                <div
-                  key={event.id || `event-${index}`}
-                  className="event-card"
-                  onClick={() => setSelectedEvent(event)}
-                >
-                  <div className="event-card-icon">🎉</div>
-                  <h3>{event.name}</h3>
-                  <p className="event-location">📍 {event.location}</p>
-                  <p className="event-date">
-                    📅 {new Date(event.date).toLocaleDateString()}
-                  </p>
-                  <button className="view-event-button">View Details →</button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="quick-actions">
-          <h3>Quick Actions</h3>
-          <div className="action-buttons">
-            <button
-              className="action-button primary"
-              onClick={() => setIsCreateEventModalOpen(true)}
-            >
-              <span>🎉</span>
-              Create Event
-            </button>
-            <button className="action-button secondary">
-              <span>📚</span>
-              View Documentation
-            </button>
-            <button className="action-button secondary">
-              <span>💬</span>
-              Contact Support
-            </button>
+        {loadingEvents ? (
+          <div className="loading-events">Loading events...</div>
+        ) : events.length === 0 ? (
+          <div className="no-events">
+            <p>You haven't created any events yet.</p>
+            <p>Click "Create a new event" below to get started!</p>
           </div>
-        </div>
+        ) : (
+          <div className="events-list">
+            {events.map((event, index) => (
+              <EventCard
+                key={event.id || `event-${index}`}
+                event={event}
+                participantCount={participantCounts[event.id] || 0}
+                onClick={() => setSelectedEvent(event)}
+                showToggle={true}
+              />
+            ))}
+          </div>
+        )}
+
+        <button
+          className="btn-create-event"
+          onClick={() => setIsCreateEventModalOpen(true)}
+        >
+          Create a new event
+        </button>
       </div>
 
       <Modal

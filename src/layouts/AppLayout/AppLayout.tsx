@@ -1,6 +1,5 @@
 import React from 'react';
 import type { User, AuthRepository } from '@/features/auth';
-import { AppHeader } from '@/layouts/AppHeader';
 import './AppLayout.css';
 
 interface AppLayoutProps {
@@ -9,14 +8,9 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({
-  user,
-  authRepository,
-  children,
-}) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <div className="app">
-      <AppHeader user={user} authRepository={authRepository} />
       <main className="app-main">{children}</main>
     </div>
   );
