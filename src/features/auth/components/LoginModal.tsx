@@ -74,16 +74,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   return (
     <div
-      className={`login-modal-overlay ${isClosing ? 'closing' : ''}`}
+      className={`auth-modal-overlay ${isClosing ? 'closing' : ''}`}
       onClick={handleBackdropClick}
     >
       <div
-        className={`login-modal-content ${isClosing ? 'closing' : ''}`}
+        className={`auth-modal-content ${isClosing ? 'closing' : ''}`}
         onClick={e => e.stopPropagation()}
       >
         <button
           type="button"
-          className="login-modal-close"
+          className="auth-modal-close"
           onClick={handleClose}
           disabled={loading}
           aria-label="Close"
@@ -91,38 +91,38 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           ✕
         </button>
 
-        <div className="login-modal-header">
-          <p className="login-greeting">Hello...</p>
-          <h2 className="login-title">Login</h2>
+        <div className="auth-modal-header">
+          <p className="auth-greeting">Hello...</p>
+          <h2 className="auth-title">Login</h2>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {error && <div className="login-error">{error}</div>}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-error">{error}</div>}
 
-          <div className="login-form-group">
-            <label htmlFor="email" className="login-label">
+          <div className="auth-form-group">
+            <label htmlFor="email" className="auth-label">
               email
             </label>
             <input
               id="email"
               type="email"
-              className={`login-input ${errors.email ? 'error' : ''}`}
+              className={`auth-input ${errors.email ? 'error' : ''}`}
               placeholder="info@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={loading}
             />
             {errors.email && (
-              <span className="login-field-error">{errors.email}</span>
+              <span className="auth-field-error">{errors.email}</span>
             )}
           </div>
 
-          <div className="login-form-group">
-            <div className="login-input-wrapper">
+          <div className="auth-form-group">
+            <div className="auth-input-wrapper">
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                className={`login-input ${errors.password ? 'error' : ''}`}
+                className={`auth-input ${errors.password ? 'error' : ''}`}
                 placeholder="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -130,7 +130,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               />
               <button
                 type="button"
-                className="login-password-toggle"
+                className="auth-password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
               >
@@ -138,19 +138,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </button>
             </div>
             {errors.password && (
-              <span className="login-field-error">{errors.password}</span>
+              <span className="auth-field-error">{errors.password}</span>
             )}
           </div>
 
-          <button type="submit" className="login-submit-btn" disabled={loading}>
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
 
-          <div className="login-register-link">
+          <div className="auth-switch-link">
             <span>Don't have account? </span>
             <button
               type="button"
-              className="login-link-btn"
+              className="auth-link-btn"
               onClick={onSwitchToRegister}
               disabled={loading}
             >

@@ -106,16 +106,16 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
 
   return (
     <div
-      className={`register-modal-overlay ${isClosing ? 'closing' : ''}`}
+      className={`auth-modal-overlay ${isClosing ? 'closing' : ''}`}
       onClick={handleBackdropClick}
     >
       <div
-        className={`register-modal-content ${isClosing ? 'closing' : ''}`}
+        className={`auth-modal-content ${isClosing ? 'closing' : ''}`}
         onClick={e => e.stopPropagation()}
       >
         <button
           type="button"
-          className="register-modal-close"
+          className="auth-modal-close"
           onClick={handleClose}
           disabled={loading}
           aria-label="Close"
@@ -123,68 +123,68 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
           ✕
         </button>
 
-        <div className="register-modal-header">
-          <p className="register-greeting">Hello...</p>
-          <h2 className="register-title">Register</h2>
+        <div className="auth-modal-header">
+          <p className="auth-greeting">Hello...</p>
+          <h2 className="auth-title">Register</h2>
         </div>
 
-        <form className="register-form" onSubmit={handleSubmit}>
-          {error && <div className="register-error">{error}</div>}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-error">{error}</div>}
 
-          <div className="register-form-group">
-            <label htmlFor="email" className="register-label">
+          <div className="auth-form-group">
+            <label htmlFor="email" className="auth-label">
               email
             </label>
             <input
               id="email"
               type="email"
-              className={`register-input ${errors.email ? 'error' : ''}`}
+              className={`auth-input ${errors.email ? 'error' : ''}`}
               placeholder="info@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={loading}
             />
             {errors.email && (
-              <span className="register-field-error">{errors.email}</span>
+              <span className="auth-field-error">{errors.email}</span>
             )}
           </div>
 
-          <div className="register-form-group">
+          <div className="auth-form-group">
             <input
               id="firstname"
               type="text"
-              className={`register-input ${errors.firstname ? 'error' : ''}`}
+              className={`auth-input ${errors.firstname ? 'error' : ''}`}
               placeholder="first name"
               value={firstname}
               onChange={e => setFirstname(e.target.value)}
               disabled={loading}
             />
             {errors.firstname && (
-              <span className="register-field-error">{errors.firstname}</span>
+              <span className="auth-field-error">{errors.firstname}</span>
             )}
           </div>
 
-          <div className="register-form-group">
+          <div className="auth-form-group">
             <input
               id="lastname"
               type="text"
-              className={`register-input ${errors.lastname ? 'error' : ''}`}
+              className={`auth-input ${errors.lastname ? 'error' : ''}`}
               placeholder="last name"
               value={lastname}
               onChange={e => setLastname(e.target.value)}
               disabled={loading}
             />
             {errors.lastname && (
-              <span className="register-field-error">{errors.lastname}</span>
+              <span className="auth-field-error">{errors.lastname}</span>
             )}
           </div>
 
-          <div className="register-form-group">
-            <div className="register-input-wrapper">
+          <div className="auth-form-group">
+            <div className="auth-input-wrapper">
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                className={`register-input ${errors.password ? 'error' : ''}`}
+                className={`auth-input ${errors.password ? 'error' : ''}`}
                 placeholder="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -192,7 +192,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               />
               <button
                 type="button"
-                className="register-password-toggle"
+                className="auth-password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
               >
@@ -200,16 +200,16 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               </button>
             </div>
             {errors.password && (
-              <span className="register-field-error">{errors.password}</span>
+              <span className="auth-field-error">{errors.password}</span>
             )}
           </div>
 
-          <div className="register-form-group">
-            <div className="register-input-wrapper">
+          <div className="auth-form-group">
+            <div className="auth-input-wrapper">
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                className={`register-input ${errors.confirmPassword ? 'error' : ''}`}
+                className={`auth-input ${errors.confirmPassword ? 'error' : ''}`}
                 placeholder="confirm password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
@@ -217,7 +217,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               />
               <button
                 type="button"
-                className="register-password-toggle"
+                className="auth-password-toggle"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 aria-label="Toggle confirm password visibility"
               >
@@ -225,25 +225,19 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
               </button>
             </div>
             {errors.confirmPassword && (
-              <span className="register-field-error">
-                {errors.confirmPassword}
-              </span>
+              <span className="auth-field-error">{errors.confirmPassword}</span>
             )}
           </div>
 
-          <button
-            type="submit"
-            className="register-submit-btn"
-            disabled={loading}
-          >
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? 'Creating Account...' : 'Register'}
           </button>
 
-          <div className="register-login-link">
+          <div className="auth-switch-link">
             <span>Already have account? </span>
             <button
               type="button"
-              className="register-link-btn"
+              className="auth-link-btn"
               onClick={onSwitchToLogin}
               disabled={loading}
             >
