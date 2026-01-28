@@ -88,7 +88,10 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -106,8 +109,12 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
       className={`register-modal-overlay ${isClosing ? 'closing' : ''}`}
       onClick={handleBackdropClick}
     >
-      <div className={`register-modal-content ${isClosing ? 'closing' : ''}`}>
+      <div
+        className={`register-modal-content ${isClosing ? 'closing' : ''}`}
+        onClick={e => e.stopPropagation()}
+      >
         <button
+          type="button"
           className="register-modal-close"
           onClick={handleClose}
           disabled={loading}

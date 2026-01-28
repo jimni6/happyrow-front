@@ -26,7 +26,10 @@ export const Modal: React.FC<ModalProps> = ({
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     onClose();
   };
 
@@ -41,7 +44,11 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="modal-header">
           <h2 className="modal-title">{title}</h2>
           {showCloseButton && (
-            <button className="modal-close-button" onClick={handleClose}>
+            <button
+              type="button"
+              className="modal-close-button"
+              onClick={handleClose}
+            >
               ×
             </button>
           )}

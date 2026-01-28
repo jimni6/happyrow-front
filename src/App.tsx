@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/features/auth';
-import { AuthView } from '@/features/auth';
 import { HomeView } from '@/features/home';
 import { WelcomeView } from '@/features/welcome';
 import { RegisterModal } from '@/features/auth/components/RegisterModal';
+import { LoginModal } from '@/features/auth/components/LoginModal';
 import { AuthServiceFactory } from '@/features/auth';
 import type { AuthRepository } from '@/features/auth';
-import type { UserRegistration } from '@/features/auth/types/User';
+import type {
+  UserRegistration,
+  UserCredentials,
+} from '@/features/auth/types/User';
 import { AppLayout } from '@/layouts';
 import '@/core/styles/index.css';
 
@@ -57,6 +60,8 @@ const AppContent: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const handleRegister = async (userData: UserRegistration) => {
     setRegisterLoading(true);
@@ -78,6 +83,26 @@ const AppContent: React.FC = () => {
       );
     } finally {
       setRegisterLoading(false);
+    }
+  };
+
+  const handleLogin = async (credentials: UserCredentials) => {
+    setLoginLoading(true);
+    setLoginError(null);
+
+    try {
+      const { SignInUser } = await import(
+        '@/features/auth/use-cases/SignInUser'
+      );
+      const signInUseCase = new SignInUser(authRepository!);
+      await signInUseCase.execute(credentials);
+
+      // Login successful, modal will close automatically via auth state change
+      setShowLoginModal(false);
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Login failed');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -115,7 +140,20 @@ const AppContent: React.FC = () => {
         )}
 
         {showLoginModal && (
-          <AuthView authRepository={authRepository!} initialMode="login" />
+          <LoginModal
+            onClose={() => {
+              setShowLoginModal(false);
+              setLoginError(null);
+            }}
+            onSwitchToRegister={() => {
+              setShowLoginModal(false);
+              setShowRegisterModal(true);
+              setLoginError(null);
+            }}
+            onSubmit={handleLogin}
+            loading={loginLoading}
+            error={loginError}
+          />
         )}
       </>
     );

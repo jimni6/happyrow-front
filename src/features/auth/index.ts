@@ -20,6 +20,8 @@ export { useAuthActions } from './hooks/useAuthActions';
 export { LoginForm } from './components/LoginForm';
 export { RegisterForm } from './components/RegisterForm';
 export { ForgotPasswordForm } from './components/ForgotPasswordForm';
+export { LoginModal } from './components/LoginModal';
+export { RegisterModal } from './components/RegisterModal';
 
 // Views
 export { AuthView } from './views/AuthView';
