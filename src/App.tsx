@@ -3,8 +3,10 @@ import { AuthProvider, useAuth } from '@/features/auth';
 import { AuthView } from '@/features/auth';
 import { HomeView } from '@/features/home';
 import { WelcomeView } from '@/features/welcome';
+import { RegisterModal } from '@/features/auth/components/RegisterModal';
 import { AuthServiceFactory } from '@/features/auth';
 import type { AuthRepository } from '@/features/auth';
+import type { UserRegistration } from '@/features/auth/types/User';
 import { AppLayout } from '@/layouts';
 import '@/core/styles/index.css';
 
@@ -51,8 +53,33 @@ try {
 
 const AppContent: React.FC = () => {
   const { user, loading, isAuthenticated } = useAuth();
-  const [showAuthView, setShowAuthView] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const handleRegister = async (userData: UserRegistration) => {
+    setRegisterLoading(true);
+    setRegisterError(null);
+
+    try {
+      const { RegisterUser } = await import(
+        '@/features/auth/use-cases/RegisterUser'
+      );
+      const registerUseCase = new RegisterUser(authRepository!);
+      await registerUseCase.execute(userData);
+
+      // Registration successful, close modal and switch to login
+      setShowRegisterModal(false);
+      setShowLoginModal(true);
+    } catch (error) {
+      setRegisterError(
+        error instanceof Error ? error.message : 'Registration failed'
+      );
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -63,21 +90,35 @@ const AppContent: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    if (!showAuthView) {
-      return (
+    return (
+      <>
         <WelcomeView
-          onCreateAccount={() => {
-            setAuthMode('register');
-            setShowAuthView(true);
-          }}
-          onLogin={() => {
-            setAuthMode('login');
-            setShowAuthView(true);
-          }}
+          onCreateAccount={() => setShowRegisterModal(true)}
+          onLogin={() => setShowLoginModal(true)}
         />
-      );
-    }
-    return <AuthView authRepository={authRepository!} initialMode={authMode} />;
+
+        {showRegisterModal && (
+          <RegisterModal
+            onClose={() => {
+              setShowRegisterModal(false);
+              setRegisterError(null);
+            }}
+            onSwitchToLogin={() => {
+              setShowRegisterModal(false);
+              setShowLoginModal(true);
+              setRegisterError(null);
+            }}
+            onSubmit={handleRegister}
+            loading={registerLoading}
+            error={registerError}
+          />
+        )}
+
+        {showLoginModal && (
+          <AuthView authRepository={authRepository!} initialMode="login" />
+        )}
+      </>
+    );
   }
 
   return (
