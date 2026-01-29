@@ -1,0 +1,178 @@
+/* Inline Add Resource Form - Matches Resource Item Design */
+.inline-add-form-container {
+  margin-top: var(--space-2);
+}
+
+.inline-add-main-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.inline-add-name-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.inline-add-name-input::placeholder {
+  color: var(--color-teal);
+  font-weight: var(--font-medium);
+}
+
+.inline-add-name-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.inline-add-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-normal) var(--ease-out),
+    visibility var(--duration-normal) var(--ease-out);
+}
+
+.inline-add-main-card:focus-within .inline-add-controls,
+.inline-add-controls.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.inline-add-suggested-input {
+  width: 40px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.inline-add-suggested-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inline-add-quantity-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inline-quantity-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: var(--color-teal);
+  color: var(--color-text-white);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-all);
+  font-family: var(--font-sans);
+  line-height: 1;
+}
+
+.inline-quantity-btn:hover:not(:disabled) {
+  background: var(--color-teal-dark);
+  transform: scale(1.05);
+}
+
+.inline-quantity-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.inline-quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inline-quantity-display {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--color-navy);
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--font-sans);
+}
+
+.inline-add-error {
+  padding: var(--space-2);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-lg);
+  color: var(--error-text);
+  font-size: var(--text-sm);
+  margin-top: var(--space-2);
+}
+
+.inline-add-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+.inline-add-validate {
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-teal);
+  color: var(--color-text-white);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: var(--transition-all);
+  font-family: var(--font-sans);
+  min-width: 120px;
+}
+
+.inline-add-validate:hover:not(:disabled) {
+  background: var(--color-teal-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(95, 189, 180, 0.3);
+}
+
+.inline-add-validate:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .inline-add-main-card {
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .inline-add-controls {
+    justify-content: space-between;
+  }
+
+  .inline-quantity-btn {
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-lg);
+  }
+
+  .inline-quantity-display {
+    font-size: var(--text-sm);
+    min-width: 20px;
+  }
+}

@@ -20,3 +20,4 @@ export { DeleteResource } from './use-cases/DeleteResource';
 // Components
 export { ResourceItem } from './components/ResourceItem';
 export { AddResourceForm } from './components/AddResourceForm';
+export { InlineAddResourceForm } from './components/InlineAddResourceForm';

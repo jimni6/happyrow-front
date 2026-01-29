@@ -1,214 +1,156 @@
-.resource-item {
+/* Resource Item Card - Figma Design */
+.resource-item-card {
   background: var(--bg-primary);
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  margin-bottom: var(--space-3);
-  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
   transition: var(--transition-shadow);
 }
 
-.resource-item:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.resource-header {
+.resource-item-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-2);
+  gap: var(--space-3);
 }
 
-.resource-info {
+.resource-item-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-navy);
+  flex: 1;
+  font-family: var(--font-sans);
+}
+
+.resource-item-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.resource-item-quantity {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-navy);
+  min-width: 40px;
+  text-align: center;
+}
+
+.resource-item-buttons {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.resource-icon {
-  font-size: var(--text-2xl);
+.resource-selected-quantity {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--color-teal);
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--font-sans);
 }
 
-.resource-name {
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
-  margin: 0;
-}
-
-.resource-category {
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-gray-100);
-  border-radius: var(--radius-pill);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  text-transform: capitalize;
-}
-
-.resource-quantity {
+.resource-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: var(--color-teal);
+  color: var(--color-text-white);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  color: var(--color-indigo);
-}
-
-.progress-bar {
-  height: 8px;
-  background: var(--color-gray-100);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  margin-bottom: var(--space-3);
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--color-indigo),
-    var(--color-primary-gradient-end)
-  );
-  transition: width var(--duration-slow) var(--ease-out);
-}
-
-.contributions-list {
-  margin-bottom: var(--space-3);
-  min-height: 40px;
-}
-
-.no-contributions {
-  color: var(--color-text-muted);
-  font-style: italic;
-  margin: var(--space-1) 0;
-}
-
-.contribution-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-1) var(--space-2);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--space-1);
-}
-
-.contribution-user {
-  font-weight: var(--font-medium);
-  color: var(--color-gray-600);
-}
-
-.contribution-quantity {
-  font-weight: var(--font-semibold);
-  color: var(--color-indigo);
-}
-
-.delete-contribution-btn {
-  background: none;
-  border: none;
-  color: var(--color-danger);
   cursor: pointer;
-  padding: var(--space-1);
-  font-size: var(--text-base);
-  opacity: 0.7;
-  transition: var(--transition-opacity);
-}
-
-.delete-contribution-btn:hover {
-  opacity: 1;
-}
-
-.resource-actions {
-  margin-top: var(--space-2);
-}
-
-.add-contribution-btn {
-  width: 100%;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-indigo);
-  color: var(--color-text-white);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: var(--transition-colors);
-}
-
-.add-contribution-btn:hover {
-  background: var(--color-indigo-dark);
-}
-
-.add-contribution-form {
   display: flex;
-  gap: var(--space-1);
   align-items: center;
-}
-
-.quantity-input {
-  flex: 1;
-  padding: var(--space-1) var(--space-2);
-  border: var(--border-light-normal);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
+  justify-content: center;
   transition: var(--transition-all);
+  font-family: var(--font-sans);
+  line-height: 1;
 }
 
-.quantity-input:focus {
-  outline: none;
-  border-color: var(--color-indigo);
-  box-shadow: var(--shadow-focus);
+.resource-btn:hover:not(:disabled) {
+  background: var(--color-teal-dark);
+  transform: scale(1.05);
 }
 
-.submit-btn {
-  padding: var(--space-1) var(--space-4);
-  background: var(--color-success);
+.resource-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.resource-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resource-btn-minus {
+  /* Minus button inherits base styles */
+}
+
+.resource-btn-plus {
+  /* Plus button inherits base styles */
+}
+
+/* Validate button that appears when selection > 0 */
+.resource-item-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
+}
+
+.resource-validate-btn {
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-teal);
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: var(--transition-colors);
+  transition: var(--transition-all);
+  font-family: var(--font-sans);
+  min-width: 120px;
 }
 
-.submit-btn:hover {
-  background: var(--color-success-dark);
+.resource-validate-btn:hover:not(:disabled) {
+  background: var(--color-teal-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(95, 189, 180, 0.3);
 }
 
-.cancel-btn {
-  padding: var(--space-1) var(--space-3);
-  background: var(--color-danger);
-  color: var(--color-text-white);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: var(--transition-colors);
-}
-
-.cancel-btn:hover {
-  background: var(--color-danger-hover);
+.resource-validate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
-  .resource-item {
-    padding: var(--space-3);
+  .resource-item-card {
+    padding: var(--space-2);
   }
 
-  .resource-info {
-    flex-wrap: wrap;
-    gap: var(--space-1);
+  .resource-item-content {
+    gap: var(--space-2);
   }
 
-  .resource-name {
-    font-size: var(--text-base);
+  .resource-item-name {
+    font-size: var(--text-sm);
   }
 
-  .add-contribution-form {
-    flex-direction: column;
+  .resource-item-quantity {
+    font-size: var(--text-sm);
+    min-width: 35px;
   }
 
-  .quantity-input {
-    width: 100%;
+  .resource-btn {
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-lg);
   }
 
-  .submit-btn,
-  .cancel-btn {
-    width: 100%;
+  .resource-selected-quantity {
+    font-size: var(--text-sm);
+    min-width: 20px;
   }
 }

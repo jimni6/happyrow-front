@@ -7,21 +7,16 @@ import {
   CreateResource,
   GetResources,
   ResourceItem,
-  AddResourceForm,
+  InlineAddResourceForm,
 } from '@/features/resources';
 import {
   HttpContributionRepository,
   AddContribution,
-  DeleteContribution,
 } from '@/features/contributions';
-import type { Participant, ParticipantStatus } from '@/features/participants';
+import type { Participant } from '@/features/participants';
 import {
   HttpParticipantRepository,
-  AddParticipant,
   GetParticipants,
-  RemoveParticipant,
-  ParticipantList,
-  AddParticipantForm,
 } from '@/features/participants';
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
@@ -54,9 +49,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isAddResourceModalOpen, setIsAddResourceModalOpen] = useState(false);
-  const [isAddParticipantModalOpen, setIsAddParticipantModalOpen] =
-    useState(false);
   const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
   // Repositories
@@ -90,10 +82,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     () => new AddContribution(contributionRepository),
     [contributionRepository]
   );
-  const deleteContributionUseCase = useMemo(
-    () => new DeleteContribution(contributionRepository),
-    [contributionRepository]
-  );
   const updateEventUseCase = useMemo(
     () => new UpdateEvent(eventRepository),
     [eventRepository]
@@ -106,21 +94,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     () => new GetParticipants(participantRepository),
     [participantRepository]
   );
-  const addParticipantUseCase = useMemo(
-    () => new AddParticipant(participantRepository),
-    [participantRepository]
-  );
-  const removeParticipantUseCase = useMemo(
-    () => new RemoveParticipant(participantRepository),
-    [participantRepository]
-  );
 
   const loadResources = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Load all resources for the event (includes contributors)
       const loadedResources = await getResourcesUseCase.execute({
         eventId: event.id,
       });
@@ -167,10 +146,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         ...data,
       });
 
-      // Reload resources to get updated data
       await loadResources();
-
-      setIsAddResourceModalOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add resource');
       throw err;
@@ -196,25 +172,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add contribution'
-      );
-      throw err;
-    }
-  };
-
-  const handleDeleteContribution = async (resourceId: string) => {
-    if (!user) return;
-
-    try {
-      await deleteContributionUseCase.execute({
-        eventId: event.id,
-        resourceId,
-      });
-
-      // Reload resources to get updated data
-      await loadResources();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to delete contribution'
       );
       throw err;
     }
@@ -283,47 +240,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     }
   };
 
-  const handleAddParticipant = async (
-    userEmail: string,
-    status: ParticipantStatus
-  ) => {
-    try {
-      await addParticipantUseCase.execute({
-        eventId: event.id,
-        userEmail,
-        status,
-      });
-
-      await loadParticipants();
-      setIsAddParticipantModalOpen(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to add participant'
-      );
-      throw err;
-    }
-  };
-
-  const handleRemoveParticipant = async (userEmail: string) => {
-    if (!user) return;
-
-    try {
-      await removeParticipantUseCase.execute({
-        eventId: event.id,
-        userEmail,
-      });
-
-      await loadParticipants();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to remove participant'
-      );
-    }
-  };
-
   const participantCount = participants.length;
-
   const isOrganizer = user?.id === currentEvent.organizerId;
+
+  // Group resources by category
+  const resourcesByCategory = useMemo(() => {
+    return {
+      FOOD: resources.filter(r => r.category === 'FOOD'),
+      DRINK: resources.filter(r => r.category === 'DRINK'),
+    };
+  }, [resources]);
 
   return (
     <div className="event-details-view">
@@ -331,109 +257,85 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         <button className="back-button" onClick={onBack} aria-label="Go back">
           ←
         </button>
-        <h1 className="event-name">{currentEvent.name}</h1>
-        {isOrganizer && (
-          <div className="event-actions">
-            <button
-              className="edit-button"
-              onClick={() => setIsEditModalOpen(true)}
-              aria-label="Edit event"
-            >
-              ✏️ Edit
-            </button>
-            <button
-              className="delete-button-header"
-              onClick={() => setIsDeleteModalOpen(true)}
-              aria-label="Delete event"
-            >
-              🗑️ Delete
-            </button>
+        <div className="event-header-info">
+          <h1 className="event-name">{currentEvent.name}</h1>
+          <div className="event-meta">
+            <span className="event-meta-item">
+              <span className="meta-icon">👥</span>
+              {participantCount} participant{participantCount !== 1 ? 's' : ''}
+            </span>
+            <span className="event-meta-item">
+              <span className="meta-icon">📍</span>
+              {currentEvent.location}
+            </span>
           </div>
+        </div>
+        {isOrganizer && (
+          <button
+            className="edit-button-header"
+            onClick={() => setIsEditModalOpen(true)}
+            aria-label="Edit event"
+          >
+            Edit
+          </button>
         )}
-      </div>
-
-      <div className="event-info-bar">
-        <div className="info-item">
-          <span className="info-icon">👥</span>
-          <span className="info-text">
-            {participantCount} participant{participantCount !== 1 ? 's' : ''}
-          </span>
-        </div>
-        <div className="info-item">
-          <span className="info-icon">📍</span>
-          <span className="info-text">{currentEvent.location}</span>
-        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="participants-section">
-        <div className="participants-header">
-          <h2>Participants</h2>
-          {isOrganizer && (
-            <button
-              className="add-participant-btn"
-              onClick={() => setIsAddParticipantModalOpen(true)}
-            >
-              + Add Participant
-            </button>
-          )}
-        </div>
-
-        {participantsLoading ? (
-          <div className="loading-state">Loading participants...</div>
-        ) : (
-          <ParticipantList
-            participants={participants}
-            currentUserEmail={user?.email || ''}
-            onRemove={isOrganizer ? handleRemoveParticipant : undefined}
-          />
-        )}
-      </div>
-
-      <div className="resources-section">
-        <div className="resources-header">
-          <h2>Resources</h2>
-          <button
-            className="add-resource-btn"
-            onClick={() => setIsAddResourceModalOpen(true)}
-          >
-            + Add Resource
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="loading-state">Loading resources...</div>
-        ) : resources.length === 0 ? (
-          <div className="empty-state">
-            <p>No resources yet. Add the first resource to get started!</p>
+      {loading ? (
+        <div className="loading-state">Loading resources...</div>
+      ) : (
+        <div className="categories-container">
+          {/* Food Section */}
+          <div className="category-section">
+            <h2 className="category-title">Food</h2>
+            <div className="resources-list">
+              {resourcesByCategory.FOOD.map(resource => (
+                <ResourceItem
+                  key={resource.id}
+                  resource={resource}
+                  eventId={event.id}
+                  onAddContribution={handleAddContribution}
+                />
+              ))}
+            </div>
+            <InlineAddResourceForm
+              category="FOOD"
+              onSubmit={handleAddResource}
+            />
           </div>
-        ) : (
-          <div className="resources-list">
-            {resources.map(resource => (
-              <ResourceItem
-                key={resource.id}
-                resource={resource}
-                currentUserId={user?.id || ''}
-                onAddContribution={handleAddContribution}
-                onDeleteContribution={handleDeleteContribution}
-              />
-            ))}
-          </div>
-        )}
-      </div>
 
-      <Modal
-        isOpen={isAddResourceModalOpen}
-        onClose={() => setIsAddResourceModalOpen(false)}
-        title="Add Resource"
-        size="medium"
-      >
-        <AddResourceForm
-          onSubmit={handleAddResource}
-          onCancel={() => setIsAddResourceModalOpen(false)}
-        />
-      </Modal>
+          {/* Drinks Section */}
+          <div className="category-section">
+            <h2 className="category-title">Drinks</h2>
+            <div className="resources-list">
+              {resourcesByCategory.DRINK.map(resource => (
+                <ResourceItem
+                  key={resource.id}
+                  resource={resource}
+                  eventId={event.id}
+                  onAddContribution={handleAddContribution}
+                />
+              ))}
+            </div>
+            <InlineAddResourceForm
+              category="DRINK"
+              onSubmit={handleAddResource}
+            />
+          </div>
+        </div>
+      )}
+
+      {isOrganizer && (
+        <button
+          className="delete-event-button"
+          onClick={() => setIsDeleteModalOpen(true)}
+          aria-label="Delete event"
+        >
+          Delete Event
+        </button>
+      )}
 
       <Modal
         isOpen={isEditModalOpen}
@@ -452,18 +354,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             setError(null);
           }}
           isLoading={isUpdating}
-        />
-      </Modal>
-
-      <Modal
-        isOpen={isAddParticipantModalOpen}
-        onClose={() => setIsAddParticipantModalOpen(false)}
-        title="Add Participant"
-        size="medium"
-      >
-        <AddParticipantForm
-          onSubmit={handleAddParticipant}
-          onCancel={() => setIsAddParticipantModalOpen(false)}
         />
       </Modal>
 
