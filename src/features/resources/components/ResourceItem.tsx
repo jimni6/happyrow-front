@@ -4,13 +4,11 @@ import './ResourceItem.css';
 
 interface ResourceItemProps {
   resource: Resource;
-  eventId: string;
   onAddContribution: (resourceId: string, quantity: number) => Promise<void>;
 }
 
 export const ResourceItem: React.FC<ResourceItemProps> = ({
   resource,
-  eventId,
   onAddContribution,
 }) => {
   const [selectedQuantity, setSelectedQuantity] = useState(0);

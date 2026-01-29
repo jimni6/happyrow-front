@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
 import type { Event, EventType } from '../types/Event';
-import type { Resource, ResourceCategory } from '@/features/resources';
+import type { Resource } from '@/features/resources';
 import {
+  ResourceCategory,
   HttpResourceRepository,
   CreateResource,
   GetResources,
@@ -43,7 +44,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const [resources, setResources] = useState<Resource[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
-  const [participantsLoading, setParticipantsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -114,15 +114,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
   const loadParticipants = useCallback(async () => {
     try {
-      setParticipantsLoading(true);
       const loadedParticipants = await getParticipantsUseCase.execute({
         eventId: event.id,
       });
       setParticipants(loadedParticipants);
     } catch (err) {
       console.error('Failed to load participants:', err);
-    } finally {
-      setParticipantsLoading(false);
     }
   }, [event.id, getParticipantsUseCase]);
 
@@ -295,13 +292,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
                 <ResourceItem
                   key={resource.id}
                   resource={resource}
-                  eventId={event.id}
                   onAddContribution={handleAddContribution}
                 />
               ))}
             </div>
             <InlineAddResourceForm
-              category="FOOD"
+              category={ResourceCategory.FOOD}
               onSubmit={handleAddResource}
             />
           </div>
@@ -314,13 +310,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
                 <ResourceItem
                   key={resource.id}
                   resource={resource}
-                  eventId={event.id}
                   onAddContribution={handleAddContribution}
                 />
               ))}
             </div>
             <InlineAddResourceForm
-              category="DRINK"
+              category={ResourceCategory.DRINK}
               onSubmit={handleAddResource}
             />
           </div>
