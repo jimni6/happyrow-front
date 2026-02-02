@@ -1,0 +1,265 @@
+import React, {
+  useState,
+  ReactNode,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
+import type {
+  Resource,
+  ResourceCreationRequest,
+  ResourceUpdateRequest,
+} from '../types/Resource';
+import { ResourcesContext, ResourcesContextType } from './ResourcesContext';
+import { CreateResource } from '../use-cases/CreateResource';
+import { GetResources } from '../use-cases/GetResources';
+import { UpdateResource } from '../use-cases/UpdateResource';
+import { DeleteResource } from '../use-cases/DeleteResource';
+import { HttpResourceRepository } from '../services/HttpResourceRepository';
+import { AddContribution } from '@/features/contributions/use-cases/AddContribution';
+import { HttpContributionRepository } from '@/features/contributions/services/HttpContributionRepository';
+
+interface ResourcesProviderProps {
+  children: ReactNode;
+  getToken: () => string | null;
+}
+
+export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
+  children,
+  getToken,
+}) => {
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentEventId, setCurrentEventId] = useState<string | null>(null);
+
+  // Cache: track which eventId has been loaded
+  const loadedEventIdRef = useRef<string | null>(null);
+  const loadingRef = useRef(false);
+
+  // Create repositories and use cases (memoized to prevent re-creation)
+  const resourceRepository = useMemo(
+    () => new HttpResourceRepository(getToken),
+    [getToken]
+  );
+  const contributionRepository = useMemo(
+    () => new HttpContributionRepository(getToken),
+    [getToken]
+  );
+
+  const createResourceUseCase = useMemo(
+    () => new CreateResource(resourceRepository),
+    [resourceRepository]
+  );
+  const getResourcesUseCase = useMemo(
+    () => new GetResources(resourceRepository),
+    [resourceRepository]
+  );
+  const updateResourceUseCase = useMemo(
+    () => new UpdateResource(resourceRepository),
+    [resourceRepository]
+  );
+  const deleteResourceUseCase = useMemo(
+    () => new DeleteResource(resourceRepository),
+    [resourceRepository]
+  );
+  const addContributionUseCase = useMemo(
+    () => new AddContribution(contributionRepository),
+    [contributionRepository]
+  );
+
+  const loadResources = useCallback(
+    async (eventId: string) => {
+      // Smart cache: don't reload if already loaded for this event
+      if (loadedEventIdRef.current === eventId || loadingRef.current) {
+        return;
+      }
+
+      // Set flags immediately to prevent concurrent calls
+      loadingRef.current = true;
+      setLoading(true);
+      setError(null);
+      setCurrentEventId(eventId);
+
+      try {
+        const eventResources = await getResourcesUseCase.execute({
+          eventId,
+        });
+        setResources(eventResources);
+        loadedEventIdRef.current = eventId;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load resources';
+        setError(errorMessage);
+        console.error('Error loading resources:', err);
+        // Reset on error to allow retry
+        loadedEventIdRef.current = null;
+      } finally {
+        setLoading(false);
+        loadingRef.current = false;
+      }
+    },
+    [getResourcesUseCase]
+  );
+
+  const addResource = useCallback(
+    async (data: ResourceCreationRequest): Promise<Resource> => {
+      setError(null);
+      try {
+        const newResource = await createResourceUseCase.execute(data);
+        // Optimistic update: add to local state immediately
+        setResources(prev => [...prev, newResource]);
+        return newResource;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to create resource';
+        setError(errorMessage);
+        console.error('Error creating resource:', err);
+        throw err;
+      }
+    },
+    [createResourceUseCase]
+  );
+
+  const updateResource = useCallback(
+    async (id: string, data: ResourceUpdateRequest): Promise<Resource> => {
+      setError(null);
+      // Store previous state for rollback
+      const previousResources = [...resources];
+
+      try {
+        const updatedResource = await updateResourceUseCase.execute({
+          id,
+          data,
+        });
+        // Optimistic update: update in local state immediately
+        setResources(prev =>
+          prev.map(r => (r.id === id ? updatedResource : r))
+        );
+        return updatedResource;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update resource';
+        setError(errorMessage);
+        console.error('Error updating resource:', err);
+        // Rollback on error
+        setResources(previousResources);
+        throw err;
+      }
+    },
+    [updateResourceUseCase, resources]
+  );
+
+  const deleteResource = useCallback(
+    async (id: string): Promise<void> => {
+      setError(null);
+      // Store previous state for rollback
+      const previousResources = [...resources];
+
+      try {
+        await deleteResourceUseCase.execute({ id });
+        // Optimistic update: remove from local state immediately
+        setResources(prev => prev.filter(r => r.id !== id));
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to delete resource';
+        setError(errorMessage);
+        console.error('Error deleting resource:', err);
+        // Rollback on error
+        setResources(previousResources);
+        throw err;
+      }
+    },
+    [deleteResourceUseCase, resources]
+  );
+
+  const addContribution = useCallback(
+    async (
+      resourceId: string,
+      userId: string,
+      quantity: number
+    ): Promise<void> => {
+      setError(null);
+      // Store previous state for rollback
+      const previousResources = [...resources];
+
+      try {
+        // Optimistic update: increment currentQuantity immediately
+        setResources(prev =>
+          prev.map(r =>
+            r.id === resourceId
+              ? {
+                  ...r,
+                  currentQuantity: r.currentQuantity + quantity,
+                  contributors: [
+                    ...r.contributors,
+                    { userId, quantity, contributedAt: new Date() },
+                  ],
+                }
+              : r
+          )
+        );
+
+        // Make API call (POST contribution)
+        if (!currentEventId) {
+          throw new Error('No event context available');
+        }
+
+        await addContributionUseCase.execute({
+          eventId: currentEventId,
+          resourceId,
+          userId,
+          quantity,
+        });
+
+        // Success - no GET needed, state already updated!
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to add contribution';
+        setError(errorMessage);
+        console.error('Error adding contribution:', err);
+        // Rollback on error
+        setResources(previousResources);
+        throw err;
+      }
+    },
+    [addContributionUseCase, currentEventId, resources]
+  );
+
+  const refreshResource = useCallback(async (): Promise<void> => {
+    setError(null);
+    try {
+      // Reload all resources for the current event
+      if (currentEventId) {
+        const eventResources = await getResourcesUseCase.execute({
+          eventId: currentEventId,
+        });
+        setResources(eventResources);
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to refresh resource';
+      setError(errorMessage);
+      console.error('Error refreshing resource:', err);
+      throw err;
+    }
+  }, [getResourcesUseCase, currentEventId]);
+
+  const value: ResourcesContextType = {
+    resources,
+    loading,
+    error,
+    loadResources,
+    addResource,
+    updateResource,
+    deleteResource,
+    addContribution,
+    refreshResource,
+  };
+
+  return (
+    <ResourcesContext.Provider value={value}>
+      {children}
+    </ResourcesContext.Provider>
+  );
+};

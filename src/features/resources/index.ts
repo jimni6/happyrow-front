@@ -17,6 +17,11 @@ export { GetResources } from './use-cases/GetResources';
 export { UpdateResource } from './use-cases/UpdateResource';
 export { DeleteResource } from './use-cases/DeleteResource';
 
+// Hooks
+export { ResourcesProvider } from './hooks/ResourcesProvider';
+export { useResources } from './hooks/useResources';
+export type { ResourcesContextType } from './hooks/ResourcesContext';
+
 // Components
 export { ResourceItem } from './components/ResourceItem';
 export { AddResourceForm } from './components/AddResourceForm';

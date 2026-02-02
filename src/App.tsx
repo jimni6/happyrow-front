@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { EventsProvider } from '@/features/events';
+import { ResourcesProvider } from '@/features/resources';
 import { HomeView } from '@/features/home';
 import { WelcomeView } from '@/features/welcome';
 import { RegisterModal } from '@/features/auth/components/RegisterModal';
@@ -162,9 +163,11 @@ const AppContent: React.FC = () => {
 
   return (
     <EventsProvider getToken={() => session?.accessToken || null}>
-      <AppLayout user={user!} authRepository={authRepository!}>
-        <HomeView user={user!} />
-      </AppLayout>
+      <ResourcesProvider getToken={() => session?.accessToken || null}>
+        <AppLayout user={user!} authRepository={authRepository!}>
+          <HomeView user={user!} />
+        </AppLayout>
+      </ResourcesProvider>
     </EventsProvider>
   );
 };

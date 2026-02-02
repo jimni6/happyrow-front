@@ -1,20 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
 import { useEvents } from '../hooks/useEvents';
+import { useResources } from '@/features/resources';
 import type { Event, EventType } from '../types/Event';
-import type { Resource } from '@/features/resources';
 import {
   ResourceCategory,
-  HttpResourceRepository,
-  CreateResource,
-  GetResources,
   ResourceItem,
   InlineAddResourceForm,
 } from '@/features/resources';
-import {
-  HttpContributionRepository,
-  AddContribution,
-} from '@/features/contributions';
 import type { Participant } from '@/features/participants';
 import {
   HttpParticipantRepository,
@@ -40,9 +33,15 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 }) => {
   const { user, session } = useAuth();
   const { updateEvent, deleteEvent } = useEvents();
-  const [resources, setResources] = useState<Resource[]>([]);
+  const {
+    resources,
+    loading,
+    error: resourceError,
+    loadResources,
+    addResource,
+    addContribution,
+  } = useResources();
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -51,53 +50,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
   // Repositories
-  const resourceRepository = useMemo(
-    () => new HttpResourceRepository(() => session?.accessToken || null),
-    [session]
-  );
-  const contributionRepository = useMemo(
-    () => new HttpContributionRepository(() => session?.accessToken || null),
-    [session]
-  );
   const participantRepository = useMemo(
     () => new HttpParticipantRepository(() => session?.accessToken || null),
     [session]
   );
 
   // Use cases
-  const getResourcesUseCase = useMemo(
-    () => new GetResources(resourceRepository),
-    [resourceRepository]
-  );
-  const createResourceUseCase = useMemo(
-    () => new CreateResource(resourceRepository),
-    [resourceRepository]
-  );
-  const addContributionUseCase = useMemo(
-    () => new AddContribution(contributionRepository),
-    [contributionRepository]
-  );
   const getParticipantsUseCase = useMemo(
     () => new GetParticipants(participantRepository),
     [participantRepository]
   );
-
-  const loadResources = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const loadedResources = await getResourcesUseCase.execute({
-        eventId: event.id,
-      });
-
-      setResources(loadedResources);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load resources');
-    } finally {
-      setLoading(false);
-    }
-  }, [event.id, getResourcesUseCase]);
 
   const loadParticipants = useCallback(async () => {
     try {
@@ -112,9 +74,9 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
   useEffect(() => {
     setCurrentEvent(event);
-    loadResources();
+    loadResources(event.id);
     loadParticipants();
-  }, [event, loadResources, loadParticipants]);
+  }, [event, event.id, loadResources, loadParticipants]);
 
   const handleAddResource = async (data: {
     name: string;
@@ -125,12 +87,11 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     if (!user) return;
 
     try {
-      await createResourceUseCase.execute({
+      await addResource({
         eventId: event.id,
         ...data,
       });
-
-      await loadResources();
+      // No need to reload - optimistic update in ResourcesProvider!
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add resource');
       throw err;
@@ -144,15 +105,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     if (!user) return;
 
     try {
-      await addContributionUseCase.execute({
-        eventId: event.id,
-        resourceId,
-        userId: user.id,
-        quantity,
-      });
-
-      // Reload resources to get updated data with contributions
-      await loadResources();
+      await addContribution(resourceId, user.id, quantity);
+      // No need to reload - optimistic update in ResourcesProvider!
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add contribution'
@@ -221,7 +175,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   };
 
   const participantCount = participants.length;
-  const isOrganizer = user?.id === currentEvent.organizerId;
+
+  // Backend returns email in 'creator' field, not UUID
+  // So we need to compare with user.email instead of user.id
+  const isOrganizer =
+    user?.id === currentEvent.organizerId ||
+    user?.email === currentEvent.organizerId;
 
   // Group resources by category
   const resourcesByCategory = useMemo(() => {
@@ -261,7 +220,9 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         )}
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {(error || resourceError) && (
+        <div className="error-message">{error || resourceError}</div>
+      )}
 
       {loading ? (
         <div className="loading-state">Loading resources...</div>
