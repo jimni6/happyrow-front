@@ -32,6 +32,7 @@ playwright-report/
 .cursorrules
 context.md
 .titre/
+tests/e2e/screenshots/
 
 # Cache directories
 .cache/
@@ -92,6 +93,8 @@ jspm_packages/
 !.vscode/tasks.json
 !.vscode/launch.json
 .idea/
+.cursor/*
+!.cursor/mcp.json
 *.swp
 *.swo
 *~

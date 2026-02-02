@@ -2,10 +2,12 @@
 .app {
   min-height: 100vh;
   background: var(--bg-secondary);
+  position: relative;
 }
 
 .app-main {
   min-height: 100vh;
+  padding-bottom: 90px; /* Space for navbar */
 }
 
 /* Loading screen */
@@ -21,4 +23,40 @@
   color: var(--color-text-white);
   font-size: var(--text-lg);
   font-weight: var(--font-medium);
+}
+
+/* Error Toast */
+.error-toast {
+  position: fixed;
+  top: var(--space-5);
+  right: var(--space-5);
+  background: var(--color-danger);
+  color: var(--color-text-white);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-danger);
+  z-index: 1001;
+  animation: slideInRight var(--duration-slow) var(--ease-out);
+  max-width: 400px;
+  word-wrap: break-word;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .error-toast {
+    top: var(--space-3);
+    right: var(--space-3);
+    left: var(--space-3);
+    max-width: none;
+  }
 }

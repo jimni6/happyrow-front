@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { EventsProvider } from '@/features/events';
 import { ResourcesProvider } from '@/features/resources';
-import { HomeView } from '@/features/home';
+import { HomePage } from '@/features/home';
+import { UserProfilePage } from '@/features/user';
 import { WelcomeView } from '@/features/welcome';
 import { RegisterModal } from '@/features/auth/components/RegisterModal';
 import { LoginModal } from '@/features/auth/components/LoginModal';
@@ -164,9 +166,18 @@ const AppContent: React.FC = () => {
   return (
     <EventsProvider getToken={() => session?.accessToken || null}>
       <ResourcesProvider getToken={() => session?.accessToken || null}>
-        <AppLayout user={user!} authRepository={authRepository!}>
-          <HomeView user={user!} />
-        </AppLayout>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AppLayout user={user!} authRepository={authRepository!} />
+            }
+          >
+            <Route index element={<HomePage user={user!} />} />
+            <Route path="profile" element={<UserProfilePage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </ResourcesProvider>
     </EventsProvider>
   );
@@ -189,9 +200,11 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <AuthProvider authRepository={authRepository}>
-        <AppContent />
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider authRepository={authRepository}>
+          <AppContent />
+        </AuthProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

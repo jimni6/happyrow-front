@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import './HomeView.css';
-import type { User } from '@/features/auth';
 import { useAuth } from '@/features/auth';
-import type { Event } from '@/features/events';
 import { useEvents } from '@/features/events';
-import { EventDetailsView } from '@/features/events';
+import type { Event } from '@/features/events';
 import { EventCard } from '../components/EventCard';
+import { EventDetailsView } from '@/features/events';
 import { GetParticipants } from '@/features/participants';
 import { HttpParticipantRepository } from '@/features/participants';
 import { AddParticipant } from '@/features/participants';
 import { ParticipantStatus } from '@/features/participants';
 import { AddParticipantModal } from '@/features/participants';
+import './HomeView.css';
 
-interface HomeViewProps {
-  user: User;
+interface HomePageProps {
+  user: { id: string };
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
+export const HomePage: React.FC<HomePageProps> = ({ user }) => {
   const { session } = useAuth();
   const { events, loading } = useEvents();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -135,7 +134,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
         ) : events.length === 0 ? (
           <div className="no-events">
             <p>You haven't created any events yet.</p>
-            <p>Click "Create a new event" below to get started!</p>
+            <p>Click the "+" button below to get started!</p>
           </div>
         ) : (
           <div className="events-list">

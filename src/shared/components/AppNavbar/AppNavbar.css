@@ -1,0 +1,182 @@
+/* App Navbar - Floating Style */
+
+.app-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  /* Transparent background - no bar */
+  background: transparent;
+
+  /* iOS safe area */
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-3));
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+  padding-top: var(--space-3);
+
+  /* Position elements */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+/* Left group - pill shape with Home + Profile */
+.navbar-left-group {
+  display: flex;
+  gap: var(--space-1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 50px;
+  padding: var(--space-1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Navbar buttons */
+.navbar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  min-width: 56px;
+  min-height: 56px;
+  border: none;
+  background: transparent;
+  color: var(--color-navbar-inactive);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-full);
+  position: relative;
+}
+
+.navbar-btn:hover {
+  transform: scale(1.05);
+}
+
+.navbar-btn:active {
+  transform: scale(0.98);
+}
+
+.navbar-btn.active {
+  color: var(--color-navbar-active);
+  background: rgba(230, 161, 154, 0.15);
+}
+
+.navbar-btn svg {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar-btn.active svg {
+  transform: scale(1.1);
+}
+
+/* Create button (+ button) special styling - isolated on the right */
+.navbar-btn-create {
+  background: var(--color-navy);
+  color: white;
+  border-radius: var(--radius-full);
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  box-shadow:
+    0 4px 12px rgba(61, 90, 108, 0.25),
+    0 2px 4px rgba(61, 90, 108, 0.15);
+  flex-shrink: 0;
+}
+
+.navbar-btn-create:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.08);
+  box-shadow:
+    0 6px 16px rgba(61, 90, 108, 0.35),
+    0 3px 6px rgba(61, 90, 108, 0.25);
+}
+
+.navbar-btn-create:active {
+  transform: scale(1.02);
+}
+
+.navbar-btn-create svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-navbar {
+    /*padding-left: var(--space-3);*/
+    /*padding-right: var(--space-3);*/
+  }
+
+  .navbar-left-group {
+    gap: 20px;
+  }
+
+  .navbar-btn {
+    padding: var(--space-2);
+    min-width: 52px;
+    min-height: 52px;
+  }
+
+  .navbar-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .navbar-btn-create {
+    width: 52px;
+    height: 52px;
+  }
+
+  .navbar-btn-create svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-navbar {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .navbar-btn {
+    padding: var(--space-2);
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .navbar-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .navbar-btn-create {
+    width: 48px;
+    height: 48px;
+  }
+
+  .navbar-btn-create svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Dark mode support (if needed later) */
+@media (prefers-color-scheme: dark) {
+  .navbar-left-group {
+    /*background: rgba(30, 30, 30, 0.95);*/
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}

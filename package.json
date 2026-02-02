@@ -10,6 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "playwright:codegen": "playwright codegen http://localhost:5173",
     "docker:dev": "docker-compose --profile dev up --build",
     "docker:prod": "docker-compose --profile prod up --build",
     "docker:build": "docker build -t happyrow-front .",
@@ -29,11 +33,13 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@lavamoat/allow-scripts": "3.4.1",
+    "@playwright/mcp": "0.0.62",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -49,6 +55,7 @@
     "jsdom": "^27.0.0",
     "lint-staged": "^16.1.6",
     "lockfile-lint": "4.14.1",
+    "playwright": "1.59.0-alpha-1769819922000",
     "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",

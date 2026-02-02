@@ -6,10 +6,13 @@ A React + TypeScript + Vite application with automated deployment via GitHub Act
 
 - ⚡️ Vite for fast development and building
 - ⚛️ React 19 with TypeScript
-- 🧪 Vitest for testing
+- 🧪 Vitest for unit testing
+- 🎭 Playwright for E2E testing with MCP integration
+- 📱 PWA (Progressive Web App) installable
 - 🐳 Docker support with multi-stage builds
 - 🚀 Automated deployment with GitHub Actions
 - 📦 GitHub Container Registry integration
+- 🤖 MCP (Model Context Protocol) for AI-powered browser automation
 
 ## Quick Start
 
@@ -20,12 +23,59 @@ npm install
 # Start development server
 npm run dev
 
-# Run tests
+# Run unit tests
 npm run test
+
+# Run E2E tests
+npm run test:e2e
 
 # Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## PWA (Progressive Web App)
+
+HappyRow is a fully functional PWA with:
+
+- ✅ Installation on desktop and mobile
+- ✅ Offline mode (basic assets cached)
+- ✅ Apple Touch icon with brand color
+- ✅ Service Worker with hybrid caching strategy
+
+See [PWA_IMPLEMENTATION.md](./PWA_IMPLEMENTATION.md) for details.
+
+## Testing
+
+### Unit Tests (Vitest)
+
+```bash
+npm run test
+```
+
+### E2E Tests (Playwright)
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run with UI mode
+npm run test:e2e:ui
+
+# Run in headed mode (see browser)
+npm run test:e2e:headed
+
+# Generate test code interactively
+npm run playwright:codegen
+```
+
+## MCP Playwright Integration
+
+This project includes a Model Context Protocol (MCP) server for Playwright, enabling AI-powered browser automation directly in Cursor.
+
+See [MCP_PLAYWRIGHT_SETUP.md](./MCP_PLAYWRIGHT_SETUP.md) for setup and usage.
 
 ## Deployment
 
@@ -80,15 +130,15 @@ export default tseslint.config([
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 //  eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default tseslint.config([
   globalIgnores(['dist']),
@@ -109,5 +159,5 @@ export default tseslint.config([
       // other options...
     },
   },
-])
+]);
 ```
