@@ -23,3 +23,4 @@ export type { RemoveParticipantInput } from './use-cases/RemoveParticipant';
 // Components
 export { ParticipantList } from './components/ParticipantList';
 export { AddParticipantForm } from './components/AddParticipantForm';
+export { AddParticipantModal } from './components/AddParticipantModal';

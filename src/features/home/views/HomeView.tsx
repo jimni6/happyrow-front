@@ -11,6 +11,9 @@ import { EventDetailsView } from '@/features/events';
 import { EventCard } from '../components/EventCard';
 import { GetParticipants } from '@/features/participants';
 import { HttpParticipantRepository } from '@/features/participants';
+import { AddParticipant } from '@/features/participants';
+import { ParticipantStatus } from '@/features/participants';
+import { AddParticipantModal } from '@/features/participants';
 
 interface HomeViewProps {
   user: User;
@@ -26,6 +29,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   const [participantCounts, setParticipantCounts] = useState<
     Record<string, number>
   >({});
+  const [addParticipantEventId, setAddParticipantEventId] = useState<
+    string | null
+  >(null);
 
   // Load events on mount
   const { loadEvents } = useEvents();
@@ -66,6 +72,23 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
 
     loadParticipantCounts();
   }, [events, session]);
+
+  const loadParticipantCountsForEvent = async (eventId: string) => {
+    const participantRepository = new HttpParticipantRepository(
+      () => session?.accessToken || null
+    );
+    const getParticipantsUseCase = new GetParticipants(participantRepository);
+
+    try {
+      const participants = await getParticipantsUseCase.execute({ eventId });
+      setParticipantCounts(prev => ({
+        ...prev,
+        [eventId]: participants.length,
+      }));
+    } catch (error) {
+      console.error(`Error loading participants for event ${eventId}:`, error);
+    }
+  };
 
   const handleCreateEvent = async (eventData: {
     name: string;
@@ -108,6 +131,26 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
     setSelectedEvent(null);
   };
 
+  const handleAddParticipant = async (email: string) => {
+    if (!addParticipantEventId) {
+      throw new Error('No event selected');
+    }
+
+    const participantRepository = new HttpParticipantRepository(
+      () => session?.accessToken || null
+    );
+    const addParticipantUseCase = new AddParticipant(participantRepository);
+
+    await addParticipantUseCase.execute({
+      eventId: addParticipantEventId,
+      userEmail: email,
+      status: ParticipantStatus.INVITED,
+    });
+
+    // Reload participant count for this event
+    await loadParticipantCountsForEvent(addParticipantEventId);
+  };
+
   // Show event details if an event is selected
   if (selectedEvent) {
     return (
@@ -139,6 +182,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
                 participantCount={participantCounts[event.id] || 0}
                 onClick={() => setSelectedEvent(event)}
                 showToggle={true}
+                onAddParticipant={eventId => setAddParticipantEventId(eventId)}
               />
             ))}
           </div>
@@ -171,6 +215,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
           isLoading={isCreatingEvent}
         />
       </Modal>
+
+      {addParticipantEventId && (
+        <AddParticipantModal
+          isOpen={!!addParticipantEventId}
+          onClose={() => setAddParticipantEventId(null)}
+          onSubmit={handleAddParticipant}
+        />
+      )}
 
       {createEventError && (
         <div className="error-toast">{createEventError}</div>

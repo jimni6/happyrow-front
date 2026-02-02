@@ -12,6 +12,7 @@ interface EventCardProps {
   onConfirm?: () => void;
   onMaybe?: () => void;
   onDecline?: () => void;
+  onAddParticipant?: (eventId: string) => void;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -24,6 +25,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   onConfirm,
   onMaybe,
   onDecline,
+  onAddParticipant,
 }) => {
   const eventDate = new Date(event.date);
   const monthName = eventDate.toLocaleDateString('en-US', { month: 'long' });
@@ -184,6 +186,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               aria-label="Add participant"
               onClick={e => {
                 e.stopPropagation();
+                onAddParticipant?.(event.id);
               }}
             >
               <svg
