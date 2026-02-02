@@ -1,6 +1,7 @@
-/* Create Event Form */
+/* Create Event Form - Design Figma */
 .create-event-form {
   width: 100%;
+  background: transparent; /* Le fond rose est géré par le modal */
 }
 
 .form-group {
@@ -9,23 +10,24 @@
 
 .form-group label {
   display: block;
-  margin-bottom: var(--space-1);
-  font-weight: var(--font-medium);
-  color: var(--color-gray-700);
-  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+  font-weight: var(--font-bold);
+  color: var(--color-navy);
+  font-size: var(--text-base);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: var(--space-2);
-  border: var(--border-light-normal);
-  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  border: 3px solid var(--color-navy);
+  border-radius: var(--radius-3xl);
   font-size: var(--text-base);
   transition: var(--transition-all);
   background: var(--bg-primary);
   font-family: inherit;
+  color: var(--color-text-primary);
 }
 
 .form-group textarea {
@@ -37,8 +39,8 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--border-focus);
-  box-shadow: var(--shadow-focus);
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px rgba(95, 189, 180, 0.2);
 }
 
 .form-group input.error,
@@ -55,6 +57,11 @@
   opacity: var(--state-disabled-opacity);
 }
 
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
 .error-message {
   display: block;
   color: var(--color-danger);
@@ -68,50 +75,45 @@
   gap: var(--space-3);
   justify-content: flex-end;
   margin-top: var(--space-5);
-  padding-top: var(--space-3);
-  border-top: var(--border-width-thin) solid var(--border-light);
 }
 
-.cancel-button,
+/* Cancel Button - Hidden per Figma design */
+.cancel-button {
+  display: none;
+}
+
+/* Submit Button - Full width, Navy background */
 .submit-button {
-  padding: var(--space-2) var(--space-4);
+  width: 100%;
+  padding: var(--space-3) var(--space-5);
   border: none;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
-  font-size: var(--text-base);
+  border-radius: var(--radius-3xl);
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
   cursor: pointer;
   transition: var(--transition-all);
-  min-width: 100px;
-}
-
-.cancel-button {
-  background: var(--bg-secondary);
-  color: var(--color-gray-500);
-  border: var(--border-light-normal);
-}
-
-.cancel-button:hover:not(:disabled) {
-  background: var(--color-gray-100);
-}
-
-.submit-button {
-  background: var(--bg-gradient);
-  color: var(--color-text-white);
-  box-shadow: var(--shadow-primary);
+  background: var(--color-navy);
+  color: white;
+  box-shadow: var(--shadow-md);
 }
 
 .submit-button:hover:not(:disabled) {
+  background: var(--color-teal);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-primary-lg);
+  box-shadow: var(--shadow-lg);
 }
 
-.cancel-button:disabled,
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .submit-button:disabled {
   opacity: var(--state-disabled-opacity);
   cursor: not-allowed;
   transform: none;
 }
 
+/* Form Row - For Date and Time side by side */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -126,12 +128,18 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .form-actions {
-    flex-direction: column-reverse;
+  .form-group label {
+    font-size: var(--text-sm);
   }
 
-  .cancel-button,
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+
   .submit-button {
-    width: 100%;
+    font-size: var(--text-base);
   }
 }

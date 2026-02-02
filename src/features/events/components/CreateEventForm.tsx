@@ -14,16 +14,33 @@ interface CreateEventFormProps {
   isLoading?: boolean;
 }
 
+const getDefaultDateTime = () => {
+  const now = new Date();
+  // Ajouter 1 heure
+  now.setHours(now.getHours() + 1);
+
+  // Format YYYY-MM-DD pour l'input type="date"
+  const dateStr = now.toISOString().split('T')[0];
+
+  // Format HH:MM pour l'input type="time"
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const timeStr = `${hours}:${minutes}`;
+
+  return { date: dateStr, time: timeStr };
+};
+
 export const CreateEventForm: React.FC<CreateEventFormProps> = ({
   onSubmit,
   onCancel,
   isLoading = false,
 }) => {
+  const defaultDateTime = getDefaultDateTime();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    date: '',
-    time: '19:00', // Default to 7 PM
+    date: defaultDateTime.date,
+    time: defaultDateTime.time,
     location: '',
     type: '' as EventType | '',
   });
@@ -104,12 +121,13 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
         type: formData.type as EventType,
       });
 
-      // Reset form on success
+      // Reset form on success with new default date/time
+      const newDefaultDateTime = getDefaultDateTime();
       setFormData({
         name: '',
         description: '',
-        date: '',
-        time: '',
+        date: newDefaultDateTime.date,
+        time: newDefaultDateTime.time,
         location: '',
         type: '',
       });
@@ -120,11 +138,12 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
   };
 
   const handleCancel = () => {
+    const newDefaultDateTime = getDefaultDateTime();
     setFormData({
       name: '',
       description: '',
-      date: '',
-      time: '',
+      date: newDefaultDateTime.date,
+      time: newDefaultDateTime.time,
       location: '',
       type: '',
     });

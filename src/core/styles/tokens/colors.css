@@ -50,6 +50,7 @@
   /* Background Colors */
   --bg-primary: white;
   --bg-secondary: #f8f9fa;
+  --bg-modal-pink: #f5e8e4;
   --bg-welcome: linear-gradient(180deg, #f5f9fb 0%, #fff5f4 50%, #f0f8f7 100%);
   --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --bg-gradient-light: linear-gradient(135deg, #e8f4f8 0%, #f5f9fb 100%);

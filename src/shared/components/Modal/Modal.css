@@ -37,6 +37,76 @@
   max-width: 800px;
 }
 
+/* Modal Variant: Create Event */
+.modal-create-event {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.modal-create-event .modal-content {
+  background: var(--bg-modal-pink);
+  border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+  max-width: 500px;
+  max-height: 70vh;
+  animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0;
+  /* Masquer la scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.modal-create-event .modal-content::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
+
+.modal-create-event .modal-header {
+  border-bottom: none;
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
+}
+
+.modal-create-event .modal-title {
+  color: var(--color-navy);
+  font-size: var(--text-xl);
+  font-weight: var(--font-normal);
+  text-align: left;
+}
+
+.modal-create-event .modal-close-button {
+  background: var(--color-navy);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-2xl);
+}
+
+.modal-create-event .modal-close-button:hover {
+  background: var(--color-teal);
+  color: white;
+}
+
+.modal-create-event .modal-body {
+  padding: var(--space-2) var(--space-4) var(--space-4) var(--space-4);
+  /* Masquer la scrollbar aussi sur le body */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.modal-create-event .modal-body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @keyframes modalSlideIn {
   from {
     opacity: 0;

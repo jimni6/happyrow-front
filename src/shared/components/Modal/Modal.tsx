@@ -9,6 +9,8 @@ interface ModalProps {
   size?: 'small' | 'medium' | 'large';
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
+  className?: string;
+  variant?: 'default' | 'create-event';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -19,6 +21,8 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'medium',
   showCloseButton = true,
   closeOnOverlayClick = true,
+  className = '',
+  variant = 'default',
 }) => {
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (closeOnOverlayClick && e.target === e.currentTarget) {
@@ -36,9 +40,12 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleOverlayClick}>
+    <div
+      className={`modal-overlay ${variant !== 'default' ? `modal-${variant}` : ''}`}
+      onClick={handleOverlayClick}
+    >
       <div
-        className={`modal-content modal-${size}`}
+        className={`modal-content modal-${size} ${variant !== 'default' ? `modal-${variant}` : ''} ${className}`}
         onClick={e => e.stopPropagation()}
       >
         <div className="modal-header">

@@ -158,8 +158,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
           setIsCreateEventModalOpen(false);
           setCreateEventError(null);
         }}
-        title="Create New Event"
+        title="Create new event"
         size="medium"
+        variant="create-event"
       >
         <CreateEventForm
           onSubmit={handleCreateEvent}
