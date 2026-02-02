@@ -27,6 +27,7 @@
 /* Left group - pill shape with Home + Profile */
 .navbar-left-group {
   display: flex;
+  flex-direction: row; /* Force horizontal layout */
   gap: var(--space-1);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -168,15 +169,5 @@
   .navbar-btn-create svg {
     width: 24px;
     height: 24px;
-  }
-}
-
-/* Dark mode support (if needed later) */
-@media (prefers-color-scheme: dark) {
-  .navbar-left-group {
-    /*background: rgba(30, 30, 30, 0.95);*/
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.3),
-      0 1px 3px rgba(0, 0, 0, 0.2);
   }
 }
