@@ -18,6 +18,11 @@ export type { UpdateEventInput } from './use-cases/UpdateEvent';
 export { DeleteEvent } from './use-cases/DeleteEvent';
 export type { DeleteEventInput } from './use-cases/DeleteEvent';
 
+// Hooks
+export { EventsProvider } from './hooks/EventsProvider';
+export { useEvents } from './hooks/useEvents';
+export type { EventsContextType } from './hooks/EventsContext';
+
 // Components
 export { CreateEventForm } from './components/CreateEventForm';
 export { UpdateEventForm } from './components/UpdateEventForm';

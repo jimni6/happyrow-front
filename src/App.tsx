@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/features/auth';
+import { EventsProvider } from '@/features/events';
 import { HomeView } from '@/features/home';
 import { WelcomeView } from '@/features/welcome';
 import { RegisterModal } from '@/features/auth/components/RegisterModal';
@@ -55,7 +56,7 @@ try {
 }
 
 const AppContent: React.FC = () => {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, session, loading, isAuthenticated } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -160,9 +161,11 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <AppLayout user={user!} authRepository={authRepository!}>
-      <HomeView user={user!} />
-    </AppLayout>
+    <EventsProvider getToken={() => session?.accessToken || null}>
+      <AppLayout user={user!} authRepository={authRepository!}>
+        <HomeView user={user!} />
+      </AppLayout>
+    </EventsProvider>
   );
 };
 

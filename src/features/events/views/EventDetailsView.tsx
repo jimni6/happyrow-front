@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
+import { useEvents } from '../hooks/useEvents';
 import type { Event, EventType } from '../types/Event';
 import type { Resource } from '@/features/resources';
 import {
@@ -22,9 +23,6 @@ import {
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
-import { UpdateEvent } from '../use-cases/UpdateEvent';
-import { DeleteEvent } from '../use-cases/DeleteEvent';
-import { HttpEventRepository } from '../services/HttpEventRepository';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {
@@ -41,6 +39,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventDeleted,
 }) => {
   const { user, session } = useAuth();
+  const { updateEvent, deleteEvent } = useEvents();
   const [resources, setResources] = useState<Resource[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,10 +63,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     () => new HttpParticipantRepository(() => session?.accessToken || null),
     [session]
   );
-  const eventRepository = useMemo(
-    () => new HttpEventRepository(() => session?.accessToken || null),
-    [session]
-  );
 
   // Use cases
   const getResourcesUseCase = useMemo(
@@ -81,14 +76,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   const addContributionUseCase = useMemo(
     () => new AddContribution(contributionRepository),
     [contributionRepository]
-  );
-  const updateEventUseCase = useMemo(
-    () => new UpdateEvent(eventRepository),
-    [eventRepository]
-  );
-  const deleteEventUseCase = useMemo(
-    () => new DeleteEvent(eventRepository),
-    [eventRepository]
   );
   const getParticipantsUseCase = useMemo(
     () => new GetParticipants(participantRepository),
@@ -187,8 +174,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       setIsUpdating(true);
       setError(null);
 
-      const updatedEvent = await updateEventUseCase.execute({
-        id: currentEvent.id,
+      const updatedEvent = await updateEvent(currentEvent.id, {
         name: eventData.name,
         description: eventData.description,
         date: eventData.date.toISOString(),
@@ -219,10 +205,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       setIsDeleting(true);
       setError(null);
 
-      await deleteEventUseCase.execute({
-        id: currentEvent.id,
-        userId: user.id,
-      });
+      await deleteEvent(currentEvent.id, user.id);
 
       setIsDeleteModalOpen(false);
 

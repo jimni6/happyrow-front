@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './HomeView.css';
 import type { User } from '@/features/auth';
 import { useAuth } from '@/features/auth';
@@ -6,8 +6,7 @@ import type { Event } from '@/features/events';
 import { Modal } from '@/shared/components/Modal';
 import { CreateEventForm } from '@/features/events';
 import { EventType } from '@/features/events';
-import { CreateEvent, GetEventsByOrganizer } from '@/features/events';
-import { HttpEventRepository } from '@/features/events';
+import { useEvents } from '@/features/events';
 import { EventDetailsView } from '@/features/events';
 import { EventCard } from '../components/EventCard';
 import { GetParticipants } from '@/features/participants';
@@ -19,42 +18,27 @@ interface HomeViewProps {
 
 export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   const { session } = useAuth();
+  const { events, loading, addEvent } = useEvents();
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [participantCounts, setParticipantCounts] = useState<
     Record<string, number>
   >({});
 
-  // Ref to track if we're currently loading to prevent duplicate calls
-  const loadingRef = useRef(false);
-  const loadedUserIdRef = useRef<string | null>(null);
+  // Load events on mount
+  const { loadEvents } = useEvents();
 
-  const loadEvents = useCallback(async () => {
-    // Prevent duplicate calls for the same user
-    if (loadingRef.current || loadedUserIdRef.current === user.id) {
-      return;
-    }
+  useEffect(() => {
+    loadEvents(user.id);
+  }, [user.id, loadEvents]);
 
-    // Set flags immediately to prevent concurrent calls
-    loadingRef.current = true;
-    loadedUserIdRef.current = user.id;
+  // Load participant counts when events change
+  useEffect(() => {
+    const loadParticipantCounts = async () => {
+      if (events.length === 0) return;
 
-    try {
-      setLoadingEvents(true);
-      const eventRepository = new HttpEventRepository(
-        () => session?.accessToken || null
-      );
-      const getEventsUseCase = new GetEventsByOrganizer(eventRepository);
-      const userEvents = await getEventsUseCase.execute({
-        organizerId: user.id,
-      });
-      setEvents(userEvents);
-
-      // Load participant counts for each event
       const participantRepository = new HttpParticipantRepository(
         () => session?.accessToken || null
       );
@@ -62,7 +46,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
 
       const counts: Record<string, number> = {};
       await Promise.all(
-        userEvents.map(async event => {
+        events.map(async event => {
           try {
             const participants = await getParticipantsUseCase.execute({
               eventId: event.id,
@@ -78,19 +62,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
         })
       );
       setParticipantCounts(counts);
-    } catch (error) {
-      console.error('Error loading events:', error);
-      // Reset on error to allow retry
-      loadedUserIdRef.current = null;
-    } finally {
-      setLoadingEvents(false);
-      loadingRef.current = false;
-    }
-  }, [user.id, session]);
+    };
 
-  useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
+    loadParticipantCounts();
+  }, [events, session]);
 
   const handleCreateEvent = async (eventData: {
     name: string;
@@ -103,18 +78,12 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
     setCreateEventError(null);
 
     try {
-      const eventRepository = new HttpEventRepository(
-        () => session?.accessToken || null
-      );
-      const createEventUseCase = new CreateEvent(eventRepository);
-
-      const newEvent = await createEventUseCase.execute({
+      await addEvent({
         ...eventData,
         organizerId: user.id,
       });
 
-      // Success - add the new event to the list and close modal
-      setEvents(prevEvents => [...prevEvents, newEvent]);
+      // Success - close modal
       setIsCreateEventModalOpen(false);
       console.log('Event created successfully!');
     } catch (error) {
@@ -129,21 +98,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   };
 
   const handleEventUpdated = (updatedEvent: Event) => {
-    // Update the event in the local list
-    setEvents(prevEvents =>
-      prevEvents.map(e => (e.id === updatedEvent.id ? updatedEvent : e))
-    );
-    // Update the selected event
+    // Update the selected event (global state is already updated by EventsProvider)
     setSelectedEvent(updatedEvent);
   };
 
   const handleEventDeleted = () => {
-    if (!selectedEvent) return;
-
-    // Remove the event from the local list
-    setEvents(prevEvents => prevEvents.filter(e => e.id !== selectedEvent.id));
-
-    // Go back to home screen
+    // Global state is already updated by EventsProvider
+    // Just go back to home screen
     setSelectedEvent(null);
   };
 
@@ -162,7 +123,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
   return (
     <div className="home-screen">
       <div className="home-content">
-        {loadingEvents ? (
+        {loading ? (
           <div className="loading-events">Loading events...</div>
         ) : events.length === 0 ? (
           <div className="no-events">
