@@ -10,7 +10,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.svg', 'logo.png', 'bg_gradient.svg'],
+      includeAssets: [
+        'logo.svg',
+        'logo.png',
+        'bg_gradient.svg',
+        'apple-touch-icon.png',
+      ],
       manifest: {
         name: 'HappyRow - Plan Together, Celebrate Better',
         short_name: 'HappyRow',
@@ -26,6 +31,12 @@ export default defineConfig({
             src: 'pwa-64x64.png',
             sizes: '64x64',
             type: 'image/png',
+          },
+          {
+            src: 'apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png',
+            purpose: 'any',
           },
           {
             src: 'pwa-192x192.png',
