@@ -59,7 +59,7 @@ try {
 }
 
 const AppContent: React.FC = () => {
-  const { user, session, loading, isAuthenticated } = useAuth();
+  const { user, session, isAuthenticated } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -110,13 +110,13 @@ const AppContent: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner">Loading...</div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="loading-screen">
+  //       <div className="loading-spinner">Loading...</div>
+  //     </div>
+  //   );
+  // }
 
   if (!isAuthenticated) {
     return (
