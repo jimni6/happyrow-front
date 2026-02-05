@@ -13,11 +13,11 @@ interface ContributionApiRequest {
 // API response interface for contributions
 interface ContributionApiResponse {
   identifier: string;
-  event_id: string;
+  participant_id: string;
   resource_id: string;
-  user_id: string;
   quantity: number;
-  creation_date: number;
+  created_at: number;
+  updated_at?: number;
 }
 
 export class HttpContributionRepository implements ContributionRepository {
@@ -57,7 +57,9 @@ export class HttpContributionRepository implements ContributionRepository {
 
     const contributionsResponse: ContributionApiResponse[] =
       await response.json();
-    return contributionsResponse.map(c => this.mapApiResponseToContribution(c));
+    return contributionsResponse.map(c =>
+      this.mapApiResponseToContribution(c, params.eventId)
+    );
   }
 
   async createContribution(
@@ -92,7 +94,10 @@ export class HttpContributionRepository implements ContributionRepository {
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
-    return this.mapApiResponseToContribution(contributionResponse);
+    return this.mapApiResponseToContribution(
+      contributionResponse,
+      data.eventId
+    );
   }
 
   async updateContribution(params: {
@@ -129,7 +134,10 @@ export class HttpContributionRepository implements ContributionRepository {
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
-    return this.mapApiResponseToContribution(contributionResponse);
+    return this.mapApiResponseToContribution(
+      contributionResponse,
+      params.eventId
+    );
   }
 
   async deleteContribution(params: {
@@ -157,15 +165,16 @@ export class HttpContributionRepository implements ContributionRepository {
   }
 
   private mapApiResponseToContribution(
-    response: ContributionApiResponse
+    response: ContributionApiResponse,
+    eventId: string
   ): Contribution {
     return {
       id: response.identifier,
-      eventId: response.event_id,
+      eventId: eventId,
       resourceId: response.resource_id,
-      userId: response.user_id,
+      userId: response.participant_id,
       quantity: response.quantity,
-      createdAt: new Date(response.creation_date),
+      createdAt: new Date(response.created_at),
     };
   }
 }

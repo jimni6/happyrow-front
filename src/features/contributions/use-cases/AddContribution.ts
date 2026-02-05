@@ -2,7 +2,7 @@ import type {
   Contribution,
   ContributionCreationRequest,
 } from '../types/Contribution';
-import type { ContributionRepository } from '../types/ContributionRepository';
+import { ContributionRepository } from '../types/ContributionRepository';
 
 export interface AddContributionInput {
   eventId: string;

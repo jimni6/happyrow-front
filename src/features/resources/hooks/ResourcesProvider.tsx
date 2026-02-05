@@ -14,7 +14,9 @@ import { ResourcesContext, ResourcesContextType } from './ResourcesContext';
 import {
   GetResources,
   UpdateResource,
-  DeleteResource, HttpResourceRepository, CreateResource
+  DeleteResource,
+  HttpResourceRepository,
+  CreateResource,
 } from '@/features/resources';
 import { AddContribution } from '@/features/contributions/use-cases/AddContribution';
 import { UpdateContribution } from '@/features/contributions/use-cases/UpdateContribution';
@@ -243,34 +245,104 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
       quantity: number
     ): Promise<void> => {
       setError(null);
+      let previousResources: Resource[] = [];
 
       try {
         if (!currentEventId) {
           throw new Error('No event context available');
         }
 
-        await updateContributionUseCase.execute({
+        // Call API and get the updated contribution
+        const updatedContribution = await updateContributionUseCase.execute({
           eventId: currentEventId,
           resourceId,
           quantity,
         });
 
-        // Reload resources to get the updated state from backend
-        const eventResources = await getResourcesUseCase.execute({
-          eventId: currentEventId,
+        // Update local state with the API response
+        setResources(prev => {
+          // Store previous state for rollback (use the actual current state)
+          previousResources = [...prev];
+
+          return prev.map(r => {
+            if (r.id !== resourceId) {
+              return r;
+            }
+
+            // IMPORTANT: The API is inconsistent with user identifiers:
+            // - Resource contributors use user_id (email from backend)
+            // - Contribution API uses participant_id (UUID)
+            // - Frontend passes Supabase user ID
+            // We need to find the contributor by trying different strategies
+
+            const participantId = updatedContribution.userId;
+
+            // Strategy 1: Try to find by participant_id
+            let oldContributor = r.contributors.find(
+              c => c.userId === participantId
+            );
+
+            // Strategy 2: If not found, try to find by the userId parameter
+            if (!oldContributor) {
+              oldContributor = r.contributors.find(c => c.userId === userId);
+            }
+
+            // Strategy 3: If still not found and there's only one contributor, assume it's them
+            if (!oldContributor && r.contributors.length === 1) {
+              oldContributor = r.contributors[0];
+            }
+
+            const oldQuantity = oldContributor?.quantity || 0;
+            const deltaQuantity = updatedContribution.quantity - oldQuantity;
+
+            // Update or add the contributor
+            let updatedContributors;
+            if (oldContributor) {
+              // Update existing contributor - replace old ID with participant_id for consistency
+              const oldUserId = oldContributor.userId;
+              updatedContributors = r.contributors.map(c =>
+                c.userId === oldUserId
+                  ? {
+                      ...c,
+                      userId: participantId, // Normalize to participant_id
+                      quantity: updatedContribution.quantity,
+                      contributedAt: updatedContribution.createdAt,
+                    }
+                  : c
+              );
+            } else {
+              // Add new contributor (shouldn't happen normally, but handle it)
+              updatedContributors = [
+                ...r.contributors,
+                {
+                  userId: participantId,
+                  quantity: updatedContribution.quantity,
+                  contributedAt: updatedContribution.createdAt,
+                },
+              ];
+            }
+
+            // Update the resource with new quantity and updated contributors
+            return {
+              ...r,
+              currentQuantity: r.currentQuantity + deltaQuantity,
+              contributors: updatedContributors,
+            };
+          });
         });
-        setResources(eventResources);
       } catch (err) {
         const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Failed to update contribution';
+          err instanceof Error ? err.message : 'Failed to update contribution';
         setError(errorMessage);
         console.error('Error updating contribution:', err);
+        // Rollback on error (only if we have a snapshot)
+        if (previousResources.length > 0) {
+          setResources(previousResources);
+        }
         throw err;
       }
     },
-    [updateContributionUseCase, getResourcesUseCase, currentEventId]
+    [updateContributionUseCase, currentEventId]
   );
 
   const deleteContribution = useCallback(
@@ -294,9 +366,7 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
         setResources(eventResources);
       } catch (err) {
         const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Failed to delete contribution';
+          err instanceof Error ? err.message : 'Failed to delete contribution';
         setError(errorMessage);
         console.error('Error deleting contribution:', err);
         throw err;

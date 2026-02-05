@@ -45,31 +45,20 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
   const handleValidate = async () => {
     try {
       setIsSaving(true);
-      
+
       const newQuantity = userQuantity + selectedQuantity;
-      
-      console.log('🔍 handleValidate DEBUG:', {
-        resourceName: resource.name,
-        userQuantity,
-        selectedQuantity,
-        newQuantity,
-        action: newQuantity <= 0 ? 'DELETE' : userQuantity === 0 ? 'ADD' : 'UPDATE'
-      });
-      
+
       if (newQuantity <= 0) {
         // Delete contribution if new quantity is 0 or negative
-        console.log('❌ Calling DELETE');
         await onDeleteContribution(resource.id);
       } else if (userQuantity === 0) {
         // No existing contribution, add new one
-        console.log('➕ Calling ADD with quantity:', selectedQuantity);
         await onAddContribution(resource.id, selectedQuantity);
       } else {
         // Update existing contribution
-        console.log('🔄 Calling UPDATE with newQuantity:', newQuantity);
         await onUpdateContribution(resource.id, newQuantity);
       }
-      
+
       // Reset selection after successful operation
       setSelectedQuantity(0);
     } catch (error) {
@@ -99,14 +88,19 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
             <button
               className="resource-btn resource-btn-minus"
               onClick={handleDecrement}
-              disabled={(selectedQuantity === 0 && userQuantity === 0) || isSaving}
+              disabled={
+                (selectedQuantity === 0 && userQuantity === 0) || isSaving
+              }
               aria-label="Decrease quantity"
             >
               −
             </button>
             {hasSelection && (
-              <span className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}>
-                {selectedQuantity > 0 ? '+' : ''}{selectedQuantity}
+              <span
+                className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
+              >
+                {selectedQuantity > 0 ? '+' : ''}
+                {selectedQuantity}
               </span>
             )}
             <button
