@@ -4,24 +4,40 @@ import './ResourceItem.css';
 
 interface ResourceItemProps {
   resource: Resource;
+  currentUserId: string;
   onAddContribution: (resourceId: string, quantity: number) => Promise<void>;
+  onUpdateContribution: (resourceId: string, quantity: number) => Promise<void>;
+  onDeleteContribution: (resourceId: string) => Promise<void>;
 }
 
 export const ResourceItem: React.FC<ResourceItemProps> = ({
   resource,
+  currentUserId,
   onAddContribution,
+  onUpdateContribution,
+  onDeleteContribution,
 }) => {
   const [selectedQuantity, setSelectedQuantity] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
-  const hasSelection = selectedQuantity > 0;
+  // Find user's current contribution
+  const userContribution = resource.contributors.find(
+    c => c.userId === currentUserId
+  );
+  const userQuantity = userContribution?.quantity || 0;
+  const hasSelection = selectedQuantity !== 0;
 
   const handleIncrement = () => {
     setSelectedQuantity(prev => prev + 1);
   };
 
   const handleDecrement = () => {
+    // Allow decrement only if there's a pending selection or if user has a contribution
     if (selectedQuantity > 0) {
+      // Decrement the temporary selection
+      setSelectedQuantity(prev => prev - 1);
+    } else if (userQuantity > 0) {
+      // Start negative selection to reduce existing contribution
       setSelectedQuantity(prev => prev - 1);
     }
   };
@@ -29,11 +45,35 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
   const handleValidate = async () => {
     try {
       setIsSaving(true);
-      await onAddContribution(resource.id, selectedQuantity);
-      // Reset selection after successful contribution
+      
+      const newQuantity = userQuantity + selectedQuantity;
+      
+      console.log('🔍 handleValidate DEBUG:', {
+        resourceName: resource.name,
+        userQuantity,
+        selectedQuantity,
+        newQuantity,
+        action: newQuantity <= 0 ? 'DELETE' : userQuantity === 0 ? 'ADD' : 'UPDATE'
+      });
+      
+      if (newQuantity <= 0) {
+        // Delete contribution if new quantity is 0 or negative
+        console.log('❌ Calling DELETE');
+        await onDeleteContribution(resource.id);
+      } else if (userQuantity === 0) {
+        // No existing contribution, add new one
+        console.log('➕ Calling ADD with quantity:', selectedQuantity);
+        await onAddContribution(resource.id, selectedQuantity);
+      } else {
+        // Update existing contribution
+        console.log('🔄 Calling UPDATE with newQuantity:', newQuantity);
+        await onUpdateContribution(resource.id, newQuantity);
+      }
+      
+      // Reset selection after successful operation
       setSelectedQuantity(0);
     } catch (error) {
-      console.error('Error adding contribution:', error);
+      console.error('Error updating contribution:', error);
     } finally {
       setIsSaving(false);
     }
@@ -42,7 +82,14 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
   return (
     <div className="resource-item-card">
       <div className="resource-item-content">
-        <span className="resource-item-name">{resource.name}</span>
+        <div className="resource-item-header">
+          <span className="resource-item-name">{resource.name}</span>
+          {userQuantity > 0 && (
+            <span className="resource-user-contribution">
+              Your contribution: {userQuantity}
+            </span>
+          )}
+        </div>
         <div className="resource-item-controls">
           <span className="resource-item-quantity">
             {resource.currentQuantity}
@@ -52,14 +99,14 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
             <button
               className="resource-btn resource-btn-minus"
               onClick={handleDecrement}
-              disabled={selectedQuantity === 0 || isSaving}
+              disabled={(selectedQuantity === 0 && userQuantity === 0) || isSaving}
               aria-label="Decrease quantity"
             >
               −
             </button>
             {hasSelection && (
-              <span className="resource-selected-quantity">
-                {selectedQuantity}
+              <span className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}>
+                {selectedQuantity > 0 ? '+' : ''}{selectedQuantity}
               </span>
             )}
             <button

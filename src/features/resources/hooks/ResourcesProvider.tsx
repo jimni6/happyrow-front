@@ -11,12 +11,14 @@ import type {
   ResourceUpdateRequest,
 } from '../types/Resource';
 import { ResourcesContext, ResourcesContextType } from './ResourcesContext';
-import { CreateResource } from '../use-cases/CreateResource';
-import { GetResources } from '../use-cases/GetResources';
-import { UpdateResource } from '../use-cases/UpdateResource';
-import { DeleteResource } from '../use-cases/DeleteResource';
-import { HttpResourceRepository } from '../services/HttpResourceRepository';
+import {
+  GetResources,
+  UpdateResource,
+  DeleteResource, HttpResourceRepository, CreateResource
+} from '@/features/resources';
 import { AddContribution } from '@/features/contributions/use-cases/AddContribution';
+import { UpdateContribution } from '@/features/contributions/use-cases/UpdateContribution';
+import { DeleteContribution } from '@/features/contributions/use-cases/DeleteContribution';
 import { HttpContributionRepository } from '@/features/contributions/services/HttpContributionRepository';
 
 interface ResourcesProviderProps {
@@ -65,6 +67,14 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
   );
   const addContributionUseCase = useMemo(
     () => new AddContribution(contributionRepository),
+    [contributionRepository]
+  );
+  const updateContributionUseCase = useMemo(
+    () => new UpdateContribution(contributionRepository),
+    [contributionRepository]
+  );
+  const deleteContributionUseCase = useMemo(
+    () => new DeleteContribution(contributionRepository),
     [contributionRepository]
   );
 
@@ -226,6 +236,75 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
     [addContributionUseCase, currentEventId, resources]
   );
 
+  const updateContribution = useCallback(
+    async (
+      resourceId: string,
+      userId: string,
+      quantity: number
+    ): Promise<void> => {
+      setError(null);
+
+      try {
+        if (!currentEventId) {
+          throw new Error('No event context available');
+        }
+
+        await updateContributionUseCase.execute({
+          eventId: currentEventId,
+          resourceId,
+          quantity,
+        });
+
+        // Reload resources to get the updated state from backend
+        const eventResources = await getResourcesUseCase.execute({
+          eventId: currentEventId,
+        });
+        setResources(eventResources);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to update contribution';
+        setError(errorMessage);
+        console.error('Error updating contribution:', err);
+        throw err;
+      }
+    },
+    [updateContributionUseCase, getResourcesUseCase, currentEventId]
+  );
+
+  const deleteContribution = useCallback(
+    async (resourceId: string): Promise<void> => {
+      setError(null);
+
+      try {
+        if (!currentEventId) {
+          throw new Error('No event context available');
+        }
+
+        await deleteContributionUseCase.execute({
+          eventId: currentEventId,
+          resourceId,
+        });
+
+        // Reload resources to get the updated state from backend
+        const eventResources = await getResourcesUseCase.execute({
+          eventId: currentEventId,
+        });
+        setResources(eventResources);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to delete contribution';
+        setError(errorMessage);
+        console.error('Error deleting contribution:', err);
+        throw err;
+      }
+    },
+    [deleteContributionUseCase, getResourcesUseCase, currentEventId]
+  );
+
   const refreshResource = useCallback(async (): Promise<void> => {
     setError(null);
     try {
@@ -254,6 +333,8 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
     updateResource,
     deleteResource,
     addContribution,
+    updateContribution,
+    deleteContribution,
     refreshResource,
   };
 

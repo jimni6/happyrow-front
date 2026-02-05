@@ -14,11 +14,24 @@
   gap: var(--space-3);
 }
 
+.resource-item-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
 .resource-item-name {
   font-size: var(--text-base);
   font-weight: var(--font-medium);
   color: var(--color-navy);
-  flex: 1;
+  font-family: var(--font-sans);
+}
+
+.resource-user-contribution {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-teal);
   font-family: var(--font-sans);
 }
 
@@ -49,6 +62,10 @@
   min-width: 24px;
   text-align: center;
   font-family: var(--font-sans);
+}
+
+.resource-selected-quantity.negative {
+  color: #ef4444;
 }
 
 .resource-btn {

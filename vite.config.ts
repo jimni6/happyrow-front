@@ -58,10 +58,10 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Désactiver les logs verbeux en développement
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        navigateFallback: null,
         // Stratégie hybride: cache pour assets statiques, network pour API
         runtimeCaching: [
           {
@@ -126,7 +126,7 @@ export default defineConfig({
         ],
       },
       devOptions: {
-        enabled: true, // Réactiver PWA en développement
+        enabled: false, // Désactiver PWA en développement pour éliminer les logs workbox
         type: 'module',
       },
     }),

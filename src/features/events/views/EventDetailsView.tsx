@@ -40,6 +40,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     loadResources,
     addResource,
     addContribution,
+    updateContribution,
+    deleteContribution,
   } = useResources();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +112,35 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add contribution'
+      );
+      throw err;
+    }
+  };
+
+  const handleUpdateContribution = async (
+    resourceId: string,
+    quantity: number
+  ) => {
+    if (!user) return;
+
+    try {
+      await updateContribution(resourceId, user.id, quantity);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to update contribution'
+      );
+      throw err;
+    }
+  };
+
+  const handleDeleteContribution = async (resourceId: string) => {
+    if (!user) return;
+
+    try {
+      await deleteContribution(resourceId);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to delete contribution'
       );
       throw err;
     }
@@ -236,7 +267,10 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
                 <ResourceItem
                   key={resource.id}
                   resource={resource}
+                  currentUserId={user?.email || ''}
                   onAddContribution={handleAddContribution}
+                  onUpdateContribution={handleUpdateContribution}
+                  onDeleteContribution={handleDeleteContribution}
                 />
               ))}
             </div>
@@ -254,7 +288,10 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
                 <ResourceItem
                   key={resource.id}
                   resource={resource}
+                  currentUserId={user?.email || ''}
                   onAddContribution={handleAddContribution}
+                  onUpdateContribution={handleUpdateContribution}
+                  onDeleteContribution={handleDeleteContribution}
                 />
               ))}
             </div>

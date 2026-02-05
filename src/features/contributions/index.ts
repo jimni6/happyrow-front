@@ -16,3 +16,5 @@ export { DeleteContribution } from './use-cases/DeleteContribution';
 export type { DeleteContributionInput } from './use-cases/DeleteContribution';
 export { GetContributions } from './use-cases/GetContributions';
 export type { GetContributionsInput } from './use-cases/GetContributions';
+export { UpdateContribution } from './use-cases/UpdateContribution';
+export type { UpdateContributionInput } from './use-cases/UpdateContribution';

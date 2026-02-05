@@ -21,6 +21,12 @@ export interface ResourcesContextType {
     userId: string,
     quantity: number
   ) => Promise<void>;
+  updateContribution: (
+    resourceId: string,
+    userId: string,
+    quantity: number
+  ) => Promise<void>;
+  deleteContribution: (resourceId: string) => Promise<void>;
   refreshResource: () => Promise<void>;
 }
 
