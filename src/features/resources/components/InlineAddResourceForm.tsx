@@ -17,7 +17,7 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
   onSubmit,
 }) => {
   const [name, setName] = useState('');
-  const [suggestedQuantity, setSuggestedQuantity] = useState(1);
+  const [suggestedQuantity, setSuggestedQuantity] = useState('1');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,11 +59,11 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
         name: name.trim(),
         category,
         quantity: selectedQuantity,
-        suggestedQuantity: suggestedQuantity,
+        suggestedQuantity: parseInt(suggestedQuantity) || 1,
       });
       // Reset form on success
       setName('');
-      setSuggestedQuantity(1);
+      setSuggestedQuantity('1');
       setSelectedQuantity(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add resource');
@@ -89,9 +89,11 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
             className="inline-add-suggested-input"
             min="1"
             value={suggestedQuantity}
-            onChange={e =>
-              setSuggestedQuantity(Math.max(1, parseInt(e.target.value) || 1))
-            }
+            onChange={e => setSuggestedQuantity(e.target.value)}
+            onBlur={() => {
+              const parsed = parseInt(suggestedQuantity);
+              if (!parsed || parsed < 1) setSuggestedQuantity('1');
+            }}
             disabled={!isActive || isSubmitting}
           />
           <div className="inline-add-quantity-buttons">
