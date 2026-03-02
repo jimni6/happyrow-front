@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth';
-import { useEvents } from '../hooks/useEvents';
-import { useResources } from '@/features/resources';
-import type { Event, EventType } from '../types/Event';
-import {
-  ResourceCategory,
-  ResourceItem,
-  InlineAddResourceForm,
-} from '@/features/resources';
-import type { Participant } from '@/features/participants';
-import {
-  HttpParticipantRepository,
-  GetParticipants,
-} from '@/features/participants';
+import { useResources, ResourceCategory } from '@/features/resources';
+import type { Event } from '../types/Event';
 import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
+import { ResourceCategorySection } from '../components/ResourceCategorySection';
+import { useParticipants } from '../hooks/useParticipants';
+import { useEventActions } from '../hooks/useEventActions';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {
@@ -32,7 +24,6 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventDeleted,
 }) => {
   const { user, session } = useAuth();
-  const { updateEvent, deleteEvent } = useEvents();
   const {
     resources,
     loading,
@@ -43,42 +34,28 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     updateContribution,
     deleteContribution,
   } = useResources();
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [currentEvent, setCurrentEvent] = useState<Event>(event);
 
-  // Repositories
-  const participantRepository = useMemo(
-    () => new HttpParticipantRepository(() => session?.accessToken || null),
-    [session]
-  );
+  const { participants } = useParticipants({ eventId: event.id, session });
 
-  // Use cases
-  const getParticipantsUseCase = useMemo(
-    () => new GetParticipants(participantRepository),
-    [participantRepository]
-  );
-
-  const loadParticipants = useCallback(async () => {
-    try {
-      const loadedParticipants = await getParticipantsUseCase.execute({
-        eventId: event.id,
-      });
-      setParticipants(loadedParticipants);
-    } catch (err) {
-      console.error('Failed to load participants:', err);
-    }
-  }, [event.id, getParticipantsUseCase]);
+  const {
+    currentEvent,
+    syncEvent,
+    error,
+    clearError,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    isUpdating,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    isDeleting,
+    handleUpdateEvent,
+    handleDeleteEvent,
+  } = useEventActions({ event, user, onEventUpdated, onEventDeleted });
 
   useEffect(() => {
-    setCurrentEvent(event);
+    syncEvent(event);
     loadResources(event.id);
-    loadParticipants();
-  }, [event, event.id, loadResources, loadParticipants]);
+  }, [event, event.id, loadResources, syncEvent]);
 
   const handleAddResource = async (data: {
     name: string;
@@ -87,17 +64,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     suggestedQuantity?: number;
   }) => {
     if (!user) return;
-
-    try {
-      await addResource({
-        eventId: event.id,
-        ...data,
-      });
-      // No need to reload - optimistic update in ResourcesProvider!
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add resource');
-      throw err;
-    }
+    await addResource({ eventId: event.id, ...data });
   };
 
   const handleAddContribution = async (
@@ -105,16 +72,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-
-    try {
-      await addContribution(resourceId, user.id, quantity);
-      // No need to reload - optimistic update in ResourcesProvider!
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to add contribution'
-      );
-      throw err;
-    }
+    await addContribution(resourceId, user.id, quantity);
   };
 
   const handleUpdateContribution = async (
@@ -122,98 +80,21 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-
-    try {
-      await updateContribution(resourceId, user.id, quantity);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to update contribution'
-      );
-      throw err;
-    }
+    await updateContribution(resourceId, user.id, quantity);
   };
 
   const handleDeleteContribution = async (resourceId: string) => {
     if (!user) return;
-
-    try {
-      await deleteContribution(resourceId);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to delete contribution'
-      );
-      throw err;
-    }
-  };
-
-  const handleUpdateEvent = async (eventData: {
-    name: string;
-    description: string;
-    date: Date;
-    location: string;
-    type: EventType;
-  }) => {
-    if (!user) return;
-
-    try {
-      setIsUpdating(true);
-      setError(null);
-
-      const updatedEvent = await updateEvent(currentEvent.id, {
-        name: eventData.name,
-        description: eventData.description,
-        date: eventData.date.toISOString(),
-        location: eventData.location,
-        type: eventData.type,
-        organizerId: user.id,
-      });
-
-      setCurrentEvent(updatedEvent);
-      setIsEditModalOpen(false);
-
-      if (onEventUpdated) {
-        onEventUpdated(updatedEvent);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update event');
-      console.error('Error updating event:', err);
-      throw err;
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleDeleteEvent = async () => {
-    if (!user) return;
-
-    try {
-      setIsDeleting(true);
-      setError(null);
-
-      await deleteEvent(currentEvent.id, user.id);
-
-      setIsDeleteModalOpen(false);
-
-      if (onEventDeleted) {
-        onEventDeleted();
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete event');
-      console.error('Error deleting event:', err);
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteContribution(resourceId);
   };
 
   const participantCount = participants.length;
 
   // Backend returns email in 'creator' field, not UUID
-  // So we need to compare with user.email instead of user.id
   const isOrganizer =
     user?.id === currentEvent.organizerId ||
     user?.email === currentEvent.organizerId;
 
-  // Group resources by category
   const resourcesByCategory = useMemo(() => {
     return {
       FOOD: resources.filter(r => r.category === 'FOOD'),
@@ -259,47 +140,26 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         <div className="loading-state">Loading resources...</div>
       ) : (
         <div className="categories-container">
-          {/* Food Section */}
-          <div className="category-section">
-            <h2 className="category-title">Food</h2>
-            <div className="resources-list">
-              {resourcesByCategory.FOOD.map(resource => (
-                <ResourceItem
-                  key={resource.id}
-                  resource={resource}
-                  currentUserId={user?.email || ''}
-                  onAddContribution={handleAddContribution}
-                  onUpdateContribution={handleUpdateContribution}
-                  onDeleteContribution={handleDeleteContribution}
-                />
-              ))}
-            </div>
-            <InlineAddResourceForm
-              category={ResourceCategory.FOOD}
-              onSubmit={handleAddResource}
-            />
-          </div>
-
-          {/* Drinks Section */}
-          <div className="category-section">
-            <h2 className="category-title">Drinks</h2>
-            <div className="resources-list">
-              {resourcesByCategory.DRINK.map(resource => (
-                <ResourceItem
-                  key={resource.id}
-                  resource={resource}
-                  currentUserId={user?.email || ''}
-                  onAddContribution={handleAddContribution}
-                  onUpdateContribution={handleUpdateContribution}
-                  onDeleteContribution={handleDeleteContribution}
-                />
-              ))}
-            </div>
-            <InlineAddResourceForm
-              category={ResourceCategory.DRINK}
-              onSubmit={handleAddResource}
-            />
-          </div>
+          <ResourceCategorySection
+            title="Food"
+            category={ResourceCategory.FOOD}
+            resources={resourcesByCategory.FOOD}
+            currentUserId={user?.email || ''}
+            onAddContribution={handleAddContribution}
+            onUpdateContribution={handleUpdateContribution}
+            onDeleteContribution={handleDeleteContribution}
+            onAddResource={handleAddResource}
+          />
+          <ResourceCategorySection
+            title="Drinks"
+            category={ResourceCategory.DRINK}
+            resources={resourcesByCategory.DRINK}
+            currentUserId={user?.email || ''}
+            onAddContribution={handleAddContribution}
+            onUpdateContribution={handleUpdateContribution}
+            onDeleteContribution={handleDeleteContribution}
+            onAddResource={handleAddResource}
+          />
         </div>
       )}
 
@@ -317,7 +177,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setError(null);
+          clearError();
         }}
         title="Edit Event"
         size="medium"
@@ -327,7 +187,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           onSubmit={handleUpdateEvent}
           onCancel={() => {
             setIsEditModalOpen(false);
-            setError(null);
+            clearError();
           }}
           isLoading={isUpdating}
         />
@@ -339,7 +199,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         onConfirm={handleDeleteEvent}
         onCancel={() => {
           setIsDeleteModalOpen(false);
-          setError(null);
+          clearError();
         }}
         loading={isDeleting}
       />
