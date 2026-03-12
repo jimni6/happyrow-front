@@ -5,6 +5,7 @@ import type { Event } from '@/features/events';
 interface EventCardProps {
   event: Event;
   participantCount: number;
+  currentUserEmail?: string;
   onClick?: () => void;
   onToggle?: (checked: boolean) => void;
   showToggle?: boolean;
@@ -18,6 +19,7 @@ interface EventCardProps {
 export const EventCard: React.FC<EventCardProps> = ({
   event,
   participantCount,
+  currentUserEmail,
   onClick,
   onToggle,
   showToggle = false,
@@ -27,6 +29,9 @@ export const EventCard: React.FC<EventCardProps> = ({
   onDecline,
   onAddParticipant,
 }) => {
+  const isOrganizer = currentUserEmail
+    ? event.organizerId === currentUserEmail
+    : true;
   const eventDate = new Date(event.date);
   const monthName = eventDate.toLocaleDateString('en-US', { month: 'long' });
   const day = eventDate.getDate();
@@ -65,7 +70,20 @@ export const EventCard: React.FC<EventCardProps> = ({
       </div>
 
       <div className="event-card__content">
-        <h3 className="event-card__title">{event.name}</h3>
+        <div className="event-card__title-row">
+          <h3 className="event-card__title">{event.name}</h3>
+          {currentUserEmail && (
+            <span
+              className={`event-card__role-badge ${
+                isOrganizer
+                  ? 'event-card__role-badge--organizer'
+                  : 'event-card__role-badge--participant'
+              }`}
+            >
+              {isOrganizer ? 'Organizer' : 'Participant'}
+            </span>
+          )}
+        </div>
 
         <div className="event-card__info">
           <div className="event-card__info-item">
@@ -181,51 +199,53 @@ export const EventCard: React.FC<EventCardProps> = ({
               </svg>
             </button>
 
-            <button
-              className="event-card__action-btn"
-              aria-label="Add participant"
-              onClick={e => {
-                e.stopPropagation();
-                onAddParticipant?.(event.id);
-              }}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 33 35"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {isOrganizer && (
+              <button
+                className="event-card__action-btn"
+                aria-label="Add participant"
+                onClick={e => {
+                  e.stopPropagation();
+                  onAddParticipant?.(event.id);
+                }}
               >
-                <path
-                  d="M10.9037 10.2083C10.9037 11.7554 11.4781 13.2392 12.5005 14.3331C13.5229 15.4271 14.9096 16.0417 16.3555 16.0417C17.8015 16.0417 19.1882 15.4271 20.2106 14.3331C21.233 13.2392 21.8074 11.7554 21.8074 10.2083C21.8074 8.66124 21.233 7.17751 20.2106 6.08354C19.1882 4.98958 17.8015 4.375 16.3555 4.375C14.9096 4.375 13.5229 4.98958 12.5005 6.08354C11.4781 7.17751 10.9037 8.66124 10.9037 10.2083Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M21.8075 27.7083H29.9853"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M25.8964 23.3333V32.0833"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M8.17773 30.625V27.7083C8.17773 26.1612 8.75213 24.6775 9.77455 23.5835C10.797 22.4896 12.1837 21.875 13.6296 21.875H19.0815"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 33 35"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.9037 10.2083C10.9037 11.7554 11.4781 13.2392 12.5005 14.3331C13.5229 15.4271 14.9096 16.0417 16.3555 16.0417C17.8015 16.0417 19.1882 15.4271 20.2106 14.3331C21.233 13.2392 21.8074 11.7554 21.8074 10.2083C21.8074 8.66124 21.233 7.17751 20.2106 6.08354C19.1882 4.98958 17.8015 4.375 16.3555 4.375C14.9096 4.375 13.5229 4.98958 12.5005 6.08354C11.4781 7.17751 10.9037 8.66124 10.9037 10.2083Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M21.8075 27.7083H29.9853"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M25.8964 23.3333V32.0833"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.17773 30.625V27.7083C8.17773 26.1612 8.75213 24.6775 9.77455 23.5835C10.797 22.4896 12.1837 21.875 13.6296 21.875H19.0815"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
 
           {showToggle && (

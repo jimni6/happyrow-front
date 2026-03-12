@@ -134,7 +134,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
           <div className="loading-events">Loading events...</div>
         ) : events.length === 0 ? (
           <div className="no-events">
-            <p>You haven't created any events yet.</p>
+            <p>No events yet.</p>
             <p>Click "Create a new event" below to get started!</p>
           </div>
         ) : (
@@ -144,6 +144,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
                 key={event.id || `event-${index}`}
                 event={event}
                 participantCount={participantCounts[event.id] || 0}
+                currentUserEmail={user.email}
                 onClick={() => setSelectedEvent(event)}
                 showToggle={true}
                 onAddParticipant={eventId => setAddParticipantEventId(eventId)}

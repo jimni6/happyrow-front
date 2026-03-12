@@ -12,7 +12,7 @@ import { AddParticipantModal } from '@/features/participants';
 import './HomeView.css';
 
 interface HomePageProps {
-  user: { id: string };
+  user: { id: string; email: string };
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ user }) => {
@@ -133,7 +133,7 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
           <div className="loading-events">Loading events...</div>
         ) : events.length === 0 ? (
           <div className="no-events">
-            <p>You haven't created any events yet.</p>
+            <p>No events yet.</p>
             <p>Click the "+" button below to get started!</p>
           </div>
         ) : (
@@ -143,6 +143,7 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
                 key={event.id || `event-${index}`}
                 event={event}
                 participantCount={participantCounts[event.id] || 0}
+                currentUserEmail={user.email}
                 onClick={() => setSelectedEvent(event)}
                 showToggle={true}
                 onAddParticipant={eventId => setAddParticipantEventId(eventId)}

@@ -6,12 +6,14 @@ interface ParticipantListProps {
   participants: Participant[];
   currentUserEmail: string;
   onRemove?: (userEmail: string) => void;
+  onUpdateStatus?: (userEmail: string, status: ParticipantStatus) => void;
 }
 
 export const ParticipantList: React.FC<ParticipantListProps> = ({
   participants,
   currentUserEmail,
   onRemove,
+  onUpdateStatus,
 }) => {
   const getStatusIcon = (status: ParticipantStatus) => {
     switch (status) {
@@ -57,6 +59,36 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
               {getStatusIcon(participant.status)}
             </span>
           </div>
+          {participant.userEmail === currentUserEmail &&
+            participant.status === 'INVITED' &&
+            onUpdateStatus && (
+              <div className="participant-actions">
+                <button
+                  className="status-btn status-btn-confirm"
+                  onClick={() =>
+                    onUpdateStatus(
+                      participant.userEmail,
+                      'CONFIRMED' as ParticipantStatus
+                    )
+                  }
+                  aria-label="Confirm participation"
+                >
+                  ✓ Confirm
+                </button>
+                <button
+                  className="status-btn status-btn-decline"
+                  onClick={() =>
+                    onUpdateStatus(
+                      participant.userEmail,
+                      'DECLINED' as ParticipantStatus
+                    )
+                  }
+                  aria-label="Decline invitation"
+                >
+                  ✗ Decline
+                </button>
+              </div>
+            )}
           {participant.userEmail !== currentUserEmail && onRemove && (
             <button
               className="remove-btn"

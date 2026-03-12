@@ -14,6 +14,7 @@ import {
   HttpParticipantRepository,
   AddParticipant,
   RemoveParticipant,
+  UpdateParticipantStatus,
   ParticipantStatus,
 } from '@/features/participants';
 import './EventDetailsView.css';
@@ -72,6 +73,19 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     async (userEmail: string) => {
       const removeParticipant = new RemoveParticipant(participantRepository);
       await removeParticipant.execute({ eventId: event.id, userEmail });
+      await loadParticipants();
+    },
+    [event.id, participantRepository, loadParticipants]
+  );
+
+  const handleUpdateParticipantStatus = useCallback(
+    async (userEmail: string, status: ParticipantStatus) => {
+      const updateStatus = new UpdateParticipantStatus(participantRepository);
+      await updateStatus.execute({
+        eventId: event.id,
+        userEmail,
+        status,
+      });
       await loadParticipants();
     },
     [event.id, participantRepository, loadParticipants]
@@ -221,6 +235,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           participants={participants}
           currentUserEmail={user?.email || ''}
           onRemove={isOrganizer ? handleRemoveParticipant : undefined}
+          onUpdateStatus={handleUpdateParticipantStatus}
         />
       </div>
 
