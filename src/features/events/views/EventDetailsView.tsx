@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useAuth } from '@/features/auth';
 import { useResources, ResourceCategory } from '@/features/resources';
 import type { Event } from '../types/Event';
@@ -8,6 +8,14 @@ import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
 import { ResourceCategorySection } from '../components/ResourceCategorySection';
 import { useParticipants } from '../hooks/useParticipants';
 import { useEventActions } from '../hooks/useEventActions';
+import {
+  ParticipantList,
+  AddParticipantModal,
+  HttpParticipantRepository,
+  AddParticipant,
+  RemoveParticipant,
+  ParticipantStatus,
+} from '@/features/participants';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {
@@ -35,7 +43,39 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     deleteContribution,
   } = useResources();
 
-  const { participants } = useParticipants({ eventId: event.id, session });
+  const { participants, loadParticipants } = useParticipants({
+    eventId: event.id,
+    session,
+  });
+
+  const [isAddParticipantOpen, setIsAddParticipantOpen] = useState(false);
+
+  const participantRepository = useMemo(
+    () => new HttpParticipantRepository(() => session?.accessToken || null),
+    [session]
+  );
+
+  const handleAddParticipant = useCallback(
+    async (email: string) => {
+      const addParticipant = new AddParticipant(participantRepository);
+      await addParticipant.execute({
+        eventId: event.id,
+        userEmail: email,
+        status: ParticipantStatus.INVITED,
+      });
+      await loadParticipants();
+    },
+    [event.id, participantRepository, loadParticipants]
+  );
+
+  const handleRemoveParticipant = useCallback(
+    async (userEmail: string) => {
+      const removeParticipant = new RemoveParticipant(participantRepository);
+      await removeParticipant.execute({ eventId: event.id, userEmail });
+      await loadParticipants();
+    },
+    [event.id, participantRepository, loadParticipants]
+  );
 
   const {
     currentEvent,
@@ -163,6 +203,27 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         </div>
       )}
 
+      <div className="participants-section">
+        <div className="participants-section-header">
+          <h2 className="participants-section-title">
+            <span className="meta-icon">👥</span> Participants
+          </h2>
+          {isOrganizer && (
+            <button
+              className="add-participant-btn"
+              onClick={() => setIsAddParticipantOpen(true)}
+            >
+              + Add
+            </button>
+          )}
+        </div>
+        <ParticipantList
+          participants={participants}
+          currentUserEmail={user?.email || ''}
+          onRemove={isOrganizer ? handleRemoveParticipant : undefined}
+        />
+      </div>
+
       {isOrganizer && (
         <button
           className="delete-event-button"
@@ -172,6 +233,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           Delete Event
         </button>
       )}
+
+      <AddParticipantModal
+        isOpen={isAddParticipantOpen}
+        onClose={() => setIsAddParticipantOpen(false)}
+        onSubmit={handleAddParticipant}
+      />
 
       <Modal
         isOpen={isEditModalOpen}

@@ -54,7 +54,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
             <span
               className={`participant-status ${getStatusClass(participant.status)}`}
             >
-              {getStatusIcon(participant.status)} {participant.status}
+              {getStatusIcon(participant.status)}
             </span>
           </div>
           {participant.userEmail !== currentUserEmail && onRemove && (
