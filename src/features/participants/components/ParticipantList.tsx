@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Participant, ParticipantStatus } from '../types/Participant';
 import './ParticipantList.css';
 
@@ -9,12 +9,38 @@ interface ParticipantListProps {
   onUpdateStatus?: (userEmail: string, status: ParticipantStatus) => void;
 }
 
+const STATUS_OPTIONS: {
+  value: ParticipantStatus;
+  icon: string;
+  label: string;
+}[] = [
+  { value: 'CONFIRMED' as ParticipantStatus, icon: '✓', label: 'Confirmed' },
+  { value: 'MAYBE' as ParticipantStatus, icon: '?', label: 'Maybe' },
+  { value: 'DECLINED' as ParticipantStatus, icon: '✗', label: 'Declined' },
+];
+
 export const ParticipantList: React.FC<ParticipantListProps> = ({
   participants,
   currentUserEmail,
   onRemove,
   onUpdateStatus,
 }) => {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const getStatusIcon = (status: ParticipantStatus) => {
     switch (status) {
       case 'CONFIRMED':
@@ -34,6 +60,13 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     return `status-${status.toLowerCase()}`;
   };
 
+  const isCurrentUser = (email: string) => email === currentUserEmail;
+
+  const handleStatusSelect = (userEmail: string, status: ParticipantStatus) => {
+    onUpdateStatus?.(userEmail, status);
+    setOpenDropdown(null);
+  };
+
   if (participants.length === 0) {
     return (
       <div className="participant-list-empty">
@@ -49,24 +82,66 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
           <div className="participant-info">
             <span className="participant-icon">👤</span>
             <span className="participant-id">
-              {participant.userEmail === currentUserEmail
+              {isCurrentUser(participant.userEmail)
                 ? 'You'
                 : participant.userEmail}
             </span>
-            <span
-              className={`participant-status ${getStatusClass(participant.status)}`}
-            >
-              {getStatusIcon(participant.status)}
-            </span>
+            {isCurrentUser(participant.userEmail) &&
+            participant.status !== 'INVITED' &&
+            onUpdateStatus ? (
+              <div
+                className="status-dropdown-wrapper"
+                ref={
+                  openDropdown === participant.userEmail ? dropdownRef : null
+                }
+              >
+                <button
+                  className={`participant-status status-clickable ${getStatusClass(participant.status)}`}
+                  onClick={() =>
+                    setOpenDropdown(
+                      openDropdown === participant.userEmail
+                        ? null
+                        : participant.userEmail
+                    )
+                  }
+                  aria-label="Change your status"
+                >
+                  {getStatusIcon(participant.status)} ✎
+                </button>
+                {openDropdown === participant.userEmail && (
+                  <div className="status-dropdown">
+                    {STATUS_OPTIONS.filter(
+                      opt => opt.value !== participant.status
+                    ).map(opt => (
+                      <button
+                        key={opt.value}
+                        className={`status-dropdown-item ${getStatusClass(opt.value)}`}
+                        onClick={() =>
+                          handleStatusSelect(participant.userEmail, opt.value)
+                        }
+                      >
+                        {opt.icon} {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <span
+                className={`participant-status ${getStatusClass(participant.status)}`}
+              >
+                {getStatusIcon(participant.status)}
+              </span>
+            )}
           </div>
-          {participant.userEmail === currentUserEmail &&
+          {isCurrentUser(participant.userEmail) &&
             participant.status === 'INVITED' &&
             onUpdateStatus && (
               <div className="participant-actions">
                 <button
                   className="status-btn status-btn-confirm"
                   onClick={() =>
-                    onUpdateStatus(
+                    handleStatusSelect(
                       participant.userEmail,
                       'CONFIRMED' as ParticipantStatus
                     )
@@ -78,7 +153,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                 <button
                   className="status-btn status-btn-decline"
                   onClick={() =>
-                    onUpdateStatus(
+                    handleStatusSelect(
                       participant.userEmail,
                       'DECLINED' as ParticipantStatus
                     )
@@ -89,7 +164,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                 </button>
               </div>
             )}
-          {participant.userEmail !== currentUserEmail && onRemove && (
+          {!isCurrentUser(participant.userEmail) && onRemove && (
             <button
               className="remove-btn"
               onClick={() => onRemove(participant.userEmail)}
