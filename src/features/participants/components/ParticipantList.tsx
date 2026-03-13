@@ -67,7 +67,20 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     setOpenDropdown(null);
   };
 
-  if (participants.length === 0) {
+  const statusOrder: Record<string, number> = {
+    CONFIRMED: 0,
+    MAYBE: 1,
+    DECLINED: 2,
+    INVITED: 3,
+  };
+
+  const sortedParticipants = [...participants].sort((a, b) => {
+    if (a.userEmail === currentUserEmail) return -1;
+    if (b.userEmail === currentUserEmail) return 1;
+    return (statusOrder[a.status] ?? 4) - (statusOrder[b.status] ?? 4);
+  });
+
+  if (sortedParticipants.length === 0) {
     return (
       <div className="participant-list-empty">
         <p>No participants yet</p>
@@ -77,11 +90,26 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
 
   return (
     <div className="participant-list">
-      {participants.map(participant => (
-        <div key={participant.userEmail} className="participant-item">
+      {sortedParticipants.map(participant => (
+        <div
+          key={participant.userEmail}
+          className={`participant-item${
+            isCurrentUser(participant.userEmail)
+              ? ' participant-item-current'
+              : ''
+          }`}
+        >
           <div className="participant-info">
-            <span className="participant-icon">👤</span>
-            <span className="participant-id">
+            <span className="participant-icon">
+              {isCurrentUser(participant.userEmail) ? '⭐' : '👤'}
+            </span>
+            <span
+              className={`participant-id${
+                isCurrentUser(participant.userEmail)
+                  ? ' participant-id-current'
+                  : ''
+              }`}
+            >
               {isCurrentUser(participant.userEmail)
                 ? 'You'
                 : participant.userEmail}

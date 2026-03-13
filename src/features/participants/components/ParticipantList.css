@@ -27,6 +27,26 @@
   border-color: var(--border-medium);
 }
 
+/* Current user highlight */
+.participant-item-current {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 128, 128, 0.06) 0%,
+    rgba(0, 128, 128, 0.02) 100%
+  );
+  border-color: var(--color-teal);
+  border-left: 3px solid var(--color-teal);
+}
+
+.participant-item-current:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 128, 128, 0.1) 0%,
+    rgba(0, 128, 128, 0.04) 100%
+  );
+  border-color: var(--color-teal);
+}
+
 .participant-info {
   display: flex;
   align-items: center;
@@ -42,6 +62,13 @@
   font-weight: var(--font-medium);
   color: var(--color-gray-900);
   font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.participant-id-current {
+  font-weight: var(--font-bold);
+  color: var(--color-teal-dark, var(--color-teal));
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
