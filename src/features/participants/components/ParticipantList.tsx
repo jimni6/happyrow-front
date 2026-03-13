@@ -62,6 +62,12 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
 
   const isCurrentUser = (email: string) => email === currentUserEmail;
 
+  const getDisplayName = (participant: Participant) => {
+    if (isCurrentUser(participant.userEmail)) return 'You';
+    if (participant.userName) return participant.userName;
+    return participant.userEmail.split('@')[0];
+  };
+
   const handleStatusSelect = (userEmail: string, status: ParticipantStatus) => {
     onUpdateStatus?.(userEmail, status);
     setOpenDropdown(null);
@@ -110,9 +116,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                   : ''
               }`}
             >
-              {isCurrentUser(participant.userEmail)
-                ? 'You'
-                : participant.userEmail}
+              {getDisplayName(participant)}
             </span>
             {isCurrentUser(participant.userEmail) &&
             participant.status !== 'INVITED' &&

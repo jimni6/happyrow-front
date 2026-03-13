@@ -13,6 +13,7 @@ interface ParticipantApiRequest {
 
 interface ParticipantApiResponse {
   user_email: string;
+  user_name?: string;
   event_id: string;
   status: string;
   joined_at: number;
@@ -156,6 +157,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
   ): Participant {
     return {
       userEmail: response.user_email,
+      userName: response.user_name ?? undefined,
       eventId: response.event_id,
       status: response.status as ParticipantStatus,
       joinedAt: new Date(response.joined_at),

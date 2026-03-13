@@ -7,6 +7,7 @@ export enum ParticipantStatus {
 
 export interface Participant {
   userEmail: string;
+  userName?: string;
   eventId: string;
   status: ParticipantStatus;
   joinedAt: Date;
