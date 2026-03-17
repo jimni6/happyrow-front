@@ -30,6 +30,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       email: userData.email,
       password: userData.password,
       options: {
+        emailRedirectTo: 'https://happyrow-front.vercel.app',
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
@@ -144,7 +145,7 @@ export class SupabaseAuthRepository implements AuthRepository {
 
   async resetPassword(email: string): Promise<void> {
     const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: 'https://happyrow-front.vercel.app/reset-password',
     });
 
     if (error) {
