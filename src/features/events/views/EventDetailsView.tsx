@@ -6,6 +6,7 @@ import { Modal } from '@/shared/components/Modal';
 import { UpdateEventForm } from '../components/UpdateEventForm';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
 import { ResourceCategorySection } from '../components/ResourceCategorySection';
+import { MyContributionsList } from '../components/MyContributionsList';
 import { useParticipants } from '../hooks/useParticipants';
 import { useEventActions } from '../hooks/useEventActions';
 import {
@@ -156,6 +157,18 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     };
   }, [resources]);
 
+  const myContributions = useMemo(() => {
+    const userEmail = user?.email || '';
+    return resources
+      .filter(r => r.contributors.some(c => c.userId === userEmail))
+      .map(r => ({
+        resourceId: r.id,
+        resourceName: r.name,
+        category: r.category,
+        quantity: r.contributors.find(c => c.userId === userEmail)!.quantity,
+      }));
+  }, [resources, user?.email]);
+
   return (
     <div className="event-details-view">
       <div className="event-header">
@@ -216,6 +229,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           />
         </div>
       )}
+
+      <MyContributionsList contributions={myContributions} />
 
       <div className="participants-section">
         <div className="participants-section-header">
