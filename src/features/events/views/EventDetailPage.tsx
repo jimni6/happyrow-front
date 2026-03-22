@@ -1,61 +1,79 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 import { useEvents } from '../hooks/useEvents';
-import { HttpEventRepository } from '../services/HttpEventRepository';
-import { GetEventById } from '../use-cases/GetEventById';
 import { EventDetailsView } from './EventDetailsView';
 import type { Event } from '../types/Event';
 
 export const EventDetailPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
-  const { session } = useAuth();
-  const { events } = useEvents();
+  const { user } = useAuth();
+  const { events, loading: eventsLoading, loadEvents } = useEvents();
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const getEventByIdUseCase = useMemo(() => {
-    const repository = new HttpEventRepository(
-      () => session?.accessToken || null
-    );
-    return new GetEventById(repository);
-  }, [session]);
+  // #region agent log
+  fetch('http://127.0.0.1:7367/ingest/596e0e48-769d-4764-9ba5-3a8f9f7e2bb0', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Debug-Session-Id': 'f986d0',
+    },
+    body: JSON.stringify({
+      sessionId: 'f986d0',
+      location: 'EventDetailPage.tsx:render',
+      message: 'EventDetailPage render state',
+      data: {
+        eventId,
+        userId: user?.id,
+        eventsCount: events.length,
+        eventsLoading,
+        hasEvent: !!event,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 
   useEffect(() => {
     if (!eventId) {
       navigate('/', { replace: true });
       return;
     }
-
-    const cached = events.find(e => e.id === eventId);
-    if (cached) {
-      setEvent(cached);
-      setLoading(false);
-      return;
+    if (user?.id && events.length === 0 && !eventsLoading) {
+      loadEvents(user.id);
     }
+  }, [eventId, user?.id, events.length, eventsLoading, loadEvents, navigate]);
 
-    const fetchEvent = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const fetched = await getEventByIdUseCase.execute({ id: eventId });
-        if (fetched) {
-          setEvent(fetched);
-        } else {
-          setError('Event not found');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load event');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [eventId, events, getEventByIdUseCase, navigate]);
+  useEffect(() => {
+    if (!eventId) return;
+    const found = events.find(e => e.id === eventId);
+    // #region agent log
+    fetch('http://127.0.0.1:7367/ingest/596e0e48-769d-4764-9ba5-3a8f9f7e2bb0', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Debug-Session-Id': 'f986d0',
+      },
+      body: JSON.stringify({
+        sessionId: 'f986d0',
+        location: 'EventDetailPage.tsx:findEvent',
+        message: 'Looking for event in context',
+        data: {
+          eventId,
+          eventsCount: events.length,
+          found: !!found,
+          eventIds: events.map(e => e.id),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    if (found) {
+      setEvent(found);
+    }
+  }, [eventId, events]);
 
   const handleBack = () => {
     navigate('/');
@@ -69,7 +87,7 @@ export const EventDetailPage: React.FC = () => {
     navigate('/', { replace: true });
   };
 
-  if (loading) {
+  if (eventsLoading || (!event && events.length === 0)) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         Loading event...
@@ -77,10 +95,10 @@ export const EventDetailPage: React.FC = () => {
     );
   }
 
-  if (error || !event) {
+  if (!event) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p>{error || 'Event not found'}</p>
+        <p>Event not found</p>
         <button onClick={handleBack}>Back to events</button>
       </div>
     );
