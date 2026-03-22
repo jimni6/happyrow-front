@@ -13,29 +13,6 @@ export const EventDetailPage: React.FC = () => {
 
   const [event, setEvent] = useState<Event | null>(null);
 
-  // #region agent log
-  fetch('http://127.0.0.1:7367/ingest/596e0e48-769d-4764-9ba5-3a8f9f7e2bb0', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Debug-Session-Id': 'f986d0',
-    },
-    body: JSON.stringify({
-      sessionId: 'f986d0',
-      location: 'EventDetailPage.tsx:render',
-      message: 'EventDetailPage render state',
-      data: {
-        eventId,
-        userId: user?.id,
-        eventsCount: events.length,
-        eventsLoading,
-        hasEvent: !!event,
-      },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
-
   useEffect(() => {
     if (!eventId) {
       navigate('/', { replace: true });
@@ -49,27 +26,6 @@ export const EventDetailPage: React.FC = () => {
   useEffect(() => {
     if (!eventId) return;
     const found = events.find(e => e.id === eventId);
-    // #region agent log
-    fetch('http://127.0.0.1:7367/ingest/596e0e48-769d-4764-9ba5-3a8f9f7e2bb0', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Debug-Session-Id': 'f986d0',
-      },
-      body: JSON.stringify({
-        sessionId: 'f986d0',
-        location: 'EventDetailPage.tsx:findEvent',
-        message: 'Looking for event in context',
-        data: {
-          eventId,
-          eventsCount: events.length,
-          found: !!found,
-          eventIds: events.map(e => e.id),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
     if (found) {
       setEvent(found);
     }
