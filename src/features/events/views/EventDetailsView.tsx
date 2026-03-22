@@ -127,7 +127,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-    await addContribution(resourceId, user.email, quantity);
+    await addContribution(resourceId, user.id, quantity);
   };
 
   const handleUpdateContribution = async (
@@ -135,7 +135,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-    await updateContribution(resourceId, user.email, quantity);
+    await updateContribution(resourceId, user.id, quantity);
   };
 
   const handleDeleteContribution = async (resourceId: string) => {
