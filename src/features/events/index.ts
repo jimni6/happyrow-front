@@ -30,3 +30,4 @@ export { ConfirmDeleteModal } from './components/ConfirmDeleteModal';
 
 // Views
 export { EventDetailsView } from './views/EventDetailsView';
+export { EventDetailPage } from './views/EventDetailPage';

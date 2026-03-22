@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/features/auth';
-import { EventsProvider } from '@/features/events';
+import { EventsProvider, EventDetailPage } from '@/features/events';
 import { ResourcesProvider } from '@/features/resources';
 import { HomePage } from '@/features/home';
 import { UserProfilePage } from '@/features/user';
@@ -191,6 +191,7 @@ const AppContent: React.FC = () => {
             }
           >
             <Route index element={<HomePage user={user!} />} />
+            <Route path="events/:eventId" element={<EventDetailPage />} />
             <Route path="profile" element={<UserProfilePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

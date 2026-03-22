@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 import { useEvents } from '@/features/events';
-import type { Event } from '@/features/events';
 import { EventCard } from '../components/EventCard';
-import { EventDetailsView } from '@/features/events';
 import { GetParticipants } from '@/features/participants';
 import { HttpParticipantRepository } from '@/features/participants';
 import { AddParticipant } from '@/features/participants';
@@ -16,9 +15,9 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ user }) => {
+  const navigate = useNavigate();
   const { session } = useAuth();
   const { events, loading } = useEvents();
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [participantCounts, setParticipantCounts] = useState<
     Record<string, number>
   >({});
@@ -87,17 +86,6 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
     }
   };
 
-  const handleEventUpdated = (updatedEvent: Event) => {
-    // Update the selected event (global state is already updated by EventsProvider)
-    setSelectedEvent(updatedEvent);
-  };
-
-  const handleEventDeleted = () => {
-    // Global state is already updated by EventsProvider
-    // Just go back to home screen
-    setSelectedEvent(null);
-  };
-
   const handleAddParticipant = async (email: string) => {
     if (!addParticipantEventId) {
       throw new Error('No event selected');
@@ -118,18 +106,6 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
     await loadParticipantCountsForEvent(addParticipantEventId);
   };
 
-  // Show event details if an event is selected
-  if (selectedEvent) {
-    return (
-      <EventDetailsView
-        event={selectedEvent}
-        onBack={() => setSelectedEvent(null)}
-        onEventUpdated={handleEventUpdated}
-        onEventDeleted={handleEventDeleted}
-      />
-    );
-  }
-
   return (
     <div className="home-screen">
       <div className="home-content">
@@ -148,7 +124,7 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
                 event={event}
                 participantCount={participantCounts[event.id] || 0}
                 currentUserEmail={user.email}
-                onClick={() => setSelectedEvent(event)}
+                onClick={() => navigate(`/events/${event.id}`)}
                 showToggle={true}
                 onAddParticipant={eventId => setAddParticipantEventId(eventId)}
               />
