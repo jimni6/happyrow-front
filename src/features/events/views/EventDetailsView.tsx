@@ -127,7 +127,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-    await addContribution(resourceId, user.id, quantity);
+    await addContribution(resourceId, user.email, quantity);
   };
 
   const handleUpdateContribution = async (
@@ -135,7 +135,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     quantity: number
   ) => {
     if (!user) return;
-    await updateContribution(resourceId, user.id, quantity);
+    await updateContribution(resourceId, user.email, quantity);
   };
 
   const handleDeleteContribution = async (resourceId: string) => {
@@ -153,9 +153,11 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     user?.email === currentEvent.organizerId;
 
   const resourcesByCategory = useMemo(() => {
+    const sortByName = (a: { name: string }, b: { name: string }) =>
+      a.name.localeCompare(b.name);
     return {
-      FOOD: resources.filter(r => r.category === 'FOOD'),
-      DRINK: resources.filter(r => r.category === 'DRINK'),
+      FOOD: resources.filter(r => r.category === 'FOOD').sort(sortByName),
+      DRINK: resources.filter(r => r.category === 'DRINK').sort(sortByName),
     };
   }, [resources]);
 
