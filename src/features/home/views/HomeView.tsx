@@ -51,7 +51,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
             const participants = await getParticipantsUseCase.execute({
               eventId: event.id,
             });
-            counts[event.id] = participants.length;
+            counts[event.id] = participants.filter(
+              p => p.status === ParticipantStatus.CONFIRMED
+            ).length;
           } catch (error) {
             console.error(
               `Error loading participants for event ${event.id}:`,
@@ -77,7 +79,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
       const participants = await getParticipantsUseCase.execute({ eventId });
       setParticipantCounts(prev => ({
         ...prev,
-        [eventId]: participants.length,
+        [eventId]: participants.filter(
+          p => p.status === ParticipantStatus.CONFIRMED
+        ).length,
       }));
     } catch (error) {
       console.error(`Error loading participants for event ${eventId}:`, error);
