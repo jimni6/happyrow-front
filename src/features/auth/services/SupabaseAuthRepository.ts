@@ -163,6 +163,19 @@ export class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  async signInWithProvider(provider: 'google'): Promise<void> {
+    const { error } = await this.supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      throw new Error(`OAuth sign in failed: ${error.message}`);
+    }
+  }
+
   onAuthStateChange(
     callback: (session: AuthSession | null) => void
   ): () => void {

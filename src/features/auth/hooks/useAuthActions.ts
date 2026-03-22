@@ -5,6 +5,7 @@ import { RegisterUser } from '../use-cases/RegisterUser';
 import { SignInUser } from '../use-cases/SignInUser';
 import { SignOutUser } from '../use-cases/SignOutUser';
 import { ResetPassword } from '../use-cases/ResetPassword';
+import { SignInWithProvider } from '../use-cases/SignInWithProvider';
 
 interface UseAuthActionsProps {
   authRepository: AuthRepository;
@@ -37,6 +38,11 @@ export const useAuthActions = ({ authRepository }: UseAuthActionsProps) => {
       error: null,
     }
   );
+
+  const [googleSignInState, setGoogleSignInState] = useState<AuthActionState>({
+    loading: false,
+    error: null,
+  });
 
   const register = async (userData: UserRegistration) => {
     setRegisterState({ loading: true, error: null });
@@ -96,6 +102,20 @@ export const useAuthActions = ({ authRepository }: UseAuthActionsProps) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setGoogleSignInState({ loading: true, error: null });
+    try {
+      const signInWithProvider = new SignInWithProvider(authRepository);
+      await signInWithProvider.execute('google');
+      setGoogleSignInState({ loading: false, error: null });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Google sign in failed';
+      setGoogleSignInState({ loading: false, error: errorMessage });
+      throw error;
+    }
+  };
+
   return {
     register: {
       execute: register,
@@ -116,6 +136,11 @@ export const useAuthActions = ({ authRepository }: UseAuthActionsProps) => {
       execute: resetPassword,
       loading: resetPasswordState.loading,
       error: resetPasswordState.error,
+    },
+    signInWithGoogle: {
+      execute: signInWithGoogle,
+      loading: googleSignInState.loading,
+      error: googleSignInState.error,
     },
   };
 };

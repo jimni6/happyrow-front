@@ -51,6 +51,12 @@ export interface AuthRepository {
   updatePassword(newPassword: string): Promise<void>;
 
   /**
+   * Sign in with an OAuth provider (e.g. Google)
+   * Triggers a full-page redirect; session is captured via onAuthStateChange
+   */
+  signInWithProvider(provider: 'google'): Promise<void>;
+
+  /**
    * Listen to authentication state changes
    */
   onAuthStateChange(

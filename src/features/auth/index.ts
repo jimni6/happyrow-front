@@ -32,3 +32,4 @@ export { SignInUser } from './use-cases/SignInUser';
 export { SignOutUser } from './use-cases/SignOutUser';
 export { GetCurrentUser } from './use-cases/GetCurrentUser';
 export { ResetPassword } from './use-cases/ResetPassword';
+export { SignInWithProvider } from './use-cases/SignInWithProvider';

@@ -110,6 +110,21 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const { SignInWithProvider } = await import(
+        '@/features/auth/use-cases/SignInWithProvider'
+      );
+      const signInUseCase = new SignInWithProvider(authRepository!);
+      await signInUseCase.execute('google');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Google sign in failed';
+      setLoginError(message);
+      setRegisterError(message);
+    }
+  };
+
   // if (loading) {
   //   return (
   //     <div className="loading-screen">
@@ -138,6 +153,7 @@ const AppContent: React.FC = () => {
               setRegisterError(null);
             }}
             onSubmit={handleRegister}
+            onGoogleSignIn={handleGoogleSignIn}
             loading={registerLoading}
             error={registerError}
           />
@@ -155,6 +171,7 @@ const AppContent: React.FC = () => {
               setLoginError(null);
             }}
             onSubmit={handleLogin}
+            onGoogleSignIn={handleGoogleSignIn}
             loading={loginLoading}
             error={loginError}
           />
