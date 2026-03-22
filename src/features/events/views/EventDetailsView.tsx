@@ -143,7 +143,9 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     await deleteContribution(resourceId);
   };
 
-  const participantCount = participants.length;
+  const participantCount = participants.filter(
+    p => p.status === ParticipantStatus.CONFIRMED
+  ).length;
 
   // Backend returns email in 'creator' field, not UUID
   const isOrganizer =
