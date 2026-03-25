@@ -6,6 +6,7 @@ import type {
 } from '../types/Resource';
 import type { ResourceRepository } from '../types/ResourceRepository';
 import { throwApiError } from '@/core/errors/ApiError';
+import { apiConfig } from '@/core/config/api';
 
 interface ResourceApiRequest {
   name: string;
@@ -39,8 +40,7 @@ export class HttpResourceRepository implements ResourceRepository {
 
   constructor(
     getToken: () => string | null,
-    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
-      'https://happyrow-core.onrender.com/event/configuration/api/v1'
+    baseUrl: string = apiConfig.baseUrl
   ) {
     this.baseUrl = baseUrl;
     this.getToken = getToken;

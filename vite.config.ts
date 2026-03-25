@@ -143,6 +143,11 @@ export default defineConfig({
         target: 'https://happyrow-core.onrender.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ''),
+        configure: proxy => {
+          proxy.on('proxyReq', proxyReq => {
+            proxyReq.removeHeader('origin');
+          });
+        },
       },
     },
   },

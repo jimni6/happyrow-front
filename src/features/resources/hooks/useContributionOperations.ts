@@ -49,6 +49,7 @@ export function useContributionOperations({
         const eventResources = await getResourcesUseCase.execute({
           eventId: currentEventId,
         });
+
         setResources(eventResources);
       } catch (err) {
         if (err instanceof ApiError && err.isConflict) {

@@ -21,9 +21,11 @@ export const getApiConfig = (): ApiConfig => {
   }
 
   if (isProduction) {
-    return { baseUrl: 'https://happyrow-core.onrender.com' };
+    return {
+      baseUrl: 'https://happyrow-core.onrender.com/event/configuration/api/v1',
+    };
   } else {
-    return { baseUrl: '/api' };
+    return { baseUrl: '/api/event/configuration/api/v1' };
   }
 };
 

@@ -5,6 +5,7 @@ import type {
 } from '../types/Contribution';
 import type { ContributionRepository } from '../types/ContributionRepository';
 import { throwApiError } from '@/core/errors/ApiError';
+import { apiConfig } from '@/core/config/api';
 
 // API request body format that matches backend
 interface ContributionApiRequest {
@@ -27,8 +28,7 @@ export class HttpContributionRepository implements ContributionRepository {
 
   constructor(
     getToken: () => string | null,
-    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
-      'https://happyrow-core.onrender.com/event/configuration/api/v1'
+    baseUrl: string = apiConfig.baseUrl
   ) {
     this.baseUrl = baseUrl;
     this.getToken = getToken;

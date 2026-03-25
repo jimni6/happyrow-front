@@ -6,6 +6,7 @@ import type {
 } from '../types/Participant';
 import type { ParticipantRepository } from '../types/ParticipantRepository';
 import { throwApiError } from '@/core/errors/ApiError';
+import { apiConfig } from '@/core/config/api';
 
 interface ParticipantApiRequest {
   user_email: string;
@@ -27,8 +28,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
 
   constructor(
     getToken: () => string | null,
-    baseUrl: string = import.meta.env.VITE_API_BASE_URL ||
-      'https://happyrow-core.onrender.com/event/configuration/api/v1'
+    baseUrl: string = apiConfig.baseUrl
   ) {
     this.baseUrl = baseUrl;
     this.getToken = getToken;

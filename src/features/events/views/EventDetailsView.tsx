@@ -174,16 +174,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   }, [resources]);
 
   const myContributions = useMemo(() => {
-    const userId = user?.id || '';
+    const userEmail = user?.email || '';
     return resources
-      .filter(r => r.contributors.some(c => c.userId === userId))
+      .filter(r => r.contributors.some(c => c.userId === userEmail))
       .map(r => ({
         resourceId: r.id,
         resourceName: r.name,
         category: r.category,
-        quantity: r.contributors.find(c => c.userId === userId)!.quantity,
+        quantity: r.contributors.find(c => c.userId === userEmail)!.quantity,
       }));
-  }, [resources, user?.id]);
+  }, [resources, user?.email]);
 
   return (
     <div className="event-details-view">
@@ -236,7 +236,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Food"
             category={ResourceCategory.FOOD}
             resources={resourcesByCategory.FOOD}
-            currentUserId={user?.id || ''}
+            currentUserId={user?.email || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}
@@ -246,7 +246,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Drinks"
             category={ResourceCategory.DRINK}
             resources={resourcesByCategory.DRINK}
-            currentUserId={user?.id || ''}
+            currentUserId={user?.email || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}

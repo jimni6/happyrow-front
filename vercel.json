@@ -29,6 +29,6 @@
     }
   ],
   "env": {
-    "VITE_API_BASE_URL": "https://happyrow-core.onrender.com"
+    "VITE_API_BASE_URL": "https://happyrow-core.onrender.com/event/configuration/api/v1"
   }
 }
