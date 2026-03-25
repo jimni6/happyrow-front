@@ -193,6 +193,7 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
             id="date"
             name="date"
             value={formData.date}
+            min={new Date().toISOString().split('T')[0]}
             onChange={handleInputChange}
             className={errors.date ? 'error' : ''}
             disabled={isLoading}

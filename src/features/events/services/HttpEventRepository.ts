@@ -1,5 +1,6 @@
 import type { Event, EventCreationRequest, EventType } from '../types/Event';
 import type { EventRepository } from '../types/EventRepository';
+import { throwApiError } from '@/core/errors/ApiError';
 
 // API request body format that matches backend
 interface EventApiRequest {
@@ -65,15 +66,11 @@ export class HttpEventRepository implements EventRepository {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const eventResponse: EventApiResponse = await response.json();
 
-    // Convert backend format to frontend format
     return {
       id: eventResponse.identifier,
       name: eventResponse.name,
@@ -102,7 +99,7 @@ export class HttpEventRepository implements EventRepository {
     }
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
 
     const eventResponse: EventApiResponse = await response.json();
@@ -130,7 +127,7 @@ export class HttpEventRepository implements EventRepository {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
 
     const eventsResponse: EventApiResponse[] = await response.json();
@@ -173,10 +170,7 @@ export class HttpEventRepository implements EventRepository {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const eventResponse: EventApiResponse = await response.json();
@@ -205,7 +199,7 @@ export class HttpEventRepository implements EventRepository {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
   }
 }

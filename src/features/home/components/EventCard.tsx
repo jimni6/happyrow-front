@@ -5,7 +5,7 @@ import type { Event } from '@/features/events';
 interface EventCardProps {
   event: Event;
   participantCount: number;
-  currentUserEmail?: string;
+  currentUserId?: string;
   onClick?: () => void;
   onToggle?: (checked: boolean) => void;
   showToggle?: boolean;
@@ -19,7 +19,7 @@ interface EventCardProps {
 export const EventCard: React.FC<EventCardProps> = ({
   event,
   participantCount,
-  currentUserEmail,
+  currentUserId,
   onClick,
   onToggle,
   showToggle = false,
@@ -29,8 +29,8 @@ export const EventCard: React.FC<EventCardProps> = ({
   onDecline,
   onAddParticipant,
 }) => {
-  const isOrganizer = currentUserEmail
-    ? event.organizerId === currentUserEmail
+  const isOrganizer = currentUserId
+    ? event.organizerId === currentUserId
     : true;
   const eventDate = new Date(event.date);
   const monthName = eventDate.toLocaleDateString('en-US', { month: 'long' });
@@ -72,7 +72,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       <div className="event-card__content">
         <div className="event-card__title-row">
           <h3 className="event-card__title">{event.name}</h3>
-          {currentUserEmail && (
+          {currentUserId && (
             <span
               className={`event-card__role-badge ${
                 isOrganizer

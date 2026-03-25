@@ -5,6 +5,7 @@ import {
   HttpParticipantRepository,
   GetParticipants,
 } from '@/features/participants';
+import { ApiError } from '@/core/errors/ApiError';
 
 interface UseParticipantsParams {
   eventId: string;
@@ -13,6 +14,7 @@ interface UseParticipantsParams {
 
 export function useParticipants({ eventId, session }: UseParticipantsParams) {
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [forbidden, setForbidden] = useState(false);
 
   const participantRepository = useMemo(
     () => new HttpParticipantRepository(() => session?.accessToken || null),
@@ -30,7 +32,11 @@ export function useParticipants({ eventId, session }: UseParticipantsParams) {
         eventId,
       });
       setParticipants(loadedParticipants);
+      setForbidden(false);
     } catch (err) {
+      if (err instanceof ApiError && err.isForbidden) {
+        setForbidden(true);
+      }
       console.error('Failed to load participants:', err);
     }
   }, [eventId, getParticipantsUseCase]);
@@ -39,5 +45,5 @@ export function useParticipants({ eventId, session }: UseParticipantsParams) {
     loadParticipants();
   }, [loadParticipants]);
 
-  return { participants, loadParticipants };
+  return { participants, loadParticipants, forbidden };
 }

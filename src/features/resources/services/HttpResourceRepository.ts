@@ -5,6 +5,7 @@ import type {
   ResourceCategory,
 } from '../types/Resource';
 import type { ResourceRepository } from '../types/ResourceRepository';
+import { throwApiError } from '@/core/errors/ApiError';
 
 interface ResourceApiRequest {
   name: string;
@@ -74,10 +75,7 @@ export class HttpResourceRepository implements ResourceRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const resourceResponse: ResourceApiResponse = await response.json();
@@ -100,7 +98,7 @@ export class HttpResourceRepository implements ResourceRepository {
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
 
     const resourcesResponse: ResourceApiResponse[] = await response.json();
@@ -124,7 +122,7 @@ export class HttpResourceRepository implements ResourceRepository {
     }
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
 
     const resourceResponse: ResourceApiResponse = await response.json();
@@ -157,10 +155,7 @@ export class HttpResourceRepository implements ResourceRepository {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const resourceResponse: ResourceApiResponse = await response.json();
@@ -181,7 +176,7 @@ export class HttpResourceRepository implements ResourceRepository {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
   }
 

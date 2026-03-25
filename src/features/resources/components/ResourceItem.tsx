@@ -28,6 +28,8 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
   const hasSelection = selectedQuantity !== 0;
 
   const handleIncrement = () => {
+    const newTotal = userQuantity + selectedQuantity + 1;
+    if (newTotal > 10000) return;
     setSelectedQuantity(prev => prev + 1);
   };
 

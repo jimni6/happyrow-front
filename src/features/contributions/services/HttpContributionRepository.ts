@@ -4,6 +4,7 @@ import type {
   ContributionUpdateRequest,
 } from '../types/Contribution';
 import type { ContributionRepository } from '../types/ContributionRepository';
+import { throwApiError } from '@/core/errors/ApiError';
 
 // API request body format that matches backend
 interface ContributionApiRequest {
@@ -52,7 +53,7 @@ export class HttpContributionRepository implements ContributionRepository {
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
 
     const contributionsResponse: ContributionApiResponse[] =
@@ -87,10 +88,7 @@ export class HttpContributionRepository implements ContributionRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
@@ -127,10 +125,7 @@ export class HttpContributionRepository implements ContributionRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const contributionResponse: ContributionApiResponse = await response.json();
@@ -160,7 +155,7 @@ export class HttpContributionRepository implements ContributionRepository {
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
   }
 

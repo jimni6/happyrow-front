@@ -4,6 +4,7 @@ import type { AddContribution } from '@/features/contributions/use-cases/AddCont
 import type { UpdateContribution } from '@/features/contributions/use-cases/UpdateContribution';
 import type { DeleteContribution } from '@/features/contributions/use-cases/DeleteContribution';
 import type { GetResources } from '../use-cases/GetResources';
+import { ApiError } from '@/core/errors/ApiError';
 
 interface UseContributionOperationsParams {
   addContributionUseCase: AddContribution;
@@ -50,9 +51,19 @@ export function useContributionOperations({
         });
         setResources(eventResources);
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to add contribution';
-        setError(errorMessage);
+        if (err instanceof ApiError && err.isConflict) {
+          setError('Data was modified by someone else. Refreshing...');
+          if (currentEventId) {
+            const eventResources = await getResourcesUseCase.execute({
+              eventId: currentEventId,
+            });
+            setResources(eventResources);
+          }
+        } else {
+          const errorMessage =
+            err instanceof Error ? err.message : 'Failed to add contribution';
+          setError(errorMessage);
+        }
         console.error('Error adding contribution:', err);
         throw err;
       }
@@ -90,9 +101,21 @@ export function useContributionOperations({
         });
         setResources(eventResources);
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to update contribution';
-        setError(errorMessage);
+        if (err instanceof ApiError && err.isConflict) {
+          setError('Data was modified by someone else. Refreshing...');
+          if (currentEventId) {
+            const eventResources = await getResourcesUseCase.execute({
+              eventId: currentEventId,
+            });
+            setResources(eventResources);
+          }
+        } else {
+          const errorMessage =
+            err instanceof Error
+              ? err.message
+              : 'Failed to update contribution';
+          setError(errorMessage);
+        }
         console.error('Error updating contribution:', err);
         throw err;
       }

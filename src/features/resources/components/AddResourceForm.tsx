@@ -34,13 +34,16 @@ export const AddResourceForm: React.FC<AddResourceFormProps> = ({
       return;
     }
 
-    if (quantity < 0) {
-      setError('Initial quantity cannot be negative');
+    if (quantity < 0 || quantity > 10000) {
+      setError('Initial quantity must be between 0 and 10,000');
       return;
     }
 
-    if (suggestedQuantity !== '' && suggestedQuantity < 1) {
-      setError('Suggested quantity must be at least 1');
+    if (
+      suggestedQuantity !== '' &&
+      (suggestedQuantity < 1 || suggestedQuantity > 10000)
+    ) {
+      setError('Suggested quantity must be between 1 and 10,000');
       return;
     }
 
@@ -104,6 +107,7 @@ export const AddResourceForm: React.FC<AddResourceFormProps> = ({
             id="initial-quantity"
             type="number"
             min="0"
+            max="10000"
             value={quantity}
             onChange={e => setQuantity(parseInt(e.target.value) || 0)}
             placeholder="0"
@@ -117,6 +121,7 @@ export const AddResourceForm: React.FC<AddResourceFormProps> = ({
             id="suggested-quantity"
             type="number"
             min="1"
+            max="10000"
             value={suggestedQuantity}
             onChange={e =>
               setSuggestedQuantity(

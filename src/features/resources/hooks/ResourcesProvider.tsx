@@ -14,6 +14,7 @@ import {
   HttpResourceRepository,
   CreateResource,
 } from '@/features/resources';
+import { ApiError } from '@/core/errors/ApiError';
 import { AddContribution } from '@/features/contributions/use-cases/AddContribution';
 import { UpdateContribution } from '@/features/contributions/use-cases/UpdateContribution';
 import { DeleteContribution } from '@/features/contributions/use-cases/DeleteContribution';
@@ -94,9 +95,13 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
         setResources(eventResources);
         loadedEventIdRef.current = eventId;
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to load resources';
-        setError(errorMessage);
+        if (err instanceof ApiError && err.isForbidden) {
+          setError('You do not have access to this event');
+        } else {
+          const errorMessage =
+            err instanceof Error ? err.message : 'Failed to load resources';
+          setError(errorMessage);
+        }
         console.error('Error loading resources:', err);
         loadedEventIdRef.current = null;
       } finally {

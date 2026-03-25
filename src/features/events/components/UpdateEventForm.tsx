@@ -176,6 +176,7 @@ export const UpdateEventForm: React.FC<UpdateEventFormProps> = ({
             id="date"
             name="date"
             value={formData.date}
+            min={new Date().toISOString().split('T')[0]}
             onChange={handleInputChange}
             className={errors.date ? 'error' : ''}
             disabled={isLoading}

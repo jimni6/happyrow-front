@@ -32,7 +32,7 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
   };
 
   const handleIncrement = () => {
-    setSelectedQuantity(prev => prev + 1);
+    setSelectedQuantity(prev => Math.min(prev + 1, 10000));
   };
 
   const handleDecrement = () => {
@@ -47,8 +47,8 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
       return;
     }
 
-    if (selectedQuantity < 1) {
-      setError('Quantity must be at least 1');
+    if (selectedQuantity < 1 || selectedQuantity > 10000) {
+      setError('Quantity must be between 1 and 10,000');
       return;
     }
 
@@ -88,6 +88,7 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
             type="number"
             className="inline-add-suggested-input"
             min="1"
+            max="10000"
             value={suggestedQuantity}
             onChange={e => setSuggestedQuantity(e.target.value)}
             onBlur={() => {

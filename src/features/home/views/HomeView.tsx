@@ -124,7 +124,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ user }) => {
                 key={event.id || `event-${index}`}
                 event={event}
                 participantCount={participantCounts[event.id] || 0}
-                currentUserEmail={user.email}
+                currentUserId={user.id}
                 onClick={() => navigate(`/events/${event.id}`)}
                 showToggle={true}
                 onAddParticipant={eventId => setAddParticipantEventId(eventId)}

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 import { useResources, ResourceCategory } from '@/features/resources';
 import type { Event } from '../types/Event';
@@ -9,6 +10,7 @@ import { ResourceCategorySection } from '../components/ResourceCategorySection';
 import { MyContributionsList } from '../components/MyContributionsList';
 import { useParticipants } from '../hooks/useParticipants';
 import { useEventActions } from '../hooks/useEventActions';
+import { ApiError } from '@/core/errors/ApiError';
 import {
   ParticipantList,
   AddParticipantModal,
@@ -33,6 +35,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   onEventUpdated,
   onEventDeleted,
 }) => {
+  const navigate = useNavigate();
   const { user, session } = useAuth();
   const {
     resources,
@@ -45,12 +48,17 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     deleteContribution,
   } = useResources();
 
-  const { participants, loadParticipants } = useParticipants({
+  const {
+    participants,
+    loadParticipants,
+    forbidden: participantsForbidden,
+  } = useParticipants({
     eventId: event.id,
     session,
   });
 
   const [isAddParticipantOpen, setIsAddParticipantOpen] = useState(false);
+  const [forbiddenError, setForbiddenError] = useState(false);
 
   const participantRepository = useMemo(
     () => new HttpParticipantRepository(() => session?.accessToken || null),
@@ -59,13 +67,20 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
   const handleAddParticipant = useCallback(
     async (email: string) => {
-      const addParticipant = new AddParticipant(participantRepository);
-      await addParticipant.execute({
-        eventId: event.id,
-        userEmail: email,
-        status: ParticipantStatus.INVITED,
-      });
-      await loadParticipants();
+      try {
+        const addParticipant = new AddParticipant(participantRepository);
+        await addParticipant.execute({
+          eventId: event.id,
+          userEmail: email,
+          status: ParticipantStatus.INVITED,
+        });
+        await loadParticipants();
+      } catch (err) {
+        if (err instanceof ApiError && err.isForbidden) {
+          setForbiddenError(true);
+        }
+        throw err;
+      }
     },
     [event.id, participantRepository, loadParticipants]
   );
@@ -147,10 +162,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     p => p.status === ParticipantStatus.CONFIRMED
   ).length;
 
-  // Backend returns email in 'creator' field, not UUID
-  const isOrganizer =
-    user?.id === currentEvent.organizerId ||
-    user?.email === currentEvent.organizerId;
+  const isOrganizer = user?.id === currentEvent.organizerId;
 
   const resourcesByCategory = useMemo(() => {
     const sortByName = (a: { name: string }, b: { name: string }) =>
@@ -162,16 +174,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   }, [resources]);
 
   const myContributions = useMemo(() => {
-    const userEmail = user?.email || '';
+    const userId = user?.id || '';
     return resources
-      .filter(r => r.contributors.some(c => c.userId === userEmail))
+      .filter(r => r.contributors.some(c => c.userId === userId))
       .map(r => ({
         resourceId: r.id,
         resourceName: r.name,
         category: r.category,
-        quantity: r.contributors.find(c => c.userId === userEmail)!.quantity,
+        quantity: r.contributors.find(c => c.userId === userId)!.quantity,
       }));
-  }, [resources, user?.email]);
+  }, [resources, user?.id]);
 
   return (
     <div className="event-details-view">
@@ -203,7 +215,16 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         )}
       </div>
 
-      {(error || resourceError) && (
+      {(forbiddenError || participantsForbidden) && (
+        <div className="error-message forbidden-error">
+          You do not have access to this event.
+          <button className="forbidden-back-btn" onClick={() => navigate('/')}>
+            Back to events
+          </button>
+        </div>
+      )}
+
+      {(error || resourceError) && !forbiddenError && (
         <div className="error-message">{error || resourceError}</div>
       )}
 
@@ -215,7 +236,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Food"
             category={ResourceCategory.FOOD}
             resources={resourcesByCategory.FOOD}
-            currentUserId={user?.email || ''}
+            currentUserId={user?.id || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}
@@ -225,7 +246,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Drinks"
             category={ResourceCategory.DRINK}
             resources={resourcesByCategory.DRINK}
-            currentUserId={user?.email || ''}
+            currentUserId={user?.id || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}

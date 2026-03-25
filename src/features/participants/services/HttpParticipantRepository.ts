@@ -5,6 +5,7 @@ import type {
   ParticipantStatus,
 } from '../types/Participant';
 import type { ParticipantRepository } from '../types/ParticipantRepository';
+import { throwApiError } from '@/core/errors/ApiError';
 
 interface ParticipantApiRequest {
   user_email: string;
@@ -57,10 +58,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const participantResponse: ParticipantApiResponse = await response.json();
@@ -83,10 +81,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const participantsResponse: ParticipantApiResponse[] =
@@ -121,10 +116,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
+      await throwApiError(response);
     }
 
     const participantResponse: ParticipantApiResponse = await response.json();
@@ -148,7 +140,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await throwApiError(response);
     }
   }
 
