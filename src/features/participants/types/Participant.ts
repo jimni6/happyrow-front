@@ -6,18 +6,20 @@ export enum ParticipantStatus {
 }
 
 export interface Participant {
-  userEmail: string;
+  id: string;
+  userId: string;
   userName?: string;
   eventId: string;
   status: ParticipantStatus;
   joinedAt: Date;
+  createdAt: Date;
   updatedAt?: Date;
 }
 
 export interface ParticipantCreationRequest {
   eventId: string;
-  userEmail: string;
-  status: ParticipantStatus;
+  userId: string;
+  userName?: string;
 }
 
 export interface ParticipantUpdateRequest {

@@ -4,9 +4,9 @@ import './ParticipantList.css';
 
 interface ParticipantListProps {
   participants: Participant[];
-  currentUserEmail: string;
-  onRemove?: (userEmail: string) => void;
-  onUpdateStatus?: (userEmail: string, status: ParticipantStatus) => void;
+  currentUserId: string;
+  onRemove?: (userId: string) => void;
+  onUpdateStatus?: (userId: string, status: ParticipantStatus) => void;
 }
 
 const STATUS_OPTIONS: {
@@ -21,7 +21,7 @@ const STATUS_OPTIONS: {
 
 export const ParticipantList: React.FC<ParticipantListProps> = ({
   participants,
-  currentUserEmail,
+  currentUserId,
   onRemove,
   onUpdateStatus,
 }) => {
@@ -60,16 +60,16 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     return `status-${status.toLowerCase()}`;
   };
 
-  const isCurrentUser = (email: string) => email === currentUserEmail;
+  const isCurrentUser = (userId: string) => userId === currentUserId;
 
   const getDisplayName = (participant: Participant) => {
-    if (isCurrentUser(participant.userEmail)) return 'You';
+    if (isCurrentUser(participant.userId)) return 'You';
     if (participant.userName) return participant.userName;
-    return participant.userEmail.split('@')[0];
+    return participant.userId.substring(0, 8);
   };
 
-  const handleStatusSelect = (userEmail: string, status: ParticipantStatus) => {
-    onUpdateStatus?.(userEmail, status);
+  const handleStatusSelect = (userId: string, status: ParticipantStatus) => {
+    onUpdateStatus?.(userId, status);
     setOpenDropdown(null);
   };
 
@@ -81,8 +81,8 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
   };
 
   const sortedParticipants = [...participants].sort((a, b) => {
-    if (a.userEmail === currentUserEmail) return -1;
-    if (b.userEmail === currentUserEmail) return 1;
+    if (a.userId === currentUserId) return -1;
+    if (b.userId === currentUserId) return 1;
     return (statusOrder[a.status] ?? 4) - (statusOrder[b.status] ?? 4);
   });
 
@@ -98,49 +98,45 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
     <div className="participant-list">
       {sortedParticipants.map(participant => (
         <div
-          key={participant.userEmail}
+          key={participant.userId}
           className={`participant-item${
-            isCurrentUser(participant.userEmail)
-              ? ' participant-item-current'
-              : ''
+            isCurrentUser(participant.userId) ? ' participant-item-current' : ''
           }`}
         >
           <div className="participant-info">
             <span className="participant-icon">
-              {isCurrentUser(participant.userEmail) ? '⭐' : '👤'}
+              {isCurrentUser(participant.userId) ? '⭐' : '👤'}
             </span>
             <span
               className={`participant-id${
-                isCurrentUser(participant.userEmail)
+                isCurrentUser(participant.userId)
                   ? ' participant-id-current'
                   : ''
               }`}
             >
               {getDisplayName(participant)}
             </span>
-            {isCurrentUser(participant.userEmail) &&
+            {isCurrentUser(participant.userId) &&
             participant.status !== 'INVITED' &&
             onUpdateStatus ? (
               <div
                 className="status-dropdown-wrapper"
-                ref={
-                  openDropdown === participant.userEmail ? dropdownRef : null
-                }
+                ref={openDropdown === participant.userId ? dropdownRef : null}
               >
                 <button
                   className={`participant-status status-clickable ${getStatusClass(participant.status)}`}
                   onClick={() =>
                     setOpenDropdown(
-                      openDropdown === participant.userEmail
+                      openDropdown === participant.userId
                         ? null
-                        : participant.userEmail
+                        : participant.userId
                     )
                   }
                   aria-label="Change your status"
                 >
                   {getStatusIcon(participant.status)} ✎
                 </button>
-                {openDropdown === participant.userEmail && (
+                {openDropdown === participant.userId && (
                   <div className="status-dropdown">
                     {STATUS_OPTIONS.filter(
                       opt => opt.value !== participant.status
@@ -149,7 +145,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                         key={opt.value}
                         className={`status-dropdown-item ${getStatusClass(opt.value)}`}
                         onClick={() =>
-                          handleStatusSelect(participant.userEmail, opt.value)
+                          handleStatusSelect(participant.userId, opt.value)
                         }
                       >
                         {opt.icon} {opt.label}
@@ -166,7 +162,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
               </span>
             )}
           </div>
-          {isCurrentUser(participant.userEmail) &&
+          {isCurrentUser(participant.userId) &&
             participant.status === 'INVITED' &&
             onUpdateStatus && (
               <div className="participant-actions">
@@ -174,7 +170,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                   className="status-btn status-btn-confirm"
                   onClick={() =>
                     handleStatusSelect(
-                      participant.userEmail,
+                      participant.userId,
                       'CONFIRMED' as ParticipantStatus
                     )
                   }
@@ -186,7 +182,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                   className="status-btn status-btn-decline"
                   onClick={() =>
                     handleStatusSelect(
-                      participant.userEmail,
+                      participant.userId,
                       'DECLINED' as ParticipantStatus
                     )
                   }
@@ -196,10 +192,10 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                 </button>
               </div>
             )}
-          {!isCurrentUser(participant.userEmail) && onRemove && (
+          {!isCurrentUser(participant.userId) && onRemove && (
             <button
               className="remove-btn"
-              onClick={() => onRemove(participant.userEmail)}
+              onClick={() => onRemove(participant.userId)}
               aria-label="Remove participant"
             >
               ✕

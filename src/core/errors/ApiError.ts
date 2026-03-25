@@ -19,6 +19,14 @@ export class ApiError extends Error {
   get isBadRequest(): boolean {
     return this.status === 400;
   }
+
+  get isNotFound(): boolean {
+    return this.status === 404;
+  }
+
+  get isRateLimited(): boolean {
+    return this.status === 429;
+  }
 }
 
 export async function throwApiError(response: Response): Promise<never> {

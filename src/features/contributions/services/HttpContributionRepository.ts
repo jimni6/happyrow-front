@@ -13,12 +13,17 @@ interface ContributionApiRequest {
 }
 
 // API response interface for contributions
+// Includes both camelCase (new) and snake_case (legacy) field names for backward compat
 interface ContributionApiResponse {
   identifier: string;
-  participant_id: string;
-  resource_id: string;
+  participantId?: string;
+  participant_id?: string;
+  resourceId?: string;
+  resource_id?: string;
   quantity: number;
-  created_at: number;
+  createdAt?: number;
+  created_at?: number;
+  updatedAt?: number;
   updated_at?: number;
 }
 
@@ -163,13 +168,14 @@ export class HttpContributionRepository implements ContributionRepository {
     response: ContributionApiResponse,
     eventId: string
   ): Contribution {
+    const createdAt = response.createdAt ?? response.created_at;
     return {
       id: response.identifier,
       eventId: eventId,
-      resourceId: response.resource_id,
-      userId: response.participant_id,
+      resourceId: response.resourceId ?? response.resource_id ?? '',
+      userId: response.participantId ?? response.participant_id ?? '',
       quantity: response.quantity,
-      createdAt: new Date(response.created_at),
+      createdAt: new Date(createdAt!),
     };
   }
 }

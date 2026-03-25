@@ -7,22 +7,27 @@ import { apiConfig } from '@/core/config/api';
 interface EventApiRequest {
   name: string;
   description: string;
-  event_date: string;
+  eventDate: string;
   location: string;
   type: string;
+  members?: string[];
 }
 
 // API response interface for events (matches backend format)
+// Includes both camelCase (new) and snake_case (legacy) field names for backward compat
 interface EventApiResponse {
-  identifier: string; // Backend uses 'identifier' not 'id'
+  identifier: string;
   name: string;
   description: string;
-  event_date: number; // Backend returns timestamp
+  eventDate?: string | number;
+  event_date?: string | number;
   location: string;
   type: string;
-  creator?: string; // Backend uses 'creator' not 'organizerId'
-  creation_date?: number;
-  update_date?: number;
+  creator?: string;
+  creationDate?: string | number;
+  creation_date?: string | number;
+  updateDate?: string | number;
+  update_date?: string | number;
   members?: string[];
 }
 
@@ -46,7 +51,7 @@ export class HttpEventRepository implements EventRepository {
     const apiRequest: EventApiRequest = {
       name: eventData.name,
       description: eventData.description,
-      event_date: eventData.date,
+      eventDate: eventData.date,
       location: eventData.location,
       type: eventData.type,
     };
@@ -71,15 +76,7 @@ export class HttpEventRepository implements EventRepository {
 
     const eventResponse: EventApiResponse = await response.json();
 
-    return {
-      id: eventResponse.identifier,
-      name: eventResponse.name,
-      description: eventResponse.description,
-      date: new Date(eventResponse.event_date),
-      location: eventResponse.location,
-      type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventResponse.creator || eventData.organizerId,
-    };
+    return this.mapApiResponseToEvent(eventResponse, eventData.organizerId);
   }
 
   async getEventById(id: string): Promise<Event | null> {
@@ -103,15 +100,7 @@ export class HttpEventRepository implements EventRepository {
     }
 
     const eventResponse: EventApiResponse = await response.json();
-    return {
-      id: eventResponse.identifier,
-      name: eventResponse.name,
-      description: eventResponse.description,
-      date: new Date(eventResponse.event_date),
-      location: eventResponse.location,
-      type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventResponse.creator || '',
-    };
+    return this.mapApiResponseToEvent(eventResponse);
   }
 
   async getEventsByOrganizer(organizerId: string): Promise<Event[]> {
@@ -130,17 +119,15 @@ export class HttpEventRepository implements EventRepository {
       await throwApiError(response);
     }
 
-    const eventsResponse: EventApiResponse[] = await response.json();
-    return eventsResponse.map(event => ({
-      id: event.identifier,
-      name: event.name,
-      description: event.description,
-      date: new Date(event.event_date),
-      location: event.location,
-      type: this.mapStringToEventType(event.type),
-      // Backend uses 'creator' field for organizerId
-      organizerId: event.creator || organizerId,
-    }));
+    const json = await response.json();
+    const eventsResponse: EventApiResponse[] = Array.isArray(json)
+      ? json
+      : Array.isArray(json.events)
+        ? json.events
+        : [];
+    return eventsResponse.map(event =>
+      this.mapApiResponseToEvent(event, organizerId)
+    );
   }
 
   async updateEvent(
@@ -151,7 +138,7 @@ export class HttpEventRepository implements EventRepository {
     const apiRequest: Partial<EventApiRequest> = {};
     if (eventData.name) apiRequest.name = eventData.name;
     if (eventData.description) apiRequest.description = eventData.description;
-    if (eventData.date) apiRequest.event_date = eventData.date;
+    if (eventData.date) apiRequest.eventDate = eventData.date;
     if (eventData.location) apiRequest.location = eventData.location;
     if (eventData.type) apiRequest.type = eventData.type;
 
@@ -174,15 +161,7 @@ export class HttpEventRepository implements EventRepository {
     }
 
     const eventResponse: EventApiResponse = await response.json();
-    return {
-      id: eventResponse.identifier,
-      name: eventResponse.name,
-      description: eventResponse.description,
-      date: new Date(eventResponse.event_date),
-      location: eventResponse.location,
-      type: this.mapStringToEventType(eventResponse.type),
-      organizerId: eventResponse.creator || eventData.organizerId || '',
-    };
+    return this.mapApiResponseToEvent(eventResponse, eventData.organizerId);
   }
 
   async deleteEvent(id: string): Promise<void> {
@@ -201,5 +180,21 @@ export class HttpEventRepository implements EventRepository {
     if (!response.ok) {
       await throwApiError(response);
     }
+  }
+
+  private mapApiResponseToEvent(
+    response: EventApiResponse,
+    fallbackOrganizerId?: string
+  ): Event {
+    const dateValue = response.eventDate ?? response.event_date;
+    return {
+      id: response.identifier,
+      name: response.name,
+      description: response.description,
+      date: new Date(dateValue!),
+      location: response.location,
+      type: this.mapStringToEventType(response.type),
+      organizerId: response.creator || fallbackOrganizerId || '',
+    };
   }
 }

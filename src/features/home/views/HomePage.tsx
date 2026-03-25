@@ -98,8 +98,7 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
 
     await addParticipantUseCase.execute({
       eventId: addParticipantEventId,
-      userEmail: email,
-      status: ParticipantStatus.INVITED,
+      userId: email,
     });
 
     // Reload participant count for this event

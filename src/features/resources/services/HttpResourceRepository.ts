@@ -15,22 +15,30 @@ interface ResourceApiRequest {
   suggested_quantity?: number;
 }
 
+// Includes both camelCase (new) and snake_case (legacy) field names for backward compat
 interface ContributorApiResponse {
-  user_id: string;
+  userId?: string;
+  user_id?: string;
   quantity: number;
-  contributed_at: number;
+  contributedAt?: number;
+  contributed_at?: number;
 }
 
 interface ResourceApiResponse {
   identifier: string;
-  event_id: string;
+  eventId?: string;
+  event_id?: string;
   name: string;
   category: string;
-  current_quantity: number;
+  currentQuantity?: number;
+  current_quantity?: number;
+  suggestedQuantity?: number;
   suggested_quantity?: number;
   contributors: ContributorApiResponse[];
   version: number;
-  created_at: number;
+  createdAt?: number;
+  created_at?: number;
+  updatedAt?: number;
   updated_at?: number;
 }
 
@@ -181,22 +189,24 @@ export class HttpResourceRepository implements ResourceRepository {
   }
 
   private mapApiResponseToResource(response: ResourceApiResponse): Resource {
+    const createdAt = response.createdAt ?? response.created_at;
+    const updatedAt = response.updatedAt ?? response.updated_at;
     return {
       id: response.identifier,
-      eventId: response.event_id,
+      eventId: response.eventId ?? response.event_id ?? '',
       name: response.name,
       category: this.mapStringToResourceCategory(response.category),
-      currentQuantity: response.current_quantity || 0,
-      suggestedQuantity: response.suggested_quantity,
+      currentQuantity:
+        response.currentQuantity ?? response.current_quantity ?? 0,
+      suggestedQuantity:
+        response.suggestedQuantity ?? response.suggested_quantity,
       contributors: (response.contributors || []).map(c => ({
-        userId: c.user_id,
+        userId: c.userId ?? c.user_id ?? '',
         quantity: c.quantity,
-        contributedAt: new Date(c.contributed_at),
+        contributedAt: new Date((c.contributedAt ?? c.contributed_at)!),
       })),
-      createdAt: new Date(response.created_at),
-      updatedAt: response.updated_at
-        ? new Date(response.updated_at)
-        : undefined,
+      createdAt: new Date(createdAt!),
+      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
     };
   }
 }

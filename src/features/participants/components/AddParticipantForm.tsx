@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { ParticipantStatus } from '../types/Participant';
 import './AddParticipantForm.css';
 
 interface AddParticipantFormProps {
-  onSubmit: (userEmail: string, status: ParticipantStatus) => Promise<void>;
+  onSubmit: (email: string) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -11,10 +10,7 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const [userEmail, setUserEmail] = useState('');
-  const [status, setStatus] = useState<ParticipantStatus>(
-    ParticipantStatus.INVITED
-  );
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +18,7 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
     e.preventDefault();
     setError(null);
 
-    if (!userEmail.trim()) {
+    if (!email.trim()) {
       setError('User email is required');
       return;
     }
@@ -30,9 +26,8 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      await onSubmit(userEmail.trim(), status);
-      setUserEmail('');
-      setStatus(ParticipantStatus.INVITED);
+      await onSubmit(email.trim());
+      setEmail('');
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to add participant'
@@ -53,27 +48,12 @@ export const AddParticipantForm: React.FC<AddParticipantFormProps> = ({
         <input
           id="userEmail"
           type="email"
-          value={userEmail}
-          onChange={e => setUserEmail(e.target.value)}
+          value={email}
+          onChange={e => setEmail(e.target.value)}
           placeholder="Enter user email"
           disabled={isSubmitting}
           required
         />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="status">Status</label>
-        <select
-          id="status"
-          value={status}
-          onChange={e => setStatus(e.target.value as ParticipantStatus)}
-          disabled={isSubmitting}
-        >
-          <option value={ParticipantStatus.INVITED}>Invited</option>
-          <option value={ParticipantStatus.CONFIRMED}>Confirmed</option>
-          <option value={ParticipantStatus.MAYBE}>Maybe</option>
-          <option value={ParticipantStatus.DECLINED}>Declined</option>
-        </select>
       </div>
 
       <div className="form-actions">

@@ -67,12 +67,12 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
 
   const handleAddParticipant = useCallback(
     async (email: string) => {
+      if (!user) throw new Error('User not authenticated');
       try {
         const addParticipant = new AddParticipant(participantRepository);
         await addParticipant.execute({
           eventId: event.id,
-          userEmail: email,
-          status: ParticipantStatus.INVITED,
+          userId: email,
         });
         await loadParticipants();
       } catch (err) {
@@ -82,24 +82,24 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         throw err;
       }
     },
-    [event.id, participantRepository, loadParticipants]
+    [event.id, user, participantRepository, loadParticipants]
   );
 
   const handleRemoveParticipant = useCallback(
-    async (userEmail: string) => {
+    async (userId: string) => {
       const removeParticipant = new RemoveParticipant(participantRepository);
-      await removeParticipant.execute({ eventId: event.id, userEmail });
+      await removeParticipant.execute({ eventId: event.id, userId });
       await loadParticipants();
     },
     [event.id, participantRepository, loadParticipants]
   );
 
   const handleUpdateParticipantStatus = useCallback(
-    async (userEmail: string, status: ParticipantStatus) => {
+    async (userId: string, status: ParticipantStatus) => {
       const updateStatus = new UpdateParticipantStatus(participantRepository);
       await updateStatus.execute({
         eventId: event.id,
-        userEmail,
+        userId,
         status,
       });
       await loadParticipants();
@@ -174,16 +174,17 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   }, [resources]);
 
   const myContributions = useMemo(() => {
-    const userEmail = user?.email || '';
+    const currentUserId = user?.id || '';
     return resources
-      .filter(r => r.contributors.some(c => c.userId === userEmail))
+      .filter(r => r.contributors.some(c => c.userId === currentUserId))
       .map(r => ({
         resourceId: r.id,
         resourceName: r.name,
         category: r.category,
-        quantity: r.contributors.find(c => c.userId === userEmail)!.quantity,
+        quantity: r.contributors.find(c => c.userId === currentUserId)!
+          .quantity,
       }));
-  }, [resources, user?.email]);
+  }, [resources, user?.id]);
 
   return (
     <div className="event-details-view">
@@ -236,7 +237,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Food"
             category={ResourceCategory.FOOD}
             resources={resourcesByCategory.FOOD}
-            currentUserId={user?.email || ''}
+            currentUserId={user?.id || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}
@@ -246,7 +247,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             title="Drinks"
             category={ResourceCategory.DRINK}
             resources={resourcesByCategory.DRINK}
-            currentUserId={user?.email || ''}
+            currentUserId={user?.id || ''}
             onAddContribution={handleAddContribution}
             onUpdateContribution={handleUpdateContribution}
             onDeleteContribution={handleDeleteContribution}
@@ -273,7 +274,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
         </div>
         <ParticipantList
           participants={participants}
-          currentUserEmail={user?.email || ''}
+          currentUserId={user?.id || ''}
           onRemove={isOrganizer ? handleRemoveParticipant : undefined}
           onUpdateStatus={handleUpdateParticipantStatus}
         />

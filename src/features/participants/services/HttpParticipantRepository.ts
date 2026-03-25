@@ -9,16 +9,25 @@ import { throwApiError } from '@/core/errors/ApiError';
 import { apiConfig } from '@/core/config/api';
 
 interface ParticipantApiRequest {
-  user_email: string;
-  status: string;
+  userId: string;
+  userName?: string;
 }
 
+// Includes both camelCase (new) and snake_case (legacy) field names for backward compat
 interface ParticipantApiResponse {
-  user_email: string;
+  identifier: string;
+  userId?: string;
+  user_email?: string;
+  userName?: string;
   user_name?: string;
-  event_id: string;
+  eventId?: string;
+  event_id?: string;
   status: string;
-  joined_at: number;
+  joinedAt?: number;
+  joined_at?: number;
+  createdAt?: number;
+  created_at?: number;
+  updatedAt?: number;
   updated_at?: number;
 }
 
@@ -36,8 +45,8 @@ export class HttpParticipantRepository implements ParticipantRepository {
 
   async addParticipant(data: ParticipantCreationRequest): Promise<Participant> {
     const apiRequest: ParticipantApiRequest = {
-      user_email: data.userEmail,
-      status: data.status,
+      userId: data.userId,
+      userName: data.userName,
     };
 
     const token = this.getToken();
@@ -91,7 +100,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
 
   async updateParticipantStatus(
     eventId: string,
-    userEmail: string,
+    userId: string,
     data: ParticipantUpdateRequest
   ): Promise<Participant> {
     const apiRequest = {
@@ -104,7 +113,7 @@ export class HttpParticipantRepository implements ParticipantRepository {
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/participants/${userEmail}`,
+      `${this.baseUrl}/events/${eventId}/participants/${userId}`,
       {
         method: 'PUT',
         headers: {
@@ -123,14 +132,14 @@ export class HttpParticipantRepository implements ParticipantRepository {
     return this.mapApiResponseToParticipant(participantResponse);
   }
 
-  async removeParticipant(eventId: string, userEmail: string): Promise<void> {
+  async removeParticipant(eventId: string, userId: string): Promise<void> {
     const token = this.getToken();
     if (!token) {
       throw new Error('Authentication required');
     }
 
     const response = await fetch(
-      `${this.baseUrl}/events/${eventId}/participants/${userEmail}`,
+      `${this.baseUrl}/events/${eventId}/participants/${userId}`,
       {
         method: 'DELETE',
         headers: {
@@ -147,15 +156,18 @@ export class HttpParticipantRepository implements ParticipantRepository {
   private mapApiResponseToParticipant(
     response: ParticipantApiResponse
   ): Participant {
+    const joinedAt = response.joinedAt ?? response.joined_at;
+    const createdAt = response.createdAt ?? response.created_at ?? joinedAt;
+    const updatedAt = response.updatedAt ?? response.updated_at;
     return {
-      userEmail: response.user_email,
-      userName: response.user_name ?? undefined,
-      eventId: response.event_id,
+      id: response.identifier,
+      userId: response.userId ?? response.user_email ?? '',
+      userName: response.userName ?? response.user_name ?? undefined,
+      eventId: response.eventId ?? response.event_id ?? '',
       status: response.status as ParticipantStatus,
-      joinedAt: new Date(response.joined_at),
-      updatedAt: response.updated_at
-        ? new Date(response.updated_at)
-        : undefined,
+      joinedAt: new Date(joinedAt!),
+      createdAt: new Date(createdAt!),
+      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
     };
   }
 }
