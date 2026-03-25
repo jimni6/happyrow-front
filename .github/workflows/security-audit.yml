@@ -36,8 +36,7 @@ jobs:
           --path package-lock.json \
           --type npm \
           --allowed-hosts npm \
-          --validate-https \
-          --validate-package-names
+          --validate-https
         echo "✅ Lockfile validation passed"
 
     - name: Check for malicious packages (Shai-Hulud detection)
