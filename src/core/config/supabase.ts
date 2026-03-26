@@ -16,12 +16,13 @@ export const getSupabaseConfig = (): SupabaseConfig => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  // Use placeholder values if environment variables are not set
-  // This prevents the app from crashing during development
-  return {
-    url: supabaseUrl || 'https://placeholder.supabase.co',
-    anonKey: supabaseAnonKey || 'placeholder-anon-key',
-  };
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error(
+      'Missing required environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set'
+    );
+  }
+
+  return { url: supabaseUrl, anonKey: supabaseAnonKey };
 };
 
 /**
