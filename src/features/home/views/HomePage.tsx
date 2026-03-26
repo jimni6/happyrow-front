@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import type { User } from '@/features/auth';
 import { useAuth } from '@/features/auth';
 import { useEvents } from '@/features/events';
-import { EventCard } from '../components/EventCard';
+import type { Event } from '@/features/events';
+import { HeroCard } from '../components/HeroCard';
+import { TimelineEvent } from '../components/TimelineEvent';
 import {
   GetParticipants,
   HttpParticipantRepository,
@@ -15,6 +17,27 @@ import './HomeView.css';
 
 interface HomePageProps {
   user: User;
+}
+
+function splitEvents(events: Event[]): {
+  nextEvent: Event | null;
+  upcomingEvents: Event[];
+} {
+  const now = new Date();
+  const future = events
+    .filter(e => new Date(e.date) >= now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  return {
+    nextEvent: future[0] ?? null,
+    upcomingEvents: future.slice(1),
+  };
+}
+
+function isEventFar(event: Event): boolean {
+  const MS_PER_DAY = 86_400_000;
+  const daysUntil = (new Date(event.date).getTime() - Date.now()) / MS_PER_DAY;
+  return daysUntil > 30;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ user }) => {
@@ -81,32 +104,61 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
     ]
   );
 
+  const { nextEvent, upcomingEvents } = useMemo(
+    () => splitEvents(events),
+    [events]
+  );
+
+  if (loading) {
+    return (
+      <div className="home-screen">
+        <div className="home-content">
+          <div className="home-loading">Chargement...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="home-screen">
       <div className="home-content">
-        <h1 className="home-greeting">Bonjour {user.firstname}</h1>
-        <h2 className="home-section-title">Mes events</h2>
-        {loading ? (
-          <div className="loading-events">Loading events...</div>
-        ) : events.length === 0 ? (
-          <div className="no-events">
-            <p>No events yet.</p>
-            <p>Click the &quot;+&quot; button below to get started!</p>
+        <div className="home-greeting">
+          <div className="home-greeting__sub">Bonjour</div>
+          <div className="home-greeting__name">{user.firstname} 👋</div>
+        </div>
+
+        {events.length === 0 ? (
+          <div className="home-empty">
+            <p>Pas encore d&apos;events.</p>
+            <p>Appuie sur &laquo; + &raquo; pour commencer !</p>
           </div>
         ) : (
-          <div className="events-list">
-            {events.map((event, index) => (
-              <EventCard
-                key={event.id || `event-${index}`}
-                event={event}
-                participantCount={participantCounts[event.id] || 0}
-                currentUserId={user.id}
-                onClick={() => navigate(`/events/${event.id}`)}
-                showToggle={true}
-                onAddParticipant={eventId => setAddParticipantEventId(eventId)}
+          <>
+            {nextEvent && (
+              <HeroCard
+                event={nextEvent}
+                participantCount={participantCounts[nextEvent.id] || 0}
+                onClick={() => navigate(`/events/${nextEvent.id}`)}
               />
-            ))}
-          </div>
+            )}
+
+            {upcomingEvents.length > 0 && (
+              <>
+                <div className="home-section-label">À venir</div>
+                <div className="home-timeline">
+                  {upcomingEvents.map(event => (
+                    <TimelineEvent
+                      key={event.id}
+                      event={event}
+                      participantCount={participantCounts[event.id] || 0}
+                      isFar={isEventFar(event)}
+                      onClick={() => navigate(`/events/${event.id}`)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
       </div>
 
