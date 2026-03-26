@@ -14,16 +14,15 @@ import { UpdateEvent } from '../use-cases/UpdateEvent';
 import { DeleteEvent } from '../use-cases/DeleteEvent';
 import { GetEventById } from '../use-cases/GetEventById';
 import { HttpEventRepository } from '../services/HttpEventRepository';
+import { useAuth } from '@/features/auth';
 
 interface EventsProviderProps {
   children: ReactNode;
-  getToken: () => string | null;
 }
 
-export const EventsProvider: React.FC<EventsProviderProps> = ({
-  children,
-  getToken,
-}) => {
+export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
+  const { session } = useAuth();
+  const getToken = useCallback(() => session?.accessToken || null, [session]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

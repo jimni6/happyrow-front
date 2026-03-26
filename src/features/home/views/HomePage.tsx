@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { User } from '@/features/auth';
 import { useAuth } from '@/features/auth';
 import { useEvents } from '@/features/events';
 import { EventCard } from '../components/EventCard';
-import { GetParticipants } from '@/features/participants';
-import { HttpParticipantRepository } from '@/features/participants';
-import { AddParticipant } from '@/features/participants';
-import { ParticipantStatus } from '@/features/participants';
-import { AddParticipantModal } from '@/features/participants';
+import {
+  GetParticipants,
+  HttpParticipantRepository,
+  AddParticipant,
+  ParticipantStatus,
+  AddParticipantModal,
+} from '@/features/participants';
 import './HomeView.css';
 
 interface HomePageProps {
-  user: { id: string; email: string };
+  user: User;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ user }) => {
   const navigate = useNavigate();
   const { session } = useAuth();
-  const { events, loading } = useEvents();
+  const { events, loading, loadEvents } = useEvents();
   const [participantCounts, setParticipantCounts] = useState<
     Record<string, number>
   >({});
@@ -25,85 +28,58 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
     string | null
   >(null);
 
-  // Load events on mount
-  const { loadEvents } = useEvents();
+  const participantRepository = useMemo(
+    () => new HttpParticipantRepository(() => session?.accessToken || null),
+    [session]
+  );
 
   useEffect(() => {
     loadEvents(user.id);
   }, [user.id, loadEvents]);
 
-  // Load participant counts when events change
-  useEffect(() => {
-    const loadParticipantCounts = async () => {
-      if (events.length === 0) return;
-
-      const participantRepository = new HttpParticipantRepository(
-        () => session?.accessToken || null
-      );
+  const loadParticipantCountsForEvent = useCallback(
+    async (eventId: string) => {
       const getParticipantsUseCase = new GetParticipants(participantRepository);
+      try {
+        const participants = await getParticipantsUseCase.execute({ eventId });
+        setParticipantCounts(prev => ({
+          ...prev,
+          [eventId]: participants.filter(
+            p => p.status === ParticipantStatus.CONFIRMED
+          ).length,
+        }));
+      } catch {
+        setParticipantCounts(prev => ({ ...prev, [eventId]: 0 }));
+      }
+    },
+    [participantRepository]
+  );
 
-      const counts: Record<string, number> = {};
-      await Promise.all(
-        events.map(async event => {
-          try {
-            const participants = await getParticipantsUseCase.execute({
-              eventId: event.id,
-            });
-            counts[event.id] = participants.filter(
-              p => p.status === ParticipantStatus.CONFIRMED
-            ).length;
-          } catch (error) {
-            console.error(
-              `Error loading participants for event ${event.id}:`,
-              error
-            );
-            counts[event.id] = 0;
-          }
-        })
-      );
-      setParticipantCounts(counts);
-    };
+  useEffect(() => {
+    if (events.length === 0) return;
+    events.forEach(event => loadParticipantCountsForEvent(event.id));
+  }, [events, loadParticipantCountsForEvent]);
 
-    loadParticipantCounts();
-  }, [events, session]);
+  const handleAddParticipant = useCallback(
+    async (email: string) => {
+      if (!addParticipantEventId) {
+        throw new Error('No event selected');
+      }
 
-  const loadParticipantCountsForEvent = async (eventId: string) => {
-    const participantRepository = new HttpParticipantRepository(
-      () => session?.accessToken || null
-    );
-    const getParticipantsUseCase = new GetParticipants(participantRepository);
+      const addParticipantUseCase = new AddParticipant(participantRepository);
+      await addParticipantUseCase.execute({
+        eventId: addParticipantEventId,
+        userId: email,
+      });
 
-    try {
-      const participants = await getParticipantsUseCase.execute({ eventId });
-      setParticipantCounts(prev => ({
-        ...prev,
-        [eventId]: participants.filter(
-          p => p.status === ParticipantStatus.CONFIRMED
-        ).length,
-      }));
-    } catch (error) {
-      console.error(`Error loading participants for event ${eventId}:`, error);
-    }
-  };
-
-  const handleAddParticipant = async (email: string) => {
-    if (!addParticipantEventId) {
-      throw new Error('No event selected');
-    }
-
-    const participantRepository = new HttpParticipantRepository(
-      () => session?.accessToken || null
-    );
-    const addParticipantUseCase = new AddParticipant(participantRepository);
-
-    await addParticipantUseCase.execute({
-      eventId: addParticipantEventId,
-      userId: email,
-    });
-
-    // Reload participant count for this event
-    await loadParticipantCountsForEvent(addParticipantEventId);
-  };
+      await loadParticipantCountsForEvent(addParticipantEventId);
+    },
+    [
+      addParticipantEventId,
+      participantRepository,
+      loadParticipantCountsForEvent,
+    ]
+  );
 
   return (
     <div className="home-screen">
