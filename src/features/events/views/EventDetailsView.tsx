@@ -20,6 +20,7 @@ import {
   UpdateParticipantStatus,
   ParticipantStatus,
 } from '@/features/participants';
+import { ShareInviteModal } from '@/features/invite/components/ShareInviteModal';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {
@@ -59,6 +60,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   });
 
   const [isAddParticipantOpen, setIsAddParticipantOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [forbiddenError, setForbiddenError] = useState(false);
 
   const participantRepository = useMemo(
@@ -214,13 +216,22 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           </div>
         </div>
         {isOrganizer && (
-          <button
-            className="edit-button-header"
-            onClick={() => setIsEditModalOpen(true)}
-            aria-label="Edit event"
-          >
-            Edit
-          </button>
+          <div className="event-header-actions">
+            <button
+              className="share-button-header"
+              onClick={() => setIsShareModalOpen(true)}
+              aria-label="Share event"
+            >
+              Share
+            </button>
+            <button
+              className="edit-button-header"
+              onClick={() => setIsEditModalOpen(true)}
+              aria-label="Edit event"
+            >
+              Edit
+            </button>
+          </div>
         )}
       </div>
 
@@ -336,6 +347,14 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           clearError();
         }}
         loading={isDeleting}
+      />
+
+      <ShareInviteModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        eventId={currentEvent.id}
+        eventName={currentEvent.name}
+        eventDate={currentEvent.date}
       />
     </div>
   );

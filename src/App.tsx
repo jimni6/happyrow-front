@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { EventsProvider, EventDetailPage } from '@/features/events';
@@ -15,7 +15,12 @@ import type {
   UserCredentials,
 } from '@/features/auth/types/User';
 import { AppLayout } from '@/layouts';
+import { InviteLandingPage } from '@/features/invite/views/InviteLandingPage';
+import { HttpInviteRepository } from '@/features/invite/services/HttpInviteRepository';
+import { AcceptInvite } from '@/features/invite/use-cases/AcceptInvite';
 import '@/core/styles/index.css';
+
+const PENDING_INVITE_KEY = 'pending_invite_token';
 
 // Error boundary component
 class ErrorBoundary extends React.Component<
@@ -59,13 +64,27 @@ try {
 }
 
 const AppContent: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, session, isAuthenticated } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  const inviteRepository = useMemo(
+    () => new HttpInviteRepository(() => session?.accessToken || null),
+    [session]
+  );
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const pendingToken = localStorage.getItem(PENDING_INVITE_KEY);
+    if (!pendingToken) return;
+    localStorage.removeItem(PENDING_INVITE_KEY);
+    const accept = new AcceptInvite(inviteRepository);
+    accept.execute(pendingToken).catch(() => {});
+  }, [isAuthenticated, inviteRepository]);
 
   const handleRegister = async (userData: UserRegistration) => {
     setRegisterLoading(true);
@@ -127,48 +146,56 @@ const AppContent: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <>
-        <WelcomeView
-          onCreateAccount={() => setShowRegisterModal(true)}
-          onLogin={() => setShowLoginModal(true)}
+      <Routes>
+        <Route path="/invite/:token" element={<InviteLandingPage />} />
+        <Route
+          path="*"
+          element={
+            <>
+              <WelcomeView
+                onCreateAccount={() => setShowRegisterModal(true)}
+                onLogin={() => setShowLoginModal(true)}
+              />
+
+              {showRegisterModal && (
+                <RegisterModal
+                  onClose={() => {
+                    setShowRegisterModal(false);
+                    setRegisterError(null);
+                  }}
+                  onSwitchToLogin={() => {
+                    setShowRegisterModal(false);
+                    setShowLoginModal(true);
+                    setRegisterError(null);
+                  }}
+                  onSubmit={handleRegister}
+                  onGoogleSignIn={handleGoogleSignIn}
+                  loading={registerLoading}
+                  error={registerError}
+                />
+              )}
+
+              {showLoginModal && (
+                <LoginModal
+                  onClose={() => {
+                    setShowLoginModal(false);
+                    setLoginError(null);
+                  }}
+                  onSwitchToRegister={() => {
+                    setShowLoginModal(false);
+                    setShowRegisterModal(true);
+                    setLoginError(null);
+                  }}
+                  onSubmit={handleLogin}
+                  onGoogleSignIn={handleGoogleSignIn}
+                  loading={loginLoading}
+                  error={loginError}
+                />
+              )}
+            </>
+          }
         />
-
-        {showRegisterModal && (
-          <RegisterModal
-            onClose={() => {
-              setShowRegisterModal(false);
-              setRegisterError(null);
-            }}
-            onSwitchToLogin={() => {
-              setShowRegisterModal(false);
-              setShowLoginModal(true);
-              setRegisterError(null);
-            }}
-            onSubmit={handleRegister}
-            onGoogleSignIn={handleGoogleSignIn}
-            loading={registerLoading}
-            error={registerError}
-          />
-        )}
-
-        {showLoginModal && (
-          <LoginModal
-            onClose={() => {
-              setShowLoginModal(false);
-              setLoginError(null);
-            }}
-            onSwitchToRegister={() => {
-              setShowLoginModal(false);
-              setShowRegisterModal(true);
-              setLoginError(null);
-            }}
-            onSubmit={handleLogin}
-            onGoogleSignIn={handleGoogleSignIn}
-            loading={loginLoading}
-            error={loginError}
-          />
-        )}
-      </>
+      </Routes>
     );
   }
 
@@ -176,6 +203,7 @@ const AppContent: React.FC = () => {
     <EventsProvider>
       <ResourcesProvider>
         <Routes>
+          <Route path="/invite/:token" element={<InviteLandingPage />} />
           <Route path="/" element={<AppLayout user={user!} />}>
             <Route index element={<HomePage user={user!} />} />
             <Route path="events/:eventId" element={<EventDetailPage />} />
