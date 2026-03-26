@@ -84,12 +84,14 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
   return (
     <div className="home-screen">
       <div className="home-content">
+        <h1 className="home-greeting">Bonjour {user.firstname}</h1>
+        <h2 className="home-section-title">Mes events</h2>
         {loading ? (
           <div className="loading-events">Loading events...</div>
         ) : events.length === 0 ? (
           <div className="no-events">
             <p>No events yet.</p>
-            <p>Click the "+" button below to get started!</p>
+            <p>Click the &quot;+&quot; button below to get started!</p>
           </div>
         ) : (
           <div className="events-list">
