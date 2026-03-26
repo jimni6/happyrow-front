@@ -1,5 +1,0 @@
-import { CreateResource } from '../use-cases/CreateResource';
-import { GetResources } from '../use-cases/GetResources';
-import { UpdateResource } from '../use-cases/UpdateResource';
-import { DeleteResource } from '../use-cases/DeleteResource';
-
