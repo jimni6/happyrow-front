@@ -38,9 +38,9 @@ export const ResourceCategorySection: React.FC<
     <div className="category-section">
       <h2 className="category-title">{title}</h2>
       <div className="resources-list">
-        {resources.map(resource => (
+        {resources.map((resource, index) => (
           <ResourceItem
-            key={resource.id}
+            key={resource.id || `resource-${index}`}
             resource={resource}
             currentUserId={currentUserId}
             onAddContribution={onAddContribution}

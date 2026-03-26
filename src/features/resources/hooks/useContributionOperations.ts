@@ -23,9 +23,22 @@ export function useContributionOperations({
   deleteContributionUseCase,
   getResourcesUseCase,
   currentEventId,
+  resources,
   setResources,
   setError,
 }: UseContributionOperationsParams) {
+  const syncResources = useCallback(
+    async (eventId: string) => {
+      try {
+        const eventResources = await getResourcesUseCase.execute({ eventId });
+        setResources(eventResources);
+      } catch (syncErr) {
+        console.error('Background sync failed:', syncErr);
+      }
+    },
+    [getResourcesUseCase, setResources]
+  );
+
   const addContribution = useCallback(
     async (
       resourceId: string,
@@ -34,11 +47,28 @@ export function useContributionOperations({
     ): Promise<void> => {
       setError(null);
 
-      try {
-        if (!currentEventId) {
-          throw new Error('No event context available');
-        }
+      if (!currentEventId) {
+        throw new Error('No event context available');
+      }
 
+      const previousResources = resources;
+
+      setResources(prev =>
+        prev.map(r =>
+          r.id === resourceId
+            ? {
+                ...r,
+                currentQuantity: r.currentQuantity + quantity,
+                contributors: [
+                  ...r.contributors,
+                  { userId, quantity, contributedAt: new Date() },
+                ],
+              }
+            : r
+        )
+      );
+
+      try {
         await addContributionUseCase.execute({
           eventId: currentEventId,
           resourceId,
@@ -46,20 +76,12 @@ export function useContributionOperations({
           quantity,
         });
 
-        const eventResources = await getResourcesUseCase.execute({
-          eventId: currentEventId,
-        });
-
-        setResources(eventResources);
+        syncResources(currentEventId);
       } catch (err) {
+        setResources(previousResources);
         if (err instanceof ApiError && err.isConflict) {
           setError('Data was modified by someone else. Refreshing...');
-          if (currentEventId) {
-            const eventResources = await getResourcesUseCase.execute({
-              eventId: currentEventId,
-            });
-            setResources(eventResources);
-          }
+          syncResources(currentEventId);
         } else {
           const errorMessage =
             err instanceof Error ? err.message : 'Failed to add contribution';
@@ -71,8 +93,9 @@ export function useContributionOperations({
     },
     [
       addContributionUseCase,
-      getResourcesUseCase,
+      syncResources,
       currentEventId,
+      resources,
       setResources,
       setError,
     ]
@@ -81,35 +104,45 @@ export function useContributionOperations({
   const updateContribution = useCallback(
     async (
       resourceId: string,
-      _userId: string,
+      userId: string,
       quantity: number
     ): Promise<void> => {
       setError(null);
 
-      try {
-        if (!currentEventId) {
-          throw new Error('No event context available');
-        }
+      if (!currentEventId) {
+        throw new Error('No event context available');
+      }
 
+      const previousResources = resources;
+
+      setResources(prev =>
+        prev.map(r => {
+          if (r.id !== resourceId) return r;
+          const oldContributor = r.contributors.find(c => c.userId === userId);
+          const oldQuantity = oldContributor?.quantity || 0;
+          return {
+            ...r,
+            currentQuantity: r.currentQuantity - oldQuantity + quantity,
+            contributors: r.contributors.map(c =>
+              c.userId === userId ? { ...c, quantity } : c
+            ),
+          };
+        })
+      );
+
+      try {
         await updateContributionUseCase.execute({
           eventId: currentEventId,
           resourceId,
           quantity,
         });
 
-        const eventResources = await getResourcesUseCase.execute({
-          eventId: currentEventId,
-        });
-        setResources(eventResources);
+        syncResources(currentEventId);
       } catch (err) {
+        setResources(previousResources);
         if (err instanceof ApiError && err.isConflict) {
           setError('Data was modified by someone else. Refreshing...');
-          if (currentEventId) {
-            const eventResources = await getResourcesUseCase.execute({
-              eventId: currentEventId,
-            });
-            setResources(eventResources);
-          }
+          syncResources(currentEventId);
         } else {
           const errorMessage =
             err instanceof Error
@@ -123,8 +156,9 @@ export function useContributionOperations({
     },
     [
       updateContributionUseCase,
-      getResourcesUseCase,
+      syncResources,
       currentEventId,
+      resources,
       setResources,
       setError,
     ]
@@ -134,20 +168,17 @@ export function useContributionOperations({
     async (resourceId: string): Promise<void> => {
       setError(null);
 
-      try {
-        if (!currentEventId) {
-          throw new Error('No event context available');
-        }
+      if (!currentEventId) {
+        throw new Error('No event context available');
+      }
 
+      try {
         await deleteContributionUseCase.execute({
           eventId: currentEventId,
           resourceId,
         });
 
-        const eventResources = await getResourcesUseCase.execute({
-          eventId: currentEventId,
-        });
-        setResources(eventResources);
+        await syncResources(currentEventId);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to delete contribution';
@@ -158,7 +189,7 @@ export function useContributionOperations({
     },
     [
       deleteContributionUseCase,
-      getResourcesUseCase,
+      syncResources,
       currentEventId,
       setResources,
       setError,

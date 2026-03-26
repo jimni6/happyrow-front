@@ -43,8 +43,11 @@ export const MyContributionsList: React.FC<MyContributionsListProps> = ({
         <span className="meta-icon">🎁</span> My Contributions
       </h2>
       <div className="my-contributions-list">
-        {contributions.map(c => (
-          <div key={c.resourceId} className="my-contribution-item">
+        {contributions.map((c, index) => (
+          <div
+            key={c.resourceId || `contrib-${index}`}
+            className="my-contribution-item"
+          >
             <span className="my-contribution-icon">
               {CATEGORY_ICONS[c.category] || '📦'}
             </span>

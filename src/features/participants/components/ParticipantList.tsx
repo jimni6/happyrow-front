@@ -96,9 +96,9 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
 
   return (
     <div className="participant-list">
-      {sortedParticipants.map(participant => (
+      {sortedParticipants.map((participant, index) => (
         <div
-          key={participant.userId}
+          key={participant.userId || participant.id || `participant-${index}`}
           className={`participant-item${
             isCurrentUser(participant.userId) ? ' participant-item-current' : ''
           }`}
