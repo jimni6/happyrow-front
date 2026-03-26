@@ -1,11 +1,7 @@
-/* Welcome Screen Styles */
+/* Welcome Screen Styles — Palette A */
 .welcome-screen {
   min-height: 100vh;
-  background: var(--bg-welcome);
-  background-image: url('/bg_gradient.svg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: var(--gradient-page);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,14 +35,14 @@
 .brand-name {
   font-size: var(--text-4xl);
   font-weight: var(--font-bold);
-  color: var(--color-coral);
+  color: var(--color-primary);
   letter-spacing: 0.1em;
   margin: 0;
 }
 
 .tagline {
   font-size: var(--text-xl);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   font-weight: var(--font-normal);
   margin: 0;
 }
@@ -73,15 +69,15 @@
 }
 
 .btn-create-account {
-  background: linear-gradient(135deg, #3d5a6c 0%, #5fbdb4 100%);
+  background: var(--gradient-primary);
   color: var(--color-text-white);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-primary);
 }
 
 .btn-create-account:hover {
-  background: linear-gradient(135deg, #2f4655 0%, #4da8a0 100%);
+  filter: brightness(1.05);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .btn-create-account:active {
@@ -90,12 +86,12 @@
 
 .btn-login {
   background: var(--bg-primary);
-  color: var(--color-navy);
-  border: 2px solid var(--color-navy);
+  color: var(--color-secondary);
+  border: 2px solid var(--color-primary);
 }
 
 .btn-login:hover {
-  background: var(--color-gray-50);
+  background: var(--bg-surface);
   transform: translateY(-1px);
 }
 
@@ -106,7 +102,7 @@
 /* Footer */
 .welcome-footer {
   font-size: var(--text-sm);
-  color: var(--color-gray-500);
+  color: var(--color-text-muted);
   text-align: center;
   margin-top: var(--space-4);
 }
