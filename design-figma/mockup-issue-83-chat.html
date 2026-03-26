@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #83: Event Chat / Comments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #F97066;
+      --secondary: #1E293B;
+      --accent: #FBBF24;
+      --accent2: #FB923C;
+      --surface: #FFFBF5;
+      --surface2: #FFF7ED;
+      --white: #ffffff;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-soft: #94A3B8;
+      --border: #F1E8E3;
+      --phone-w: 375px;
+      --phone-h: 812px;
+      --radius-phone: 40px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(165deg, var(--surface2) 0%, var(--surface) 45%, #fde8e4 100%);
+      color: var(--text);
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .phone-label {
+      text-align: center;
+      max-width: 380px;
+    }
+
+    .phone-label strong {
+      display: block;
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    .phone-label span {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: var(--radius-phone);
+      background: var(--white);
+      box-shadow:
+        0 25px 50px -12px rgba(30, 41, 59, 0.18),
+        0 0 0 1px rgba(241, 232, 227, 0.8);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 20;
+    }
+
+    .screen {
+      height: 100%;
+      background: var(--surface);
+      padding-top: 52px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Shared header */
+    .chat-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px 12px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--surface2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      color: var(--secondary);
+    }
+
+    .chat-header-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-header-title h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-header-title .sub {
+      font-size: 0.6875rem;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    /* Avatar */
+    .av {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .av.jean { background: linear-gradient(135deg, var(--primary), #fb8f87); }
+    .av.marie { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+    .av.thomas { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+    .av.sophie { background: linear-gradient(135deg, var(--accent2), #fdba74); }
+
+    /* --- Variant A: Chat bubbles --- */
+    .a-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg-row {
+      display: flex;
+      max-width: 100%;
+    }
+
+    .msg-row.me {
+      justify-content: flex-end;
+    }
+
+    .msg-row.them {
+      justify-content: flex-start;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .msg-block {
+      max-width: 78%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .msg-row.me .msg-block {
+      align-items: flex-end;
+      max-width: 78%;
+    }
+
+    .sender-name {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      padding-left: 2px;
+    }
+
+    .msg-row.me .sender-name {
+      display: none;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.875rem;
+      line-height: 1.45;
+    }
+
+    .bubble.them {
+      background: var(--white);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble.me {
+      background: var(--primary);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 0.625rem;
+      color: var(--text-soft);
+      margin-top: 4px;
+      padding-left: 2px;
+    }
+
+    .msg-row.me .msg-time {
+      text-align: right;
+      padding-right: 2px;
+      padding-left: 0;
+    }
+
+    .input-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px 24px;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+    }
+
+    .input-bar input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      background: var(--surface);
+      outline: none;
+      color: var(--text);
+    }
+
+    .input-bar input::placeholder {
+      color: var(--text-soft);
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: default;
+    }
+
+    /* --- Variant B: Threaded comments --- */
+    .b-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px 12px;
+    }
+
+    .comment-card {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comment-card:last-of-type {
+      border-bottom: none;
+    }
+
+    .comment-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .comment-head .av {
+      width: 32px;
+      height: 32px;
+      font-size: 0.6875rem;
+    }
+
+    .comment-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .comment-meta .name-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .comment-meta .name {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .comment-meta .time {
+      font-size: 0.6875rem;
+      color: var(--text-soft);
+    }
+
+    .comment-text {
+      margin: 6px 0 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .reply-btn {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: default;
+    }
+
+    .replies {
+      margin: 10px 0 0 42px;
+      padding-left: 12px;
+      border-left: 2px solid var(--border);
+    }
+
+    .reply-item {
+      padding: 10px 0;
+    }
+
+    .reply-item + .reply-item {
+      border-top: 1px solid rgba(241, 232, 227, 0.7);
+    }
+
+    .reactions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .react-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* --- Variant C: Activity feed --- */
+    .c-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feed-system {
+      text-align: center;
+      padding: 4px 8px;
+    }
+
+    .feed-system-inner {
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 8px;
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .feed-system .sys-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+
+    .feed-system p {
+      margin: 0;
+      font-size: 0.6875rem;
+      line-height: 1.4;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    .feed-system .sys-highlight {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .feed-msg {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      max-width: 92%;
+    }
+
+    .feed-msg .bubble.them {
+      max-width: 100%;
+    }
+
+    .feed-date {
+      text-align: center;
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #83: Event Chat / Comments</h1>
+    <p>3 variantes pour la discussion d'event</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="phone-wrap">
+      <div class="phone-label">
+        <strong>Variante A — Bulles de chat</strong>
+        <span>Style messagerie instantanée : bulles alignées, ton convivial, focus sur la conversation en direct.</span>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="screen-inner">
+            <header class="chat-header">
+              <button type="button" class="back-btn" aria-label="Retour">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <div class="chat-header-title">
+                <h2>Diner chez Marie</h2>
+                <div class="sub">Discussion de l'événement</div>
+              </div>
+            </header>
+            <div class="a-scroll">
+              <div class="msg-row them">
+                <div class="av marie" aria-hidden="true">M</div>
+                <div class="msg-block">
+                  <span class="sender-name">Marie</span>
+                  <div class="bubble them">Salut tout le monde ! On se retrouve samedi à 20h, j'ai prévu l'entrée.</div>
+                  <span class="msg-time">Aujourd'hui · 14:32</span>
+                </div>
+              </div>
+              <div class="msg-row them">
+                <div class="av thomas" aria-hidden="true">T</div>
+                <div class="msg-block">
+                  <span class="sender-name">Thomas</span>
+                  <div class="bubble them">J'amène du vin rouge, ça vous va ?</div>
+                  <span class="msg-time">14:38</span>
+                </div>
+              </div>
+              <div class="msg-row me">
+                <div class="msg-block">
+                  <div class="bubble me">Super ! J'amène du vin aussi — je prends du blanc pour l'apéro.</div>
+                  <span class="msg-time">14:41</span>
+                </div>
+              </div>
+              <div class="msg-row them">
+                <div class="av sophie" aria-hidden="true">S</div>
+                <div class="msg-block">
+                  <span class="sender-name">Sophie</span>
+                  <div class="bubble them">Qui amène le dessert ?</div>
+                  <span class="msg-time">14:45</span>
+                </div>
+              </div>
+              <div class="msg-row them">
+                <div class="av marie" aria-hidden="true">M</div>
+                <div class="msg-block">
+                  <span class="sender-name">Marie</span>
+                  <div class="bubble them">Moi ! Je fais un gâteau au chocolat.</div>
+                  <span class="msg-time">14:47</span>
+                </div>
+              </div>
+              <div class="msg-row me">
+                <div class="msg-block">
+                  <div class="bubble me">Parfait. Je peux prendre le fromage et le pain si vous voulez.</div>
+                  <span class="msg-time">14:50</span>
+                </div>
+              </div>
+            </div>
+            <div class="input-bar">
+              <input type="text" placeholder="Écrire un message…" readonly />
+              <button type="button" class="send-btn" aria-label="Envoyer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="phone-wrap">
+      <div class="phone-label">
+        <strong>Variante B — Commentaires filaires</strong>
+        <span>Liste structurée avec réponses indentées et réactions : proche d'un fil de discussion (forum / doc).</span>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="screen-inner">
+            <header class="chat-header">
+              <button type="button" class="back-btn" aria-label="Retour">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <div class="chat-header-title">
+                <h2>Diner chez Marie</h2>
+                <div class="sub">Commentaires</div>
+              </div>
+            </header>
+            <div class="b-scroll">
+              <article class="comment-card">
+                <div class="comment-head">
+                  <div class="av sophie" aria-hidden="true">S</div>
+                  <div class="comment-meta">
+                    <div class="name-row">
+                      <span class="name">Sophie</span>
+                      <span class="time">mar. 14:42</span>
+                    </div>
+                    <p class="comment-text">Qui amène le dessert pour samedi ? Je peux passer chercher des fruits si besoin.</p>
+                    <div class="reactions">
+                      <span class="react-pill">👍 2</span>
+                      <span class="react-pill">❤️ 1</span>
+                    </div>
+                    <button type="button" class="reply-btn">Répondre</button>
+                  </div>
+                </div>
+                <div class="replies">
+                  <div class="reply-item">
+                    <div class="comment-head">
+                      <div class="av marie" aria-hidden="true">M</div>
+                      <div class="comment-meta">
+                        <div class="name-row">
+                          <span class="name">Marie</span>
+                          <span class="time">14:45</span>
+                        </div>
+                        <p class="comment-text">Je m'occupe du dessert — gâteau au chocolat maison.</p>
+                        <div class="reactions">
+                          <span class="react-pill">👍 3</span>
+                        </div>
+                        <button type="button" class="reply-btn">Répondre</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="reply-item">
+                    <div class="comment-head">
+                      <div class="av jean" aria-hidden="true">J</div>
+                      <div class="comment-meta">
+                        <div class="name-row">
+                          <span class="name">Jean</span>
+                          <span class="time">14:48</span>
+                        </div>
+                        <p class="comment-text">Top ! Je prends le fromage et le pain dans ce cas.</p>
+                        <div class="reactions">
+                          <span class="react-pill">❤️ 2</span>
+                        </div>
+                        <button type="button" class="reply-btn">Répondre</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="comment-card">
+                <div class="comment-head">
+                  <div class="av thomas" aria-hidden="true">T</div>
+                  <div class="comment-meta">
+                    <div class="name-row">
+                      <span class="name">Thomas</span>
+                      <span class="time">mar. 14:36</span>
+                    </div>
+                    <p class="comment-text">Je ramène deux bouteilles de vin — dispo pour récupérer quelqu'un à la gare à 19h30 ?</p>
+                    <div class="reactions">
+                      <span class="react-pill">👍 1</span>
+                    </div>
+                    <button type="button" class="reply-btn">Répondre</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="input-bar">
+              <input type="text" placeholder="Ajouter un commentaire…" readonly />
+              <button type="button" class="send-btn" aria-label="Publier">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="phone-wrap">
+      <div class="phone-label">
+        <strong>Variante C — Fil d'activité</strong>
+        <span>Chronologie mêlant messages et actions système : vue « tout ce qui s'est passé » sur l'événement.</span>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="screen-inner">
+            <header class="chat-header">
+              <button type="button" class="back-btn" aria-label="Retour">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <div class="chat-header-title">
+                <h2>Diner chez Marie</h2>
+                <div class="sub">Activité</div>
+              </div>
+            </header>
+            <div class="c-scroll">
+              <div class="feed-date">Aujourd'hui</div>
+              <div class="feed-system">
+                <div class="feed-system-inner">
+                  <span class="sys-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                    </svg>
+                  </span>
+                  <p>Marie a ajouté <strong class="sys-highlight">Quiche lorraine</strong> au menu partagé.</p>
+                </div>
+              </div>
+              <div class="feed-msg">
+                <div class="av thomas" aria-hidden="true">T</div>
+                <div class="bubble them">J'amène le vin rouge pour accompagner — vous préférez bordeaux ou loire ?</div>
+              </div>
+              <div class="feed-system">
+                <div class="feed-system-inner">
+                  <span class="sys-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <path d="M22 4L12 14.01l-3-3" />
+                    </svg>
+                  </span>
+                  <p>Thomas a confirmé sa présence.</p>
+                </div>
+              </div>
+              <div class="feed-msg">
+                <div class="av sophie" aria-hidden="true">S</div>
+                <div class="bubble them">Je peux passer en vélo — quelqu'un a un cadenas de libre pour la cour ?</div>
+              </div>
+              <div class="feed-system">
+                <div class="feed-system-inner">
+                  <span class="sys-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" />
+                      <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                  </span>
+                  <p>Sophie a proposé un sondage de date pour le prochain brunch.</p>
+                </div>
+              </div>
+              <div class="feed-msg">
+                <div class="av jean" aria-hidden="true">J</div>
+                <div class="bubble them">Je m'occupe du fromage et du pain — je passe à la fromagerie samedi en début d'après-midi.</div>
+              </div>
+            </div>
+            <div class="input-bar">
+              <input type="text" placeholder="Écrire un message…" readonly />
+              <button type="button" class="send-btn" aria-label="Envoyer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

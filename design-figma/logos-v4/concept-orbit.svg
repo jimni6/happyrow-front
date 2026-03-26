@@ -1,0 +1,18 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Orbital ellipses -->
+  <ellipse cx="100" cy="100" rx="64" ry="28" fill="none" stroke="white" stroke-width="2" opacity="0.2" transform="rotate(-25, 100, 100)"/>
+  <ellipse cx="100" cy="100" rx="52" ry="22" fill="none" stroke="white" stroke-width="2" opacity="0.18" transform="rotate(30, 100, 100)"/>
+  <!-- Central body -->
+  <circle cx="100" cy="100" r="20" fill="white"/>
+  <!-- Orbiting satellites -->
+  <circle cx="46" cy="80" r="12" fill="white" opacity="0.75"/>
+  <circle cx="148" cy="116" r="10" fill="white" opacity="0.65"/>
+  <circle cx="120" cy="76" r="7" fill="white" opacity="0.5"/>
+</svg>

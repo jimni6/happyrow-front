@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #79: Event Templates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #f97066;
+      --secondary: #1e293b;
+      --accent: #fbbf24;
+      --accent2: #fb923c;
+      --surface-1: #fffbf5;
+      --surface-2: #fff7ed;
+      --white: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --border: #f1e8e3;
+      --phone-w: 375px;
+      --phone-h: 812px;
+      --radius-phone: 40px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(160deg, var(--surface-2) 0%, #fde8e4 40%, var(--surface-1) 100%);
+      color: var(--text);
+      padding: var(--space-5, 2rem) 1.5rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mockup-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 0 0 auto;
+    }
+
+    .mockup-label {
+      text-align: center;
+      max-width: 375px;
+    }
+
+    .mockup-label strong {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .mockup-label span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: var(--radius-phone);
+      background: var(--secondary);
+      padding: 10px;
+      box-shadow:
+        0 24px 48px rgba(30, 41, 59, 0.18),
+        0 8px 16px rgba(30, 41, 59, 0.08);
+      position: relative;
+    }
+
+    .phone-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: calc(var(--radius-phone) - 10px);
+      background: var(--surface-1);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    /* ——— Variant A ——— */
+    .va-header {
+      padding: 52px 1rem 1rem;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .va-back {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .va-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    .va-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0.35rem 0 0;
+    }
+
+    .va-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      padding-bottom: 5rem;
+    }
+
+    .va-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .va-card {
+      border-radius: 16px;
+      padding: 1rem 0.75rem;
+      border: 2px solid transparent;
+      text-align: center;
+      cursor: default;
+      transition: border-color 0.15s;
+    }
+
+    .va-card .emoji {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin-bottom: 0.35rem;
+    }
+
+    .va-card .name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .va-card .hint {
+      font-size: 0.65rem;
+      color: var(--text-subtle);
+      margin-top: 0.25rem;
+    }
+
+    .va-card.tint-warm {
+      background: #fff0ed;
+    }
+    .va-card.tint-orange {
+      background: #fff4e8;
+    }
+    .va-card.tint-pink {
+      background: #fce8f0;
+    }
+    .va-card.tint-yellow {
+      background: #fff9e6;
+    }
+    .va-card.tint-blue {
+      background: #e8f2fc;
+    }
+    .va-card.tint-green {
+      background: #e8f5e9;
+    }
+
+    .va-card.selected {
+      border-color: var(--primary);
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(249, 112, 102, 0.25);
+    }
+
+    .va-card.selected::after {
+      content: "✓";
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      line-height: 22px;
+      font-weight: 700;
+    }
+
+    .va-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 12px));
+      background: linear-gradient(to top, var(--surface-1) 70%, transparent);
+      text-align: center;
+    }
+
+    .va-scratch {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: default;
+    }
+
+    /* ——— Variant B ——— */
+    .vb-top {
+      padding: 48px 1rem 0.75rem;
+      background: var(--white);
+    }
+
+    .vb-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .vb-carousel {
+      display: flex;
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin: 0 -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      scrollbar-width: none;
+    }
+
+    .vb-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .vb-citem {
+      flex: 0 0 132px;
+      height: 100px;
+      border-radius: 14px;
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .vb-citem.selected {
+      border-color: var(--secondary);
+      box-shadow: 0 4px 12px rgba(30, 41, 59, 0.12);
+    }
+
+    .vb-citem .em {
+      font-size: 1.5rem;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .vb-citem .nm {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .vb-citem .inc {
+      font-size: 0.6rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 0.15rem;
+    }
+
+    .grad-diner {
+      background: linear-gradient(135deg, #f97066, #fb923c);
+    }
+    .grad-bbq {
+      background: linear-gradient(135deg, #ea580c, #fbbf24);
+    }
+    .grad-apero {
+      background: linear-gradient(135deg, #db2777, #f472b6);
+    }
+    .grad-brunch {
+      background: linear-gradient(135deg, #eab308, #fde047);
+    }
+    .grad-blank {
+      background: linear-gradient(135deg, #64748b, #94a3b8);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .grad-blank .nm {
+      font-size: 0.7rem;
+      text-shadow: none;
+      color: white;
+    }
+
+    .vb-preview {
+      padding: 0.5rem 1rem 0.65rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      flex: 0 1 auto;
+      max-height: 44%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .vb-preview-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .vb-item-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.28rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+
+    .vb-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .vb-item-row input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.5rem;
+      font-family: inherit;
+      font-size: 0.78rem;
+      background: var(--white);
+    }
+
+    .vb-remove {
+      color: var(--text-subtle);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: default;
+    }
+
+    .vb-form {
+      flex: 1;
+      min-height: 0;
+      padding: 0.75rem 1rem 1rem;
+      overflow-y: auto;
+    }
+
+    .vb-field {
+      margin-bottom: 1rem;
+    }
+
+    .vb-field label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .vb-field input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: var(--white);
+    }
+
+    /* ——— Variant C ——— */
+    .vc-bg {
+      flex: 1;
+      background: linear-gradient(180deg, #e2e8f0 0%, var(--surface-1) 45%);
+      position: relative;
+    }
+
+    .vc-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.35);
+    }
+
+    .vc-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-height: 92%;
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -8px 32px rgba(30, 41, 59, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .vc-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .vc-section-label {
+      padding: 0.5rem 1.25rem 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+    }
+
+    .vc-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.75rem 1.25rem;
+    }
+
+    .vc-row.selected {
+      background: rgba(249, 112, 102, 0.06);
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+
+    .ico-bg-diner {
+      background: #fff0ed;
+    }
+    .ico-bg-bbq {
+      background: #fff4e8;
+    }
+    .ico-bg-apero {
+      background: #fce8f0;
+    }
+    .ico-bg-brunch {
+      background: #fff9e6;
+    }
+    .ico-bg-jeux {
+      background: #e8f2fc;
+    }
+    .ico-bg-pic {
+      background: #e8f5e9;
+    }
+
+    .vc-scratch-inline {
+      margin: 0.5rem 1.25rem 0.75rem;
+    }
+
+    .vc-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 10px auto 6px;
+    }
+
+    .vc-sheet-h {
+      padding: 0.25rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vc-sheet-h h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .vc-sheet-h p {
+      margin: 0.25rem 0 0;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .vc-list {
+      padding: 0;
+    }
+
+    .vc-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vc-ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .vc-row-txt {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .vc-row-txt .t1 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .vc-row-txt .t2 {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .vc-chev {
+      color: var(--text-subtle);
+      font-size: 1rem;
+    }
+
+    .vc-scratch-row {
+      padding: 1rem 1.25rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface-1);
+    }
+
+    .vc-scratch-btn {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: default;
+    }
+
+    /* Variant C preview list */
+    .vc-preview-body {
+      padding: 0 1.25rem 0.75rem;
+    }
+
+    .vc-prev-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .vc-prev-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    .vc-cat {
+      width: 28px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .vc-prev-list .nm {
+      flex: 1;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    .vc-prev-list .qty {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    .vc-actions {
+      display: flex;
+      gap: 0.65rem;
+      padding: 1rem 1.25rem calc(1rem + 8px);
+      border-top: 1px solid var(--border);
+      background: var(--surface-1);
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      cursor: default;
+    }
+
+    .btn-outline {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary);
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #79: Event Templates</h1>
+    <p>3 variantes pour les templates d'events pre-remplis</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variant A phone mockup">
+        <div class="phone-inner">
+          <div class="notch" aria-hidden="true"></div>
+          <header class="va-header">
+            <div class="va-back">← Back</div>
+            <h2 class="va-title">Choose a template</h2>
+            <p class="va-sub">Pre-fill resources for your event</p>
+          </header>
+          <div class="va-scroll">
+            <div class="va-grid">
+              <div class="va-card tint-warm selected">
+                <div class="emoji" aria-hidden="true">🍽️</div>
+                <div class="name">Diner</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+              <div class="va-card tint-orange">
+                <div class="emoji" aria-hidden="true">🔥</div>
+                <div class="name">BBQ</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+              <div class="va-card tint-pink">
+                <div class="emoji" aria-hidden="true">🍷</div>
+                <div class="name">Apero</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+              <div class="va-card tint-yellow">
+                <div class="emoji" aria-hidden="true">🥐</div>
+                <div class="name">Brunch</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+              <div class="va-card tint-blue">
+                <div class="emoji" aria-hidden="true">🎲</div>
+                <div class="name">Soiree jeux</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+              <div class="va-card tint-green">
+                <div class="emoji" aria-hidden="true">🧺</div>
+                <div class="name">Pique-nique</div>
+                <div class="hint">8 items pre-filled</div>
+              </div>
+            </div>
+          </div>
+          <footer class="va-footer">
+            <button type="button" class="va-scratch">Start from scratch</button>
+          </footer>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant A — Template Grid Picker</strong>
+        <span>First step after « + » : 2-column cards, one selected (border + ✓), text-only « Start from scratch ».</span>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variant B phone mockup">
+        <div class="phone-inner">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="vb-top">
+            <div class="vb-label">Start with a template</div>
+            <div class="vb-carousel">
+              <div class="vb-citem grad-diner selected">
+                <span class="em">🍽️</span>
+                <span class="nm">Diner</span>
+                <span class="inc">8 items included</span>
+              </div>
+              <div class="vb-citem grad-bbq">
+                <span class="em">🔥</span>
+                <span class="nm">BBQ</span>
+                <span class="inc">8 items included</span>
+              </div>
+              <div class="vb-citem grad-apero">
+                <span class="em">🍷</span>
+                <span class="nm">Apero</span>
+                <span class="inc">8 items included</span>
+              </div>
+              <div class="vb-citem grad-brunch">
+                <span class="em">🥐</span>
+                <span class="nm">Brunch</span>
+                <span class="inc">8 items included</span>
+              </div>
+              <div class="vb-citem grad-blank">
+                <span class="nm">Or start<br />blank</span>
+              </div>
+            </div>
+          </div>
+          <div class="vb-preview">
+            <div class="vb-preview-title">Diner — included resources (editable)</div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Aperitif" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Entree" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Plat" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Fromage" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Dessert" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Vin rouge" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Vin blanc" readonly /></div>
+            <div class="vb-item-row"><span class="vb-remove">×</span><input type="text" value="Eau" readonly /></div>
+          </div>
+          <div class="vb-form">
+            <div class="vb-field">
+              <label>Event name</label>
+              <input type="text" value="Diner" readonly />
+            </div>
+            <div class="vb-field">
+              <label>Date</label>
+              <input type="text" value="Sat, Apr 5" readonly />
+            </div>
+            <div class="vb-field">
+              <label>Location</label>
+              <input type="text" value="At mine" readonly />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant B — Horizontal Carousel</strong>
+        <span>Top of create form: scrollable gradient cards, editable pre-filled list below selection, event fields use template name.</span>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variant C phone mockup">
+        <div class="phone-inner">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="vc-bg">
+            <div class="vc-dim" aria-hidden="true"></div>
+            <div class="vc-sheet">
+              <div class="vc-handle" aria-hidden="true"></div>
+              <div class="vc-sheet-h">
+                <h3>New event</h3>
+                <p>Choose a template, then review what will be pre-filled.</p>
+              </div>
+              <div class="vc-scroll">
+                <div class="vc-section-label">Templates</div>
+                <div class="vc-list">
+                  <div class="vc-row selected">
+                    <div class="vc-ico ico-bg-diner">🍽️</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">Diner</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                  <div class="vc-row">
+                    <div class="vc-ico ico-bg-bbq">🔥</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">BBQ</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                  <div class="vc-row">
+                    <div class="vc-ico ico-bg-apero">🍷</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">Apero</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                  <div class="vc-row">
+                    <div class="vc-ico ico-bg-brunch">🥐</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">Brunch</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                  <div class="vc-row">
+                    <div class="vc-ico ico-bg-jeux">🎲</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">Soiree jeux</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                  <div class="vc-row">
+                    <div class="vc-ico ico-bg-pic">🧺</div>
+                    <div class="vc-row-txt">
+                      <div class="t1">Pique-nique</div>
+                      <div class="t2">8 food &amp; drink items</div>
+                    </div>
+                    <span class="vc-chev" aria-hidden="true">›</span>
+                  </div>
+                </div>
+                <div class="vc-scratch-inline">
+                  <button type="button" class="vc-scratch-btn">Start from scratch</button>
+                </div>
+                <div class="vc-divider" aria-hidden="true"></div>
+                <div class="vc-section-label">Preview — Diner</div>
+                <div class="vc-preview-body">
+                  <ul class="vc-prev-list">
+                    <li><span class="vc-cat">🥂</span><span class="nm">Aperitif</span><span class="qty">×1 lot</span></li>
+                    <li><span class="vc-cat">🥗</span><span class="nm">Entree</span><span class="qty">×1</span></li>
+                    <li><span class="vc-cat">🍖</span><span class="nm">Plat</span><span class="qty">×1</span></li>
+                    <li><span class="vc-cat">🧀</span><span class="nm">Fromage</span><span class="qty">×1 plateau</span></li>
+                    <li><span class="vc-cat">🍰</span><span class="nm">Dessert</span><span class="qty">×1</span></li>
+                    <li><span class="vc-cat">🍷</span><span class="nm">Vin rouge</span><span class="qty">×2 bouteilles</span></li>
+                    <li><span class="vc-cat">🥂</span><span class="nm">Vin blanc</span><span class="qty">×1</span></li>
+                    <li><span class="vc-cat">💧</span><span class="nm">Eau</span><span class="qty">×2 carafes</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="vc-actions">
+                <button type="button" class="btn-outline">Customize</button>
+                <button type="button" class="btn-primary">Use this template</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant C — Bottom Sheet Picker</strong>
+        <span>Scrollable sheet: template rows (40px emoji circle + title + description + chevron), outline « Start from scratch », then preview with suggested qty + primary / outline actions.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

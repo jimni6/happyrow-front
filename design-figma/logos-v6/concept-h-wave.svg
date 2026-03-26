@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Two pillars -->
+  <rect x="48" y="40" width="22" height="120" rx="11" fill="white" opacity="0.65"/>
+  <rect x="130" y="40" width="22" height="120" rx="11" fill="white" opacity="0.65"/>
+  <!-- Wavy crossbar (S-curve) -->
+  <path d="M59,100 C80,76 120,124 141,100" stroke="white" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.85"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Left vertical petal -->
+  <ellipse cx="62" cy="100" rx="20" ry="56" fill="white" opacity="0.4"/>
+  <!-- Right vertical petal -->
+  <ellipse cx="138" cy="100" rx="20" ry="56" fill="white" opacity="0.4"/>
+  <!-- Horizontal connecting petal -->
+  <ellipse cx="100" cy="100" rx="56" ry="18" fill="white" opacity="0.38"/>
+  <!-- Decorative corner petals -->
+  <ellipse cx="62" cy="46" rx="10" ry="16" fill="white" opacity="0.2" transform="rotate(15, 62, 46)"/>
+  <ellipse cx="138" cy="46" rx="10" ry="16" fill="white" opacity="0.2" transform="rotate(-15, 138, 46)"/>
+  <ellipse cx="62" cy="154" rx="10" ry="16" fill="white" opacity="0.2" transform="rotate(-15, 62, 154)"/>
+  <ellipse cx="138" cy="154" rx="10" ry="16" fill="white" opacity="0.2" transform="rotate(15, 138, 154)"/>
+</svg>

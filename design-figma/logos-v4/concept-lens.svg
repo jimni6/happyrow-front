@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Two overlapping circles -->
+  <circle cx="74" cy="100" r="52" fill="white" opacity="0.25"/>
+  <circle cx="126" cy="100" r="52" fill="white" opacity="0.25"/>
+  <!-- Bright intersection (vesica piscis) -->
+  <path d="M100,52 A52,52 0 0,1 100,148 A52,52 0 0,1 100,52 Z" fill="white" opacity="0.45"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Soft bokeh circles -->
+  <circle cx="60" cy="56" r="30" fill="white" opacity="0.12"/>
+  <circle cx="144" cy="48" r="22" fill="white" opacity="0.1"/>
+  <circle cx="100" cy="104" r="40" fill="white" opacity="0.15"/>
+  <circle cx="156" cy="124" r="26" fill="white" opacity="0.12"/>
+  <circle cx="44" cy="136" r="18" fill="white" opacity="0.14"/>
+  <circle cx="124" cy="64" r="14" fill="white" opacity="0.18"/>
+  <circle cx="76" cy="152" r="24" fill="white" opacity="0.1"/>
+  <!-- Bright highlights -->
+  <circle cx="76" cy="80" r="8" fill="white" opacity="0.55"/>
+  <circle cx="120" cy="100" r="10" fill="white" opacity="0.5"/>
+  <circle cx="92" cy="132" r="6" fill="white" opacity="0.4"/>
+</svg>

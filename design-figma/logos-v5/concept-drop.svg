@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Teardrop / water drop shape, no background -->
+  <defs>
+    <linearGradient id="dropGrad" x1="70" y1="30" x2="140" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBBF24"/>
+      <stop offset="0.5" stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <path d="M100,28 C100,28 52,84 52,120 A48,48 0 0,0 148,120 C148,84 100,28 100,28 Z" fill="url(#dropGrad)" opacity="0.85"/>
+  <!-- Inner highlight -->
+  <ellipse cx="88" cy="108" rx="16" ry="22" fill="white" opacity="0.2" transform="rotate(-12, 88, 108)"/>
+</svg>

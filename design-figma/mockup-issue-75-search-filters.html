@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #75: Search & Filters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #F97066;
+      --secondary: #1E293B;
+      --accent: #FBBF24;
+      --accent2: #FB923C;
+      --surface: #FFFBF5;
+      --surface2: #FFF7ED;
+      --white: #ffffff;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-soft: #94A3B8;
+      --border: #F1E8E3;
+      --phone-w: 375px;
+      --phone-h: 812px;
+      --radius-phone: 40px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(165deg, var(--surface2) 0%, var(--surface) 45%, #fde8e4 100%);
+      color: var(--text);
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .phone-label {
+      text-align: center;
+      max-width: 380px;
+    }
+
+    .phone-label strong {
+      display: block;
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    .phone-label span {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      border-radius: var(--radius-phone);
+      background: var(--white);
+      box-shadow:
+        0 25px 50px -12px rgba(30, 41, 59, 0.18),
+        0 0 0 1px rgba(241, 232, 227, 0.8);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 20;
+    }
+
+    .screen {
+      height: 100%;
+      background: var(--surface);
+      padding-top: 52px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0 16px 20px;
+    }
+
+    .greeting {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 12px;
+      padding-top: 4px;
+    }
+
+    /* --- Variant A --- */
+    .a-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .a-search svg {
+      flex-shrink: 0;
+      color: var(--text-soft);
+    }
+
+    .a-search input {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text);
+      width: 100%;
+      outline: none;
+    }
+
+    .a-search input::placeholder {
+      color: var(--text-soft);
+    }
+
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex-shrink: 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text-muted);
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+
+    .event-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .event-row {
+      display: flex;
+      align-items: stretch;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 72px;
+    }
+
+    .event-row.dimmed {
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    .event-bar {
+      width: 5px;
+      flex-shrink: 0;
+    }
+
+    .event-bar.c1 { background: var(--primary); }
+    .event-bar.c2 { background: var(--accent2); }
+    .event-bar.c3 { background: var(--accent); }
+    .event-bar.c4 { background: #94a3b8; }
+
+    .event-body {
+      flex: 1;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .event-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .avatar-stack {
+      display: flex;
+      align-items: center;
+      padding-right: 10px;
+    }
+
+    .avatar-stack .av {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--white);
+      margin-left: -8px;
+      background: linear-gradient(135deg, var(--accent2), var(--primary));
+    }
+
+    .avatar-stack .av:first-child {
+      margin-left: 0;
+    }
+
+    /* Sticky block variant A */
+    .variant-a .sticky-top {
+      flex-shrink: 0;
+      background: var(--surface);
+      padding-bottom: 2px;
+    }
+
+    /* --- Variant B --- */
+    .b-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+
+    .b-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .b-search input {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .filter-btn {
+      position: relative;
+      width: 48px;
+      min-width: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      color: var(--secondary);
+    }
+
+    .filter-btn.has-badge {
+      border-color: var(--primary);
+      background: #fff5f4;
+    }
+
+    .filter-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 0.625rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropdown-panel {
+      margin: -4px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      padding: 14px;
+      box-shadow: 0 12px 24px rgba(30, 41, 59, 0.08);
+      flex-shrink: 0;
+    }
+
+    .dropdown-panel h4 {
+      margin: 0 0 10px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-soft);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 12px;
+    }
+
+    .filter-group .opts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .toggle-pair {
+      display: flex;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .toggle-pair button {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      background: var(--white);
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+
+    .toggle-pair button.on {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .radio-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .radio-opt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .radio-opt .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .radio-opt .dot.on {
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 3px var(--white), inset 0 0 0 8px var(--primary);
+    }
+
+    .variant-b .screen-inner-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Variant C --- */
+    .segmented {
+      display: flex;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .segmented button {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .segmented button.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .c-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .c-search input {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .month-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 8px 0 10px;
+    }
+
+    .month-header:first-of-type {
+      margin-top: 0;
+    }
+
+    .event-minimal {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .event-minimal:last-child {
+      border-bottom: none;
+    }
+
+    .event-date-box {
+      width: 44px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .event-date-box .d {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--secondary);
+      line-height: 1.1;
+    }
+
+    .event-date-box .m {
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      text-transform: uppercase;
+    }
+
+    .event-min-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .event-min-body .t {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 2px;
+    }
+
+    .event-min-body .loc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .variant-c .list-scroll {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #75: Search &amp; Filters</h1>
+    <p>3 variantes pour rechercher et filtrer les events</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="phone-wrap">
+      <div class="phone variant-a">
+        <div class="notch" aria-hidden="true"></div>
+        <div class="screen">
+          <div class="screen-inner variant-a">
+            <div class="sticky-top">
+              <p class="greeting">Bonjour Jean</p>
+              <div class="a-search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input type="text" placeholder="Rechercher un event…" readonly />
+              </div>
+              <div class="chips-row">
+                <span class="chip">All</span>
+                <span class="chip active">This week</span>
+                <span class="chip">Organizer</span>
+                <span class="chip">Invited</span>
+                <span class="chip">Upcoming</span>
+              </div>
+            </div>
+            <div class="event-list">
+              <div class="event-row">
+                <div class="event-bar c1"></div>
+                <div class="event-body">
+                  <div class="event-title">Diner chez Marie</div>
+                  <div class="event-meta">12 avr · 19:30</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #64748b, #94a3b8);"></div>
+                </div>
+              </div>
+              <div class="event-row dimmed" title="Hors de la semaine — filtré">
+                <div class="event-bar c2"></div>
+                <div class="event-body">
+                  <div class="event-title">BBQ au parc</div>
+                  <div class="event-meta">19 avr · 12:00</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                </div>
+              </div>
+              <div class="event-row">
+                <div class="event-bar c3"></div>
+                <div class="event-body">
+                  <div class="event-title">Soiree jeux</div>
+                  <div class="event-meta">3 mai · 20:00</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #fbbf24, #f97316);"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #1e293b, #475569);"></div>
+                </div>
+              </div>
+              <div class="event-row">
+                <div class="event-bar c4"></div>
+                <div class="event-body">
+                  <div class="event-title">Brunch dominical</div>
+                  <div class="event-meta">17 mai · 11:00</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #fb923c, #f97066);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante A — Search Bar + Filter Chips</strong>
+        <span>Barre de recherche sticky, chips horizontales scrollables, liste compacte avec barre de couleur et avatars.</span>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="phone-wrap">
+      <div class="phone variant-b">
+        <div class="notch" aria-hidden="true"></div>
+        <div class="screen">
+          <div class="screen-inner" style="padding-bottom: 12px;">
+            <p class="greeting">Bonjour Jean</p>
+            <div class="screen-inner-scroll">
+              <div class="b-row">
+                <div class="b-search">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.35-4.35" />
+                  </svg>
+                  <input type="text" placeholder="Rechercher…" readonly />
+                </div>
+                <div class="filter-btn has-badge" aria-label="Filtres actifs">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                  </svg>
+                  <span class="filter-badge">3</span>
+                </div>
+              </div>
+              <div class="dropdown-panel">
+                <div class="filter-grid">
+                  <div class="filter-group">
+                    <h4>Role</h4>
+                    <div class="toggle-pair">
+                      <button type="button" class="on">Organizer</button>
+                      <button type="button">Invited</button>
+                    </div>
+                  </div>
+                  <div class="filter-group">
+                    <h4>Time</h4>
+                    <div class="radio-row">
+                      <div class="radio-opt"><span class="dot on"></span> This week</div>
+                      <div class="radio-opt"><span class="dot"></span> This month</div>
+                      <div class="radio-opt"><span class="dot"></span> All</div>
+                    </div>
+                  </div>
+                  <div class="filter-group" style="grid-column: 1 / -1;">
+                    <h4>Sort</h4>
+                    <div class="radio-row" style="flex-direction: row; gap: 16px;">
+                      <div class="radio-opt"><span class="dot on"></span> Date</div>
+                      <div class="radio-opt"><span class="dot"></span> Name</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="event-list" style="flex: none;">
+                <div class="event-row">
+                  <div class="event-bar c1"></div>
+                  <div class="event-body">
+                    <div class="event-title">Diner chez Marie</div>
+                    <div class="event-meta">12 avr · 19:30</div>
+                  </div>
+                  <div class="avatar-stack">
+                    <div class="av"></div>
+                    <div class="av" style="background: linear-gradient(135deg, #64748b, #94a3b8);"></div>
+                  </div>
+                </div>
+                <div class="event-row">
+                  <div class="event-bar c2"></div>
+                  <div class="event-body">
+                    <div class="event-title">BBQ au parc</div>
+                    <div class="event-meta">19 avr · 12:00</div>
+                  </div>
+                  <div class="avatar-stack">
+                    <div class="av"></div>
+                  </div>
+                </div>
+                <div class="event-row">
+                  <div class="event-bar c3"></div>
+                  <div class="event-body">
+                    <div class="event-title">Soiree jeux</div>
+                    <div class="event-meta">3 mai · 20:00</div>
+                  </div>
+                  <div class="avatar-stack">
+                    <div class="av"></div>
+                    <div class="av" style="background: linear-gradient(135deg, #fbbf24, #f97316);"></div>
+                    <div class="av" style="background: linear-gradient(135deg, #1e293b, #475569);"></div>
+                  </div>
+                </div>
+                <div class="event-row">
+                  <div class="event-bar c4"></div>
+                  <div class="event-body">
+                    <div class="event-title">Brunch dominical</div>
+                    <div class="event-meta">17 mai · 11:00</div>
+                  </div>
+                  <div class="avatar-stack">
+                    <div class="av"></div>
+                    <div class="av" style="background: linear-gradient(135deg, #fb923c, #f97066);"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante B — Search + Dropdown Filters</strong>
+        <span>Icône Filtre avec badge, panneau déroulant (rôle, temps, tri) et liste d’events en dessous.</span>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="phone-wrap">
+      <div class="phone variant-c">
+        <div class="notch" aria-hidden="true"></div>
+        <div class="screen">
+          <div class="screen-inner" style="height: 100%;">
+            <p class="greeting">Bonjour Jean</p>
+            <div class="segmented">
+              <button type="button" class="active">Upcoming</button>
+              <button type="button">Past</button>
+              <button type="button">All</button>
+            </div>
+            <div class="c-search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <input type="text" placeholder="Rechercher un event…" readonly />
+            </div>
+            <div class="list-scroll">
+              <div class="month-header">Avril 2026</div>
+              <div class="event-minimal">
+                <div class="event-date-box">
+                  <div class="d">12</div>
+                  <div class="m">avr</div>
+                </div>
+                <div class="event-min-body">
+                  <div class="t">Diner chez Marie</div>
+                  <div class="loc">Chez Marie · Paris</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #64748b, #94a3b8);"></div>
+                </div>
+              </div>
+              <div class="event-minimal">
+                <div class="event-date-box">
+                  <div class="d">19</div>
+                  <div class="m">avr</div>
+                </div>
+                <div class="event-min-body">
+                  <div class="t">BBQ au parc</div>
+                  <div class="loc">Parc des Buttes</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                </div>
+              </div>
+              <div class="month-header">Mai 2026</div>
+              <div class="event-minimal">
+                <div class="event-date-box">
+                  <div class="d">3</div>
+                  <div class="m">mai</div>
+                </div>
+                <div class="event-min-body">
+                  <div class="t">Soiree jeux</div>
+                  <div class="loc">Loft · Lyon</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #fbbf24, #f97316);"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #1e293b, #475569);"></div>
+                </div>
+              </div>
+              <div class="event-minimal">
+                <div class="event-date-box">
+                  <div class="d">17</div>
+                  <div class="m">mai</div>
+                </div>
+                <div class="event-min-body">
+                  <div class="t">Brunch dominical</div>
+                  <div class="loc">Café du canal</div>
+                </div>
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av" style="background: linear-gradient(135deg, #fb923c, #f97066);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante C — Segmented Tabs + Inline Search</strong>
+        <span>Onglets Upcoming / Past / All, recherche sous les segments, liste groupée par mois avec date, lieu et avatars.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Sparse background noise -->
+  <circle cx="96" cy="56" r="2" fill="white" opacity="0.15"/>
+  <circle cx="112" cy="68" r="2.5" fill="white" opacity="0.12"/>
+  <circle cx="88" cy="140" r="2" fill="white" opacity="0.15"/>
+  <circle cx="116" cy="148" r="2" fill="white" opacity="0.12"/>
+  <circle cx="104" cy="44" r="1.5" fill="white" opacity="0.1"/>
+  <circle cx="100" cy="160" r="1.5" fill="white" opacity="0.1"/>
+  <!-- Dense left column -->
+  <circle cx="58" cy="44" r="5" fill="white" opacity="0.65"/>
+  <circle cx="66" cy="58" r="4" fill="white" opacity="0.55"/>
+  <circle cx="60" cy="72" r="6" fill="white" opacity="0.6"/>
+  <circle cx="64" cy="86" r="3.5" fill="white" opacity="0.5"/>
+  <circle cx="58" cy="96" r="5" fill="white" opacity="0.7"/>
+  <circle cx="66" cy="108" r="4" fill="white" opacity="0.55"/>
+  <circle cx="60" cy="122" r="5.5" fill="white" opacity="0.6"/>
+  <circle cx="64" cy="136" r="3.5" fill="white" opacity="0.5"/>
+  <circle cx="58" cy="148" r="5" fill="white" opacity="0.65"/>
+  <circle cx="62" cy="160" r="4" fill="white" opacity="0.55"/>
+  <!-- Dense right column -->
+  <circle cx="140" cy="44" r="5" fill="white" opacity="0.65"/>
+  <circle cx="134" cy="56" r="4" fill="white" opacity="0.55"/>
+  <circle cx="142" cy="70" r="5.5" fill="white" opacity="0.6"/>
+  <circle cx="136" cy="84" r="3.5" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="96" r="5" fill="white" opacity="0.7"/>
+  <circle cx="134" cy="110" r="4" fill="white" opacity="0.55"/>
+  <circle cx="142" cy="124" r="6" fill="white" opacity="0.6"/>
+  <circle cx="136" cy="138" r="3.5" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="150" r="5" fill="white" opacity="0.65"/>
+  <circle cx="138" cy="162" r="3.5" fill="white" opacity="0.5"/>
+  <!-- Dense crossbar -->
+  <circle cx="78" cy="98" r="4.5" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="102" r="5.5" fill="white" opacity="0.7"/>
+  <circle cx="100" cy="100" r="7" fill="white" opacity="0.85"/>
+  <circle cx="110" cy="98" r="5.5" fill="white" opacity="0.7"/>
+  <circle cx="122" cy="102" r="4.5" fill="white" opacity="0.6"/>
+</svg>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Logo Concepts v5</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e2e8f0; padding: 3rem 2rem; }
+
+  h1 { text-align: center; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h1 span {
+    background: linear-gradient(135deg, #F97066, #FB923C);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 3rem; }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: #475569; margin-bottom: 1.5rem;
+    max-width: 1200px; margin-left: auto; margin-right: auto;
+    padding-left: 4px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: #F97066; }
+
+  .card img { width: 130px; height: 130px; }
+
+  .card--checker {
+    background:
+      linear-gradient(#1a1a1a, #1a1a1a) padding-box,
+      linear-gradient(135deg, #2a2a2a, #1a1a1a) border-box;
+  }
+  .card--checker .card-preview {
+    background: repeating-conic-gradient(#222 0% 25%, #1a1a1a 0% 50%) 50% / 12px 12px;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .card-number {
+    font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+    color: #F97066;
+    background: rgba(249,112,102,0.1);
+    padding: 3px 10px; border-radius: 100px;
+  }
+
+  .card-name { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; }
+
+  .card-desc {
+    font-size: 0.75rem; color: #64748b; text-align: center; line-height: 1.5;
+  }
+
+  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; }
+
+  .tag {
+    font-size: 0.55rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; border: 1px solid #333; color: #94a3b8;
+  }
+
+  hr { border: none; border-top: 1px solid #222; max-width: 1200px; margin: 0 auto 2rem; }
+</style>
+</head>
+<body>
+
+<h1>HappyRow &mdash; <span>v5 Explorations</span></h1>
+<p class="subtitle">10 concepts creatifs &bull; Nouvelles directions graphiques</p>
+
+<p class="section-label">Sur fond gradient (app icon)</p>
+<div class="grid">
+
+  <div class="card">
+    <span class="card-number">01</span>
+    <img src="concept-blob.svg">
+    <div class="card-name">Blob</div>
+    <div class="card-desc">Forme organique irreguliere. Fluide, moderne, tendance tech.</div>
+    <div class="card-tags"><span class="tag">organique</span><span class="tag">tendance</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">02</span>
+    <img src="concept-aurora.svg">
+    <div class="card-name">Aurora</div>
+    <div class="card-desc">Bandes de lumiere fluides + points lumineux. Onirique, atmospherique.</div>
+    <div class="card-tags"><span class="tag">flow</span><span class="tag">poetique</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">03</span>
+    <img src="concept-spiral.svg">
+    <div class="card-name">Spiral</div>
+    <div class="card-desc">Spirale de dots croissants. Croissance, mouvement, attraction.</div>
+    <div class="card-tags"><span class="tag">mathematique</span><span class="tag">dynamique</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">04</span>
+    <img src="concept-bokeh.svg">
+    <div class="card-name">Bokeh</div>
+    <div class="card-desc">Lumieres floues superposees. Chaleur, soiree, ambiance festive.</div>
+    <div class="card-tags"><span class="tag">photo</span><span class="tag">ambiance</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">05</span>
+    <img src="concept-pinwheel.svg">
+    <div class="card-name">Pinwheel</div>
+    <div class="card-desc">Moulin a 3 pales separees. Rotation, energie, jeu.</div>
+    <div class="card-tags"><span class="tag">geometrique</span><span class="tag">ludique</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">06</span>
+    <img src="concept-layers.svg">
+    <div class="card-name">Layers</div>
+    <div class="card-desc">Carres empiles et pivotes. Profondeur, empilement d'evenements.</div>
+    <div class="card-tags"><span class="tag">3D</span><span class="tag">structure</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">07</span>
+    <img src="concept-ribbon.svg">
+    <div class="card-name">Ribbon</div>
+    <div class="card-desc">Ruban en S fluide et epais. Mouvement, lien, elegance.</div>
+    <div class="card-tags"><span class="tag">flow</span><span class="tag">elegant</span></div>
+  </div>
+
+</div>
+
+<hr>
+<p class="section-label">Sans fond (standalone mark)</p>
+<div class="grid">
+
+  <div class="card card--checker">
+    <span class="card-number">08</span>
+    <div class="card-preview"><img src="concept-mosaic.svg"></div>
+    <div class="card-name">Mosaic</div>
+    <div class="card-desc">Grille 4x4 de tuiles colorees. Diversite, pixels, communaute.</div>
+    <div class="card-tags"><span class="tag">grille</span><span class="tag">colorful</span></div>
+  </div>
+
+  <div class="card card--checker">
+    <span class="card-number">09</span>
+    <div class="card-preview"><img src="concept-drop.svg"></div>
+    <div class="card-name">Drop</div>
+    <div class="card-desc">Goutte d'eau en gradient triple. Energie, naissance, chaleur.</div>
+    <div class="card-tags"><span class="tag">organique</span><span class="tag">gradient</span></div>
+  </div>
+
+  <div class="card card--checker">
+    <span class="card-number">10</span>
+    <div class="card-preview"><img src="concept-origami.svg"></div>
+    <div class="card-name">Origami</div>
+    <div class="card-desc">Diamant plie en facettes colorees. Geometrie, craft, precision.</div>
+    <div class="card-tags"><span class="tag">geometrique</span><span class="tag">craft</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>

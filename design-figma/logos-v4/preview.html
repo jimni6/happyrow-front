@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Logo Concepts v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f1f1;
+    color: #1e293b;
+    padding: 3rem 2rem;
+  }
+
+  h1 { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h1 span { color: #F97066; }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+  }
+
+  .inspiration {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 3rem;
+  }
+
+  .inspiration strong { color: #F97066; }
+
+  .section-label {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .card img { width: 120px; height: 120px; }
+
+  .card--standalone {
+    background: repeating-conic-gradient(#f8f8f8 0% 25%, #fff 0% 50%) 50% / 16px 16px;
+  }
+
+  .card-number {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #F97066;
+    background: rgba(249,112,102,0.08);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .card-name { font-size: 1rem; font-weight: 700; color: #1e293b; }
+
+  .card-desc {
+    font-size: 0.78rem;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tag {
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #f1f5f9;
+    color: #64748b;
+  }
+
+  .tag--confetti { background: #FEF3C7; color: #92400E; }
+  .tag--venn { background: #DBEAFE; color: #1E40AF; }
+  .tag--hybrid { background: #F3E8FF; color: #6B21A8; }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>HappyRow &mdash; <span>Logo Concepts v4</span></h1>
+<p class="subtitle">10 explorations creatives &bull; Palette "Warm Social"</p>
+<p class="inspiration">Inspirations: <strong>Confetti</strong> (scatter festif) + <strong>Venn</strong> (cercles superposes)</p>
+
+<p class="section-label">Sur fond gradient (style app icon)</p>
+<div class="grid">
+
+  <div class="card">
+    <span class="card-number">01</span>
+    <img src="concept-burst.svg" alt="Burst">
+    <div class="card-name">Burst</div>
+    <div class="card-desc">Explosion asymetrique de dots depuis un point decentre. Energie, fete.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">02</span>
+    <img src="concept-constellation.svg" alt="Constellation">
+    <div class="card-name">Constellation</div>
+    <div class="card-desc">Dots relies par des lignes fines. Reseau social, connexion entre amis.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span><span class="tag tag--hybrid">structure</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">03</span>
+    <img src="concept-bloom.svg" alt="Bloom">
+    <div class="card-name">Bloom</div>
+    <div class="card-desc">Fleur de 5 petales translucides. Eclosion, epanouissement, partage.</div>
+    <div class="card-tags"><span class="tag tag--venn">venn</span><span class="tag tag--hybrid">organique</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">04</span>
+    <img src="concept-lens.svg" alt="Lens">
+    <div class="card-name">Lens</div>
+    <div class="card-desc">Deux cercles dont l'intersection brille. L'espace de rencontre.</div>
+    <div class="card-tags"><span class="tag tag--venn">venn</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">05</span>
+    <img src="concept-molecule.svg" alt="Molecule">
+    <div class="card-name">Molecule</div>
+    <div class="card-desc">Structure moleculaire organique. Liens, atomes, chimie sociale.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span><span class="tag tag--venn">venn</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">06</span>
+    <img src="concept-orbit.svg" alt="Orbit">
+    <div class="card-name">Orbit</div>
+    <div class="card-desc">Systeme solaire: noyau central + satellites en orbite. Graviter ensemble.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span><span class="tag tag--hybrid">structure</span></div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">07</span>
+    <img src="concept-flow.svg" alt="Flow">
+    <div class="card-name">Flow</div>
+    <div class="card-desc">Riviere diagonale de dots croissants puis decroissants. Mouvement, flux.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span><span class="tag tag--hybrid">dynamique</span></div>
+  </div>
+
+</div>
+
+<hr>
+<p class="section-label">Sans fond (mark standalone sur damier transparent)</p>
+<div class="grid">
+
+  <div class="card card--standalone">
+    <span class="card-number">08</span>
+    <img src="concept-nebula.svg" alt="Nebula">
+    <div class="card-name">Nebula</div>
+    <div class="card-desc">Nuage de cercles colores superposes. Nuance, profondeur, chaleur.</div>
+    <div class="card-tags"><span class="tag tag--venn">venn</span><span class="tag tag--confetti">confetti</span></div>
+  </div>
+
+  <div class="card card--standalone">
+    <span class="card-number">09</span>
+    <img src="concept-petals.svg" alt="Petals">
+    <div class="card-name">Petals</div>
+    <div class="card-desc">4 ellipses colorees croisees. Fleur abstraite, diversite des couleurs.</div>
+    <div class="card-tags"><span class="tag tag--venn">venn</span><span class="tag tag--hybrid">organique</span></div>
+  </div>
+
+  <div class="card card--standalone">
+    <span class="card-number">10</span>
+    <img src="concept-scatter.svg" alt="Scatter">
+    <div class="card-name">Scatter</div>
+    <div class="card-desc">Dispersion libre de dots colores. Joie pure, spontaneite, fete.</div>
+    <div class="card-tags"><span class="tag tag--confetti">confetti</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>

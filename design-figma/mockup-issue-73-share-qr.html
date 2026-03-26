@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #73: Share Link + QR Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #F97066;
+      --secondary: #1E293B;
+      --accent: #FBBF24;
+      --accent2: #FB923C;
+      --surface: #FFFBF5;
+      --surface2: #FFF7ED;
+      --white: #ffffff;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-subtle: #94A3B8;
+      --border: #F1E8E3;
+      --whatsapp: #25D366;
+      --sms: #3B82F6;
+      --email: #94A3B8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(160deg, var(--surface2) 0%, var(--surface) 45%, #fff 100%);
+      color: var(--text);
+      padding: var(--space-5, 2rem) 1.5rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      color: var(--secondary);
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .phone-label {
+      text-align: center;
+      max-width: 375px;
+    }
+
+    .phone-label strong {
+      display: block;
+      font-size: 0.9375rem;
+      color: var(--secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .phone-label span {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Phone shell */
+    .phone {
+      width: 375px;
+      height: 812px;
+      border-radius: 40px;
+      background: #0f172a;
+      padding: 10px;
+      box-shadow:
+        0 25px 50px -12px rgba(30, 41, 59, 0.35),
+        0 0 0 1px rgba(15, 23, 42, 0.08);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 20;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: var(--surface);
+    }
+
+    /* QR placeholder — CSS grid of squares */
+    .qr {
+      --cell: 6px;
+      --qr-cols: 25;
+      width: calc(var(--qr-cols) * var(--cell) + 8px);
+      height: calc(var(--qr-cols) * var(--cell) + 8px);
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: repeat(var(--qr-cols), var(--cell));
+      grid-template-rows: repeat(var(--qr-cols), var(--cell));
+      gap: 0;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .qr--lg {
+      --cell: 7px;
+      --qr-cols: 25;
+    }
+
+    .qr span {
+      display: block;
+      background: var(--secondary);
+      border-radius: 1px;
+      opacity: 0.92;
+    }
+
+    .qr span.off {
+      background: transparent;
+    }
+
+    /* --- Variant A: Event detail + bottom sheet --- */
+    .va-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
+      filter: blur(0);
+    }
+
+    .va-header {
+      padding: 52px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .va-dots {
+      width: 8px;
+      height: 8px;
+      background: var(--text-subtle);
+      border-radius: 50%;
+      box-shadow: 14px 0 0 var(--text-subtle), 28px 0 0 var(--text-subtle);
+    }
+
+    .va-event-preview {
+      padding: 0 16px 16px;
+      opacity: 0.55;
+    }
+
+    .va-card-fake {
+      height: 120px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+
+    .va-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.45);
+      backdrop-filter: blur(3px);
+    }
+
+    .va-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 18px 28px;
+      box-shadow: 0 -8px 40px rgba(30, 41, 59, 0.12);
+      z-index: 5;
+    }
+
+    .va-sheet-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-right: 4px;
+    }
+
+    .va-sheet-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      line-height: 1.35;
+      max-width: 280px;
+      margin: 0;
+    }
+
+    .va-close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--surface2);
+      border-radius: 50%;
+      color: var(--text-muted);
+      font-size: 1.125rem;
+      line-height: 1;
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    .va-qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .va-qr-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 10px 0 0;
+    }
+
+    .va-link-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .va-input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      padding: 10px 16px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: var(--white);
+      font-family: inherit;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .va-copied {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      font-weight: 600;
+      margin: 0 0 14px 4px;
+    }
+
+    .va-share-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .va-icon-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: default;
+    }
+
+    .va-icon-btn.wa { background: var(--whatsapp); color: #fff; padding: 0; }
+    .va-icon-btn.wa svg { display: block; }
+    .va-icon-btn.sms { background: var(--sms); color: #fff; }
+    .va-icon-btn.mail { background: #E2E8F0; color: var(--text-muted); }
+    .va-icon-btn.more {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    /* --- Variant B: Full page share card --- */
+    .vb-page {
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vb-top {
+      padding: 52px 16px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vb-back {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+      font-size: 1.25rem;
+    }
+
+    .vb-title-bar {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .vb-scroll {
+      flex: 1;
+      overflow: auto;
+      padding: 0 16px 24px;
+    }
+
+    .vb-card-outer {
+      padding: 3px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      margin-bottom: 20px;
+    }
+
+    .vb-card {
+      background: var(--white);
+      border-radius: 21px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .vb-event-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 8px;
+    }
+
+    .vb-meta {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 0 0 20px;
+      line-height: 1.45;
+    }
+
+    .vb-qr-hint {
+      font-size: 0.8125rem;
+      color: var(--text-subtle);
+      margin: 14px 0 0;
+    }
+
+    .vb-below {
+      margin-top: 4px;
+    }
+
+    .vb-link-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .vb-input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+
+    .share-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .share-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    .share-row .ico {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+    }
+
+    .share-row .ico.wa { background: rgba(37, 211, 102, 0.15); }
+    .share-row .ico.sms { background: rgba(59, 130, 246, 0.12); }
+    .share-row .ico.mail { background: rgba(148, 163, 184, 0.2); }
+    .share-row .ico.sys { background: rgba(251, 146, 60, 0.15); }
+
+    /* --- Variant C: Modal + tabs --- */
+    .vc-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--surface2), var(--surface));
+    }
+
+    .vc-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    .vc-modal-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      z-index: 3;
+    }
+
+    .vc-modal {
+      width: 100%;
+      max-width: 318px;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 24px 48px rgba(30, 41, 59, 0.18);
+      overflow: hidden;
+    }
+
+    .vc-event-mini {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .vc-event-mini h3 {
+      margin: 0 0 4px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .vc-event-mini p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .vc-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vc-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: default;
+      font-family: inherit;
+    }
+
+    .vc-tab.active {
+      color: var(--primary);
+      box-shadow: inset 0 -2px 0 var(--primary);
+    }
+
+    .vc-panel {
+      padding: 18px;
+    }
+
+    .vc-link-input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 0.6875rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface2);
+      margin-bottom: 12px;
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+
+    .vc-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .vc-actions .btn-primary {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      border-radius: 10px;
+    }
+
+    .vc-mini-share {
+      display: flex;
+      gap: 8px;
+    }
+
+    .vc-mini-share button {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 1rem;
+      cursor: default;
+    }
+
+    .vc-qr-panel {
+      text-align: center;
+    }
+
+    .vc-dl {
+      margin-top: 14px;
+      width: 100%;
+      padding: 10px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--secondary);
+      font-family: inherit;
+      cursor: default;
+    }
+
+    .vc-link-panel-wrap { display: block; }
+    .vc-qr-panel-wrap { display: none; }
+
+    .vc-show-qr .vc-link-panel-wrap { display: none; }
+    .vc-show-qr .vc-qr-panel-wrap { display: block; }
+    .vc-show-qr .vc-tab-link { color: var(--text-muted); box-shadow: none; }
+    .vc-show-qr .vc-tab-qr { color: var(--primary); box-shadow: inset 0 -2px 0 var(--primary); }
+
+    @media (max-width: 1200px) {
+      .row {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #73: Share Link + QR Code</h1>
+    <p>3 variantes pour le partage d'event</p>
+  </header>
+
+  <div class="row">
+    <!-- Variant A -->
+    <div class="phone-wrap">
+      <div class="phone" aria-label="Variante A — Bottom Sheet Share">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen">
+          <div class="va-bg"></div>
+          <div class="va-header">
+            <div class="va-dots"></div>
+          </div>
+          <div class="va-event-preview">
+            <div class="va-card-fake"></div>
+            <div class="va-card-fake" style="height: 80px;"></div>
+          </div>
+          <div class="va-dim"></div>
+          <div class="va-sheet">
+            <div class="va-sheet-head">
+              <p class="va-sheet-title">Diner chez Marie - 12 avr, 19:30</p>
+              <button type="button" class="va-close" aria-label="Fermer">×</button>
+            </div>
+            <div class="va-qr-wrap">
+              <div class="qr" data-cols="25" data-seed="a" id="qr-a"></div>
+              <p class="va-qr-sub">Scan to join</p>
+            </div>
+            <div class="va-link-row">
+              <input class="va-input" type="text" readonly value="https://happyrow.app/e/marie-diner-12avr..." />
+              <button type="button" class="btn-primary">Copy</button>
+            </div>
+            <p class="va-copied">Copied!</p>
+            <div class="va-share-row">
+              <button type="button" class="va-icon-btn wa" aria-label="WhatsApp">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+              </button>
+              <button type="button" class="va-icon-btn sms" aria-label="SMS">💬</button>
+              <button type="button" class="va-icon-btn mail" aria-label="Email">✉</button>
+              <button type="button" class="va-icon-btn more">···</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante A — Bottom Sheet Share</strong>
+        <span>Feuille depuis le bas sur l’événement estompé : QR, lien copiable, raccourcis de partage.</span>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="phone-wrap">
+      <div class="phone" aria-label="Variante B — Full-page Share Card">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen">
+          <div class="vb-page">
+            <div class="vb-top">
+              <div class="vb-back" aria-hidden="true">←</div>
+              <div class="vb-title-bar">Partager</div>
+            </div>
+            <div class="vb-scroll">
+              <div class="vb-card-outer">
+                <div class="vb-card">
+                  <h2 class="vb-event-name">Diner chez Marie</h2>
+                  <p class="vb-meta">12 avr. 2025 · 19:30<br />Chez Marie, 12 rue des Lilas, Paris</p>
+                  <div style="display:flex; justify-content:center;">
+                    <div class="qr qr--lg" data-cols="25" data-seed="b" id="qr-b"></div>
+                  </div>
+                  <p class="vb-qr-hint">Scan or share the link below</p>
+                </div>
+              </div>
+              <div class="vb-below">
+                <div class="vb-link-row">
+                  <input class="vb-input" type="text" readonly value="https://happyrow.app/e/marie-diner-12avr" />
+                  <button type="button" class="btn-primary">Copy</button>
+                </div>
+                <div class="share-list">
+                  <div class="share-row">
+                    <span class="ico wa">📱</span>
+                    Share via WhatsApp
+                  </div>
+                  <div class="share-row">
+                    <span class="ico sms">💬</span>
+                    Share via SMS
+                  </div>
+                  <div class="share-row">
+                    <span class="ico mail">✉</span>
+                    Share via Email
+                  </div>
+                  <div class="share-row">
+                    <span class="ico sys">↗</span>
+                    Share via...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante B — Full-page Share Card</strong>
+        <span>Page dédiée avec carte décorative (bordure dégradée), QR large et liste de modes de partage.</span>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="phone-wrap">
+      <div class="phone" aria-label="Variante C — Compact Modal">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen">
+          <div class="vc-bg"></div>
+          <div class="vc-dim"></div>
+          <div class="vc-modal-wrap">
+            <div class="vc-modal" id="vc-modal">
+              <div class="vc-event-mini">
+                <h3>Diner chez Marie</h3>
+                <p>12 avr. · 19:30</p>
+              </div>
+              <div class="vc-tabs">
+                <button type="button" class="vc-tab vc-tab-link active">Link</button>
+                <button type="button" class="vc-tab vc-tab-qr">QR Code</button>
+              </div>
+              <div class="vc-panel vc-link-panel-wrap">
+                <input class="vc-link-input" type="text" readonly value="https://happyrow.app/e/marie-diner" />
+                <div class="vc-actions">
+                  <button type="button" class="btn-primary">Copy</button>
+                  <div class="vc-mini-share">
+                    <button type="button" title="WhatsApp">📱</button>
+                    <button type="button" title="SMS">💬</button>
+                    <button type="button" title="Email">✉</button>
+                  </div>
+                </div>
+              </div>
+              <div class="vc-panel vc-qr-panel-wrap">
+                <div class="vc-qr-panel">
+                  <div class="qr" style="--cell: 8px; --qr-cols: 20; margin: 0 auto;" data-cols="20" data-seed="c" id="qr-c"></div>
+                  <button type="button" class="vc-dl">Download QR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">
+        <strong>Variante C — Compact Modal</strong>
+        <span>Modale centrée avec onglets Lien / QR, fond atténué et actions compactes.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function fillQr(el) {
+        if (!el) return;
+        var colsParsed = parseInt(el.getAttribute("data-cols"), 10);
+        var cols = Number.isFinite(colsParsed) && colsParsed >= 15 && colsParsed <= 40 ? colsParsed : 25;
+        var seed = el.getAttribute("data-seed") || "a";
+        var seedCode = 0;
+        for (var si = 0; si < seed.length; si++) {
+          seedCode += seed.charCodeAt(si);
+        }
+        var fs = 7;
+        var n = cols * cols;
+        for (var i = 0; i < n; i++) {
+          var s = document.createElement("span");
+          var x = i % cols;
+          var y = (i / cols) | 0;
+          var tl = x < fs && y < fs;
+          var tr = x >= cols - fs && y < fs;
+          var bl = x < fs && y >= cols - fs;
+          var corner = tl || tr || bl;
+          var hash = (x * 31 + y * 17 + seedCode) % 7;
+          if (corner) {
+            var inner = false;
+            var frame = false;
+            if (tl) {
+              inner = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+              frame = (x <= 1 || x >= 5 || y <= 1 || y >= 5) && x < fs && y < fs;
+            } else if (tr) {
+              var rx = x - (cols - fs);
+              inner = rx >= 2 && rx <= 4 && y >= 2 && y <= 4;
+              frame = !inner && (rx <= 1 || rx >= 5 || y <= 1 || y >= 5) && x >= cols - fs && y < fs;
+            } else if (bl) {
+              var by = y - (cols - fs);
+              inner = x >= 2 && x <= 4 && by >= 2 && by <= 4;
+              frame = !inner && (x <= 1 || x >= 5 || by <= 1 || by >= 5) && x < fs && y >= cols - fs;
+            }
+            s.className = inner || frame ? "" : "off";
+          } else {
+            s.className = hash > 2 ? "" : "off";
+          }
+          el.appendChild(s);
+        }
+      }
+      ["qr-a", "qr-b", "qr-c"].forEach(function (id) {
+        fillQr(document.getElementById(id));
+      });
+    })();
+  </script>
+</body>
+</html>

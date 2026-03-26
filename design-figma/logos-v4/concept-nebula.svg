@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Nebula: cloud of overlapping colored circles, no background -->
+  <circle cx="84" cy="82" r="44" fill="#F97066" opacity="0.45"/>
+  <circle cx="124" cy="90" r="40" fill="#FB923C" opacity="0.4"/>
+  <circle cx="76" cy="120" r="36" fill="#FBBF24" opacity="0.35"/>
+  <circle cx="120" cy="68" r="28" fill="#FBBF24" opacity="0.3"/>
+  <circle cx="136" cy="128" r="30" fill="#F97066" opacity="0.3"/>
+  <circle cx="100" cy="100" r="22" fill="#FB923C" opacity="0.55"/>
+  <circle cx="60" cy="76" r="18" fill="#FB923C" opacity="0.25"/>
+  <circle cx="148" cy="84" r="16" fill="#F97066" opacity="0.2"/>
+  <!-- Bright core -->
+  <circle cx="100" cy="98" r="14" fill="#F97066" opacity="0.7"/>
+</svg>

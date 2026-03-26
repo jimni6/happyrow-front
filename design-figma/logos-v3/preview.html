@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Logo Concepts v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f1f1;
+    color: #1e293b;
+    padding: 3rem 2rem;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 span { color: #F97066; }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #64748b;
+    margin-bottom: 3rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .card img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .card-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .card-desc {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .card-number {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #F97066;
+    background: rgba(249,112,102,0.08);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    margin: 2rem 0 1rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sizes-row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .size-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .dark-preview {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .dark-preview img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .palette-bar {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .palette-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .palette-dot span:first-child {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .palette-dot span:last-child {
+    font-size: 0.6rem;
+    font-family: monospace;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+
+<h1>HappyRow &mdash; <span>Logo Concepts v3</span></h1>
+<p class="subtitle">10 concepts epures &bull; Palette "Warm Social" (Option A)</p>
+
+<div class="palette-bar">
+  <div class="palette-dot"><span style="background:#F97066"></span><span>#F97066</span></div>
+  <div class="palette-dot"><span style="background:#FB923C"></span><span>#FB923C</span></div>
+  <div class="palette-dot"><span style="background:#FBBF24"></span><span>#FBBF24</span></div>
+  <div class="palette-dot"><span style="background:#1E293B"></span><span>#1E293B</span></div>
+  <div class="palette-dot"><span style="background:#FFFBF5; border: 1px solid #e5e2dc"></span><span>#FFFBF5</span></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <span class="card-number">01</span>
+    <img src="concept-dots-arc.svg" alt="Dots Arc">
+    <div class="card-name">Dots Arc</div>
+    <div class="card-desc">3 cercles en arc + courbe sourire.<br>Derive direct du favicon que tu aimes.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">02</span>
+    <img src="concept-sunrise.svg" alt="Sunrise">
+    <div class="card-name">Sunrise</div>
+    <div class="card-desc">Demi-cercle (table/soleil) + 3 dots.<br>Metaphore du rassemblement autour d'une table.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">03</span>
+    <img src="concept-venn.svg" alt="Venn">
+    <div class="card-name">Venn</div>
+    <div class="card-desc">3 cercles translucides qui se chevauchent.<br>Rencontre, intersection, partage.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">04</span>
+    <img src="concept-monogram-h.svg" alt="Monogram H">
+    <div class="card-name">Monogram H</div>
+    <div class="card-desc">Lettre H arrondie en blanc sur gradient.<br>Lettermark classique et bold.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">05</span>
+    <img src="concept-minimal-arc.svg" alt="Minimal Arc">
+    <div class="card-name">Minimal Arc</div>
+    <div class="card-desc">1 seul dot + arc epais.<br>Ultra minimal. Joie/sourire abstrait.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">06</span>
+    <img src="concept-chat.svg" alt="Chat Bubble">
+    <div class="card-name">Chat Bubble</div>
+    <div class="card-desc">Bulle de conversation + 3 dots colores.<br>Social, communication, echange.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">07</span>
+    <img src="concept-ring.svg" alt="Ring">
+    <div class="card-name">Ring</div>
+    <div class="card-desc">Cercle fin + 3 dots sur le perimetre.<br>Rassemblement autour d'un cercle.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">08</span>
+    <img src="concept-infinity.svg" alt="Infinity">
+    <div class="card-name">Infinity</div>
+    <div class="card-desc">Boucle infinie / figure 8.<br>Moments sans fin, lien continu.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">09</span>
+    <img src="concept-sparkle.svg" alt="Sparkle">
+    <div class="card-name">Sparkle</div>
+    <div class="card-desc">Etoile 4 branches arrondie.<br>Celebration, magie, joie festive.</div>
+  </div>
+  <div class="card">
+    <span class="card-number">10</span>
+    <img src="concept-confetti.svg" alt="Confetti">
+    <div class="card-name">Confetti</div>
+    <div class="card-desc">Dot central + satellites disperses.<br>Festif, organique, joyeux.</div>
+  </div>
+</div>
+
+</body>
+</html>

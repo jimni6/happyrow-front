@@ -1,0 +1,25 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="warmGrad" x1="30" y1="30" x2="170" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="200" height="200" rx="44" fill="url(#warmGrad)"/>
+
+  <!-- Person left -->
+  <circle cx="56" cy="66" r="14" fill="white"/>
+  <path d="M32,120 C32,93 42,80 56,80 C70,80 80,93 80,120 Z" fill="white"/>
+
+  <!-- Person center (emphasis) -->
+  <circle cx="100" cy="56" r="17" fill="white"/>
+  <path d="M70,120 C70,89 83,73 100,73 C117,73 130,89 130,120 Z" fill="white"/>
+
+  <!-- Person right -->
+  <circle cx="144" cy="66" r="14" fill="white"/>
+  <path d="M120,120 C120,93 130,80 144,80 C158,80 168,93 168,120 Z" fill="white"/>
+
+  <!-- Row / smile curve -->
+  <path d="M34,148 Q100,168 166,148" stroke="white" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.55"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Flowing aurora bands -->
+  <path d="M24,156 C56,100 92,72 128,88 C156,100 172,68 184,48" stroke="white" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.18"/>
+  <path d="M20,140 C48,84 88,104 120,72 C148,48 168,76 184,52" stroke="white" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.35"/>
+  <path d="M28,164 C64,112 100,92 140,108 C164,116 176,84 188,60" stroke="white" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <!-- Light dots -->
+  <circle cx="72" cy="88" r="4" fill="white" opacity="0.6"/>
+  <circle cx="132" cy="72" r="3" fill="white" opacity="0.5"/>
+  <circle cx="108" cy="104" r="5" fill="white" opacity="0.4"/>
+</svg>

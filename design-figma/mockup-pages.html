@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Mockups HomePage & EventDetail (Palette A)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #F97066;
+    --primary-dark: #E85D52;
+    --primary-light: #FFA09A;
+    --secondary: #1E293B;
+    --secondary-light: #334155;
+    --accent: #FBBF24;
+    --accent-dark: #D97706;
+    --accent2: #FB923C;
+    --surface: #FFFBF5;
+    --surface-alt: #FFF7ED;
+    --surface-card: #FFFFFF;
+    --bg-page: linear-gradient(180deg, #FFFBF5 0%, #FFF1EC 40%, #FFF7ED 100%);
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --border: #F1E8E3;
+    --border-light: #F5EDE8;
+    --success-bg: #D1FAE5;
+    --success-text: #065F46;
+    --warning-bg: #FEF3C7;
+    --warning-text: #92400E;
+    --danger-bg: #FEE2E2;
+    --danger-text: #991B1B;
+    --info-bg: #DBEAFE;
+    --info-text: #1E40AF;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --shadow-sm: 0 1px 3px rgba(30,41,59,0.04), 0 1px 2px rgba(30,41,59,0.03);
+    --shadow-md: 0 4px 12px rgba(30,41,59,0.06), 0 2px 4px rgba(30,41,59,0.04);
+    --shadow-lg: 0 8px 24px rgba(30,41,59,0.08), 0 4px 8px rgba(30,41,59,0.04);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #E8E4E0;
+    color: var(--text-primary);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  h1.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-align: center;
+  }
+
+  h1.page-title span { color: var(--primary); }
+
+  .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: -1.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* Phone frame */
+  .phone-row {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .phone-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--surface);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-notch {
+    height: 50px;
+    background: var(--surface);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    flex-shrink: 0;
+  }
+
+  .notch-pill {
+    width: 120px;
+    height: 28px;
+    background: #1E293B;
+    border-radius: 20px;
+  }
+
+  .phone-screen {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .phone-screen::-webkit-scrollbar { width: 0; }
+
+  /* ===== HOME PAGE ===== */
+  .home-bg {
+    background: var(--bg-page);
+    padding: 20px 16px;
+    padding-bottom: 100px;
+    min-height: 100%;
+  }
+
+  .home-greeting {
+    margin-bottom: 24px;
+  }
+
+  .greeting-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .greeting-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .events-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Event Card */
+  .event-card {
+    display: flex;
+    background: var(--surface-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-light);
+  }
+
+  .event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 14px;
+    min-width: 88px;
+    text-align: center;
+    color: white;
+    position: relative;
+  }
+
+  .card-date--warm {
+    background: linear-gradient(135deg, #F97066 0%, #FB923C 100%);
+  }
+
+  .card-date--amber {
+    background: linear-gradient(135deg, #FBBF24 0%, #FB923C 100%);
+  }
+
+  .card-date .month {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.9;
+  }
+
+  .card-date .day {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 2px 0;
+  }
+
+  .card-date .time {
+    font-size: 0.65rem;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  .card-body {
+    flex: 1;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .card-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-organizer {
+    background: #FEF3C7;
+    color: #92400E;
+  }
+
+  .badge-participant {
+    background: #FFE4E1;
+    color: #C0392B;
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .card-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .card-info-item svg {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .card-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: transform 0.15s;
+  }
+
+  .card-action-btn:hover { transform: scale(1.08); }
+  .card-action-btn--dark { background: var(--secondary); }
+  .card-action-btn--primary { background: var(--primary); }
+
+  .card-toggle {
+    width: 48px;
+    height: 26px;
+    border-radius: 13px;
+    background: #E2E8F0;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .card-toggle--on { background: var(--primary); }
+
+  .card-toggle::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 3px;
+    left: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+  }
+
+  .card-toggle--on::after { transform: translateX(22px); }
+
+  /* Navbar */
+  .phone-navbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    padding-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    z-index: 10;
+  }
+
+  .nav-pill {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 100px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .nav-btn--active {
+    background: rgba(249,112,102,0.12);
+    color: var(--primary);
+  }
+
+  .nav-btn--inactive { color: var(--text-muted); }
+
+  .nav-fab {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(249,112,102,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .nav-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(249,112,102,0.45);
+  }
+
+  /* ===== EVENT DETAIL PAGE ===== */
+  .detail-bg {
+    background: var(--bg-page);
+    padding: 16px;
+    padding-bottom: 100px;
+    min-height: 100%;
+  }
+
+  /* Event Header */
+  .detail-header {
+    background: var(--surface-card);
+    border-radius: var(--radius-xl);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid var(--border-light);
+  }
+
+  .back-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .detail-header-info {
+    flex: 1;
+  }
+
+  .detail-event-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 8px;
+  }
+
+  .detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .detail-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+  }
+
+  .edit-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* Section */
+  .detail-section {
+    background: rgba(255,247,237,0.6);
+    border-radius: var(--radius-xl);
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-light);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .section-icon {
+    font-size: 1.1rem;
+  }
+
+  .section-add-btn {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Resource Item */
+  .resource-item {
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--border-light);
+  }
+
+  .resource-info {
+    flex: 1;
+  }
+
+  .resource-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .resource-contrib {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--primary);
+    margin-top: 2px;
+  }
+
+  .resource-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .resource-qty {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--secondary);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .resource-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* Participant Item */
+  .participant-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    border: 1px solid var(--border-light);
+  }
+
+  .participant-item--me {
+    border-left: 3px solid var(--primary);
+    background: rgba(249,112,102,0.04);
+  }
+
+  .participant-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .participant-avatar-small {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .participant-avatar-small--alt { background: var(--secondary); }
+  .participant-avatar-small--accent { background: var(--accent2); }
+
+  .participant-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .participant-me-label {
+    font-size: 0.65rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .status-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .status-confirmed { background: var(--success-bg); color: var(--success-text); }
+  .status-maybe { background: var(--warning-bg); color: var(--warning-text); }
+  .status-invited { background: var(--info-bg); color: var(--info-text); }
+  .status-declined { background: var(--danger-bg); color: var(--danger-text); }
+
+  /* My Contributions */
+  .contribution-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    border: 1px solid var(--border-light);
+  }
+
+  .contribution-icon { font-size: 1rem; }
+
+  .contribution-name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--secondary);
+  }
+
+  .contribution-qty {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 3px 10px;
+    background: rgba(249,112,102,0.08);
+    border-radius: 100px;
+  }
+
+  /* Delete button */
+  .delete-btn {
+    width: 100%;
+    padding: 14px;
+    background: none;
+    border: 2px solid #EF4444;
+    color: #EF4444;
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+
+  .delete-btn:hover {
+    background: #EF4444;
+    color: white;
+  }
+
+  /* Inline add form */
+  .inline-add {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .inline-add input {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: var(--surface-card);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .inline-add input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(249,112,102,0.1);
+  }
+
+  .inline-add input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .inline-add-btn {
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">HappyRow &mdash; <span>Palette A</span> Mockups</h1>
+<p class="subtitle">Font: Inter &bull; HomePage + EventDetailView</p>
+
+<div class="phone-row">
+
+  <!-- ============ HOME PAGE ============ -->
+  <div class="phone-wrapper">
+    <span class="phone-label">Home Page</span>
+    <div class="phone">
+      <div class="phone-notch"><div class="notch-pill"></div></div>
+      <div class="phone-screen">
+        <div class="home-bg">
+
+          <div class="home-greeting">
+            <div class="greeting-text">Bonjour</div>
+            <div class="greeting-name">Jean 👋</div>
+          </div>
+
+          <div class="events-section-title">Mes events</div>
+
+          <div class="events-list">
+
+            <!-- Card 1 -->
+            <div class="event-card">
+              <div class="card-date card-date--warm">
+                <span class="month">AVR</span>
+                <span class="day">12</span>
+                <span class="time">19:30</span>
+              </div>
+              <div class="card-body">
+                <div class="card-title-row">
+                  <span class="card-title">Diner chez Marie</span>
+                  <span class="card-badge badge-organizer">Organisateur</span>
+                </div>
+                <div class="card-info">
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span>6 Participants</span>
+                  </div>
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Paris 11e</span>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="card-actions">
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </button>
+                    <button class="card-action-btn card-action-btn--primary">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    </button>
+                  </div>
+                  <div class="card-toggle card-toggle--on"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="event-card">
+              <div class="card-date card-date--amber">
+                <span class="month">AVR</span>
+                <span class="day">19</span>
+                <span class="time">14:00</span>
+              </div>
+              <div class="card-body">
+                <div class="card-title-row">
+                  <span class="card-title">BBQ au parc</span>
+                  <span class="card-badge badge-participant">Participant</span>
+                </div>
+                <div class="card-info">
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span>12 Participants</span>
+                  </div>
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Parc des Buttes-Chaumont</span>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="card-actions">
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </button>
+                  </div>
+                  <div class="card-toggle"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="event-card">
+              <div class="card-date card-date--warm">
+                <span class="month">MAI</span>
+                <span class="day">3</span>
+                <span class="time">20:00</span>
+              </div>
+              <div class="card-body">
+                <div class="card-title-row">
+                  <span class="card-title">Soiree jeux</span>
+                  <span class="card-badge badge-organizer">Organisateur</span>
+                </div>
+                <div class="card-info">
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span>4 Participants</span>
+                  </div>
+                  <div class="card-info-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Chez Thomas</span>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="card-actions">
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                    <button class="card-action-btn card-action-btn--dark">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </button>
+                    <button class="card-action-btn card-action-btn--primary">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    </button>
+                  </div>
+                  <div class="card-toggle card-toggle--on"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="phone-navbar">
+          <div class="nav-pill">
+            <button class="nav-btn nav-btn--active">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </button>
+            <button class="nav-btn nav-btn--inactive">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
+          </div>
+          <button class="nav-fab">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EVENT DETAIL ============ -->
+  <div class="phone-wrapper">
+    <span class="phone-label">Event Detail View</span>
+    <div class="phone">
+      <div class="phone-notch"><div class="notch-pill"></div></div>
+      <div class="phone-screen">
+        <div class="detail-bg">
+
+          <!-- Header -->
+          <div class="detail-header">
+            <button class="back-btn">&larr;</button>
+            <div class="detail-header-info">
+              <div class="detail-event-name">Diner chez Marie</div>
+              <div class="detail-meta">
+                <span class="detail-meta-item">👥 6 participants</span>
+                <span class="detail-meta-item">📍 Paris 11e</span>
+                <span class="detail-meta-item">📅 12 avr, 19:30</span>
+              </div>
+            </div>
+            <button class="edit-btn">Edit</button>
+          </div>
+
+          <!-- Food Section -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">🍕</span> Food</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Quiche lorraine</div>
+                <div class="resource-contrib">You bring 2</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">2</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Salade verte</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">0</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Fromage</div>
+                <div class="resource-contrib">You bring 1</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">1</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+
+            <div class="inline-add">
+              <input type="text" placeholder="Add a food item...">
+              <button class="inline-add-btn">Add</button>
+            </div>
+          </div>
+
+          <!-- Drinks Section -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">🥤</span> Drinks</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Vin rouge</div>
+                <div class="resource-contrib">You bring 1</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">1</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Jus d'orange</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">0</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- My Contributions -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">🎒</span> My Contributions</div>
+            </div>
+
+            <div class="contribution-item">
+              <span class="contribution-icon">🍕</span>
+              <span class="contribution-name">Quiche lorraine</span>
+              <span class="contribution-qty">x2</span>
+            </div>
+            <div class="contribution-item">
+              <span class="contribution-icon">🍕</span>
+              <span class="contribution-name">Fromage</span>
+              <span class="contribution-qty">x1</span>
+            </div>
+            <div class="contribution-item">
+              <span class="contribution-icon">🥤</span>
+              <span class="contribution-name">Vin rouge</span>
+              <span class="contribution-qty">x1</span>
+            </div>
+          </div>
+
+          <!-- Participants -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">👥</span> Participants</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+
+            <div class="participant-item participant-item--me">
+              <div class="participant-left">
+                <div class="participant-avatar-small">JN</div>
+                <div>
+                  <div class="participant-name">Jean Dupont</div>
+                  <div class="participant-me-label">You</div>
+                </div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+
+            <div class="participant-item">
+              <div class="participant-left">
+                <div class="participant-avatar-small participant-avatar-small--alt">ML</div>
+                <div><div class="participant-name">Marie Leroy</div></div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+
+            <div class="participant-item">
+              <div class="participant-left">
+                <div class="participant-avatar-small participant-avatar-small--accent">TD</div>
+                <div><div class="participant-name">Thomas Duval</div></div>
+              </div>
+              <span class="status-badge status-maybe">Maybe</span>
+            </div>
+
+            <div class="participant-item">
+              <div class="participant-left">
+                <div class="participant-avatar-small participant-avatar-small--alt">SB</div>
+                <div><div class="participant-name">Sophie Bernard</div></div>
+              </div>
+              <span class="status-badge status-invited">Invited</span>
+            </div>
+
+            <div class="participant-item">
+              <div class="participant-left">
+                <div class="participant-avatar-small">PM</div>
+                <div><div class="participant-name">Pierre Martin</div></div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+
+            <div class="participant-item">
+              <div class="participant-left">
+                <div class="participant-avatar-small participant-avatar-small--accent">LR</div>
+                <div><div class="participant-name">Laura Roux</div></div>
+              </div>
+              <span class="status-badge status-declined">Declined</span>
+            </div>
+          </div>
+
+          <!-- Delete -->
+          <button class="delete-btn">Delete Event</button>
+
+        </div>
+
+        <!-- Navbar -->
+        <div class="phone-navbar">
+          <div class="nav-pill">
+            <button class="nav-btn nav-btn--inactive">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </button>
+            <button class="nav-btn nav-btn--inactive">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
+          </div>
+          <button class="nav-fab">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

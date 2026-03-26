@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - EventDetail Variants: Current vs Compact</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #F97066;
+    --primary-dark: #E85D52;
+    --secondary: #1E293B;
+    --secondary-light: #334155;
+    --accent: #FBBF24;
+    --accent2: #FB923C;
+    --surface: #FFFBF5;
+    --surface-alt: #FFF7ED;
+    --surface-card: #FFFFFF;
+    --bg-page: linear-gradient(180deg, #FFFBF5 0%, #FFF1EC 40%, #FFF7ED 100%);
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --border: #F1E8E3;
+    --border-light: #F5EDE8;
+    --success-bg: #D1FAE5;
+    --success-text: #065F46;
+    --warning-bg: #FEF3C7;
+    --warning-text: #92400E;
+    --danger-bg: #FEE2E2;
+    --danger-text: #991B1B;
+    --info-bg: #DBEAFE;
+    --info-text: #1E40AF;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 1px 3px rgba(30,41,59,0.04), 0 1px 2px rgba(30,41,59,0.03);
+    --shadow-md: 0 4px 12px rgba(30,41,59,0.06), 0 2px 4px rgba(30,41,59,0.04);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #E8E4E0;
+    color: var(--text-primary);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  h1.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-align: center;
+  }
+  h1.page-title span { color: var(--primary); }
+
+  .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: -0.75rem;
+  }
+
+  .phone-row {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .phone-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+  }
+
+  .phone-label-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .tag-old { background: var(--danger-bg); color: var(--danger-text); }
+  .tag-new { background: var(--success-bg); color: var(--success-text); }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--surface);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-notch {
+    height: 50px;
+    background: var(--surface);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    flex-shrink: 0;
+  }
+
+  .notch-pill {
+    width: 120px;
+    height: 28px;
+    background: #1E293B;
+    border-radius: 20px;
+  }
+
+  .phone-screen {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+  .phone-screen::-webkit-scrollbar { width: 0; }
+
+  .detail-bg {
+    background: var(--bg-page);
+    padding: 16px;
+    padding-bottom: 100px;
+    min-height: 100%;
+  }
+
+  /* Header */
+  .detail-header {
+    background: var(--surface-card);
+    border-radius: var(--radius-xl);
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--border-light);
+  }
+
+  .back-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .detail-header-info { flex: 1; }
+
+  .detail-event-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 6px;
+  }
+
+  .detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .detail-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 500;
+  }
+
+  .edit-btn {
+    padding: 7px 14px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* Section container */
+  .detail-section {
+    background: rgba(255,247,237,0.6);
+    border-radius: var(--radius-xl);
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-light);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .section-icon { font-size: 1rem; }
+
+  .section-add-btn {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+  }
+
+  .section-count {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 4px;
+  }
+
+  /* Resource item (same on both) */
+  .resource-item {
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid var(--border-light);
+  }
+
+  .resource-info { flex: 1; }
+  .resource-name { font-size: 0.85rem; font-weight: 600; color: var(--secondary); }
+  .resource-contrib { font-size: 0.65rem; font-weight: 500; color: var(--primary); margin-top: 1px; }
+
+  .resource-controls { display: flex; align-items: center; gap: 8px; }
+  .resource-qty { font-size: 0.85rem; font-weight: 700; color: var(--secondary); min-width: 20px; text-align: center; }
+  .resource-btn {
+    width: 28px; height: 28px; border-radius: var(--radius-sm); border: none;
+    background: var(--primary); color: white; font-size: 1rem; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
+  }
+
+  /* ============================== */
+  /*   CURRENT DESIGN (LEFT PHONE)  */
+  /* ============================== */
+
+  /* Current: Contribution cards */
+  .contrib-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    border: 1px solid var(--border-light);
+  }
+
+  .contrib-card-icon { font-size: 0.95rem; flex-shrink: 0; }
+
+  .contrib-card-name {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--secondary);
+  }
+
+  .contrib-card-qty {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 3px 10px;
+    background: rgba(249,112,102,0.08);
+    border-radius: 100px;
+  }
+
+  /* Current: Participant cards */
+  .participant-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--surface-card);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    border: 1px solid var(--border-light);
+  }
+
+  .participant-card--me {
+    border-left: 3px solid var(--primary);
+    background: rgba(249,112,102,0.04);
+  }
+
+  .participant-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    color: white; font-size: 0.6rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .avatar--primary { background: var(--primary); }
+  .avatar--secondary { background: var(--secondary); }
+  .avatar--accent { background: var(--accent2); }
+
+  .participant-name { font-size: 0.82rem; font-weight: 600; color: var(--secondary); }
+  .participant-me { font-size: 0.6rem; color: var(--primary); font-weight: 600; }
+
+  .status-badge {
+    font-size: 0.6rem; font-weight: 600; padding: 3px 8px; border-radius: 100px;
+  }
+  .status-confirmed { background: var(--success-bg); color: var(--success-text); }
+  .status-maybe { background: var(--warning-bg); color: var(--warning-text); }
+  .status-invited { background: var(--info-bg); color: var(--info-text); }
+  .status-declined { background: var(--danger-bg); color: var(--danger-text); }
+
+  /* ============================== */
+  /*     NEW DESIGN (RIGHT PHONE)   */
+  /* ============================== */
+
+  /* New: Flat contribution list */
+  .contrib-flat-list {
+    padding: 0;
+  }
+
+  .contrib-flat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contrib-flat-item:last-child {
+    border-bottom: none;
+  }
+
+  .contrib-flat-icon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+
+  .contrib-flat-name {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--secondary);
+  }
+
+  .contrib-flat-qty {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* New: Avatar stack */
+  .avatar-stack-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .avatar-stack-row:hover .avatar-stack-expand {
+    color: var(--primary);
+  }
+
+  .avatar-stack {
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar-stacked {
+    width: 32px; height: 32px; border-radius: 50%;
+    color: white; font-size: 0.6rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2.5px solid rgba(255,247,237,0.9);
+    margin-left: -10px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar-stacked:first-child { margin-left: 0; }
+
+  .avatar-stacked--primary { background: var(--primary); }
+  .avatar-stacked--secondary { background: var(--secondary); }
+  .avatar-stacked--accent { background: var(--accent2); }
+  .avatar-stacked--muted { background: var(--text-muted); }
+
+  .avatar-stack-more {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  .avatar-stack-expand {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.25s ease, color 0.2s;
+    padding: 4px;
+  }
+
+  .avatar-stack-expand.expanded {
+    transform: rotate(180deg);
+    color: var(--primary);
+  }
+
+  /* New: Expandable participant list */
+  .participants-expanded {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+  }
+
+  .participants-expanded.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .participants-expanded.open {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .participant-flat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .participant-flat-item:last-child { border-bottom: none; }
+
+  .participant-flat-item--me {
+    padding-left: 8px;
+    border-left: 2px solid var(--primary);
+    margin-left: -2px;
+  }
+
+  .participant-flat-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .avatar-sm {
+    width: 24px; height: 24px; border-radius: 50%;
+    color: white; font-size: 0.5rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .participant-flat-name { font-size: 0.78rem; font-weight: 600; color: var(--secondary); }
+  .participant-flat-me { font-size: 0.58rem; color: var(--primary); font-weight: 600; }
+
+  .status-badge-sm {
+    font-size: 0.55rem; font-weight: 600; padding: 2px 7px; border-radius: 100px;
+  }
+
+  /* Comparison annotation */
+  .annotation {
+    position: relative;
+    margin: 10px 0 4px;
+  }
+
+  .annotation-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    background: rgba(249,112,102,0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">EventDetail &mdash; <span>Avant / Apres</span></h1>
+<p class="subtitle">Comparaison : My Contributions (liste plate) + Participants (avatar stack)</p>
+
+<div class="phone-row">
+
+  <!-- ============ CURRENT DESIGN ============ -->
+  <div class="phone-wrapper">
+    <span class="phone-label">Version actuelle <span class="phone-label-tag tag-old">AVANT</span></span>
+    <div class="phone">
+      <div class="phone-notch"><div class="notch-pill"></div></div>
+      <div class="phone-screen">
+        <div class="detail-bg">
+
+          <!-- Header -->
+          <div class="detail-header">
+            <button class="back-btn">&larr;</button>
+            <div class="detail-header-info">
+              <div class="detail-event-name">Diner chez Marie</div>
+              <div class="detail-meta">
+                <span class="detail-meta-item">&#128101; 6 participants</span>
+                <span class="detail-meta-item">&#128205; Paris 11e</span>
+              </div>
+            </div>
+            <button class="edit-btn">Edit</button>
+          </div>
+
+          <!-- Food (abbreviated) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#127829;</span> Food</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Quiche lorraine</div>
+                <div class="resource-contrib">You bring 2</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">2</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info"><div class="resource-name">Fromage</div></div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">0</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drinks (abbreviated) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#129380;</span> Drinks</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Vin rouge</div>
+                <div class="resource-contrib">You bring 1</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">1</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MY CONTRIBUTIONS - CURRENT (CARDS) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#127890;</span> My Contributions</div>
+            </div>
+            <div class="contrib-card">
+              <span class="contrib-card-icon">&#127829;</span>
+              <span class="contrib-card-name">Quiche lorraine</span>
+              <span class="contrib-card-qty">x2</span>
+            </div>
+            <div class="contrib-card">
+              <span class="contrib-card-icon">&#127829;</span>
+              <span class="contrib-card-name">Fromage</span>
+              <span class="contrib-card-qty">x1</span>
+            </div>
+            <div class="contrib-card">
+              <span class="contrib-card-icon">&#129380;</span>
+              <span class="contrib-card-name">Vin rouge</span>
+              <span class="contrib-card-qty">x1</span>
+            </div>
+          </div>
+
+          <!-- PARTICIPANTS - CURRENT (CARD LIST) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#128101;</span> Participants</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+            <div class="participant-card participant-card--me">
+              <div class="participant-left">
+                <div class="avatar avatar--primary">JN</div>
+                <div><div class="participant-name">Jean Dupont</div><div class="participant-me">You</div></div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+            <div class="participant-card">
+              <div class="participant-left">
+                <div class="avatar avatar--secondary">ML</div>
+                <div><div class="participant-name">Marie Leroy</div></div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+            <div class="participant-card">
+              <div class="participant-left">
+                <div class="avatar avatar--accent">TD</div>
+                <div><div class="participant-name">Thomas Duval</div></div>
+              </div>
+              <span class="status-badge status-maybe">Maybe</span>
+            </div>
+            <div class="participant-card">
+              <div class="participant-left">
+                <div class="avatar avatar--secondary">SB</div>
+                <div><div class="participant-name">Sophie Bernard</div></div>
+              </div>
+              <span class="status-badge status-invited">Invited</span>
+            </div>
+            <div class="participant-card">
+              <div class="participant-left">
+                <div class="avatar avatar--primary">PM</div>
+                <div><div class="participant-name">Pierre Martin</div></div>
+              </div>
+              <span class="status-badge status-confirmed">Confirmed</span>
+            </div>
+            <div class="participant-card">
+              <div class="participant-left">
+                <div class="avatar avatar--accent">LR</div>
+                <div><div class="participant-name">Laura Roux</div></div>
+              </div>
+              <span class="status-badge status-declined">Declined</span>
+            </div>
+          </div>
+
+          <button style="width:100%;padding:12px;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:var(--radius-lg);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;">Delete Event</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NEW COMPACT DESIGN ============ -->
+  <div class="phone-wrapper">
+    <span class="phone-label">Version compacte <span class="phone-label-tag tag-new">APRES</span></span>
+    <div class="phone">
+      <div class="phone-notch"><div class="notch-pill"></div></div>
+      <div class="phone-screen">
+        <div class="detail-bg">
+
+          <!-- Header (same) -->
+          <div class="detail-header">
+            <button class="back-btn">&larr;</button>
+            <div class="detail-header-info">
+              <div class="detail-event-name">Diner chez Marie</div>
+              <div class="detail-meta">
+                <span class="detail-meta-item">&#128101; 6 participants</span>
+                <span class="detail-meta-item">&#128205; Paris 11e</span>
+              </div>
+            </div>
+            <button class="edit-btn">Edit</button>
+          </div>
+
+          <!-- Food (same) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#127829;</span> Food</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Quiche lorraine</div>
+                <div class="resource-contrib">You bring 2</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">2</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info"><div class="resource-name">Fromage</div></div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">0</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drinks (same) -->
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#129380;</span> Drinks</div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <div class="resource-name">Vin rouge</div>
+                <div class="resource-contrib">You bring 1</div>
+              </div>
+              <div class="resource-controls">
+                <button class="resource-btn">&minus;</button>
+                <span class="resource-qty">1</span>
+                <button class="resource-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MY CONTRIBUTIONS - NEW (FLAT LIST) -->
+          <div class="annotation"><span class="annotation-label">Nouveau : liste plate</span></div>
+          <div class="detail-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#127890;</span> My Contributions <span class="section-count">(3)</span></div>
+            </div>
+            <div class="contrib-flat-list">
+              <div class="contrib-flat-item">
+                <span class="contrib-flat-icon">&#127829;</span>
+                <span class="contrib-flat-name">Quiche lorraine</span>
+                <span class="contrib-flat-qty">x2</span>
+              </div>
+              <div class="contrib-flat-item">
+                <span class="contrib-flat-icon">&#127829;</span>
+                <span class="contrib-flat-name">Fromage</span>
+                <span class="contrib-flat-qty">x1</span>
+              </div>
+              <div class="contrib-flat-item">
+                <span class="contrib-flat-icon">&#129380;</span>
+                <span class="contrib-flat-name">Vin rouge</span>
+                <span class="contrib-flat-qty">x1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PARTICIPANTS - NEW (AVATAR STACK + EXPANDABLE) -->
+          <div class="annotation"><span class="annotation-label">Nouveau : avatar stack + expansion</span></div>
+          <div class="detail-section" id="participants-section">
+            <div class="section-header">
+              <div class="section-title"><span class="section-icon">&#128101;</span> Participants <span class="section-count">(6)</span></div>
+              <button class="section-add-btn">+ Add</button>
+            </div>
+
+            <!-- Avatar stack (collapsed state) -->
+            <div class="avatar-stack-row" onclick="toggleParticipants()">
+              <div class="avatar-stack">
+                <div class="avatar-stacked avatar-stacked--primary">JN</div>
+                <div class="avatar-stacked avatar-stacked--secondary">ML</div>
+                <div class="avatar-stacked avatar-stacked--accent">TD</div>
+                <div class="avatar-stacked avatar-stacked--secondary">SB</div>
+                <div class="avatar-stacked avatar-stacked--primary">PM</div>
+              </div>
+              <span class="avatar-stack-more">+1 other</span>
+              <span class="avatar-stack-expand" id="chevron">&#9660;</span>
+            </div>
+
+            <!-- Expanded flat list -->
+            <div class="participants-expanded collapsed" id="participants-list">
+              <div style="height:8px"></div>
+              <div class="participant-flat-item participant-flat-item--me">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--primary">JN</div>
+                  <div><div class="participant-flat-name">Jean Dupont</div><div class="participant-flat-me">You</div></div>
+                </div>
+                <span class="status-badge-sm status-confirmed">Confirmed</span>
+              </div>
+              <div class="participant-flat-item">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--secondary">ML</div>
+                  <div><div class="participant-flat-name">Marie Leroy</div></div>
+                </div>
+                <span class="status-badge-sm status-confirmed">Confirmed</span>
+              </div>
+              <div class="participant-flat-item">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--accent">TD</div>
+                  <div><div class="participant-flat-name">Thomas Duval</div></div>
+                </div>
+                <span class="status-badge-sm status-maybe">Maybe</span>
+              </div>
+              <div class="participant-flat-item">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--secondary">SB</div>
+                  <div><div class="participant-flat-name">Sophie Bernard</div></div>
+                </div>
+                <span class="status-badge-sm status-invited">Invited</span>
+              </div>
+              <div class="participant-flat-item">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--primary">PM</div>
+                  <div><div class="participant-flat-name">Pierre Martin</div></div>
+                </div>
+                <span class="status-badge-sm status-confirmed">Confirmed</span>
+              </div>
+              <div class="participant-flat-item">
+                <div class="participant-flat-left">
+                  <div class="avatar-sm avatar--accent">LR</div>
+                  <div><div class="participant-flat-name">Laura Roux</div></div>
+                </div>
+                <span class="status-badge-sm status-declined">Declined</span>
+              </div>
+            </div>
+          </div>
+
+          <button style="width:100%;padding:12px;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:var(--radius-lg);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;">Delete Event</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleParticipants() {
+    const list = document.getElementById('participants-list');
+    const chevron = document.getElementById('chevron');
+    if (list.classList.contains('collapsed')) {
+      list.classList.remove('collapsed');
+      list.classList.add('open');
+      chevron.classList.add('expanded');
+    } else {
+      list.classList.remove('open');
+      list.classList.add('collapsed');
+      chevron.classList.remove('expanded');
+    }
+  }
+</script>
+
+</body>
+</html>

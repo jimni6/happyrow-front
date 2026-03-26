@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Petals Variants</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f1f1f1; color: #1e293b; padding: 3rem 2rem; }
+  h1 { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h1 span { color: #F97066; }
+  .subtitle { text-align: center; font-size: 0.95rem; color: #64748b; margin-bottom: 3rem; }
+
+  .section-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #94a3b8; margin-bottom: 1.5rem;
+    max-width: 1200px; margin-left: auto; margin-right: auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .card img { width: 110px; height: 110px; }
+
+  .card--checker {
+    background: repeating-conic-gradient(#f8f8f8 0% 25%, #fff 0% 50%) 50% / 14px 14px;
+  }
+
+  .card-name { font-size: 0.9rem; font-weight: 700; }
+  .card-desc { font-size: 0.72rem; color: #64748b; text-align: center; line-height: 1.45; }
+
+  .tag {
+    font-size: 0.58rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; background: rgba(249,112,102,0.08); color: #F97066;
+  }
+
+  hr { border: none; border-top: 1px solid #e2e8f0; max-width: 1200px; margin: 0 auto 2rem; }
+
+  .compare-row {
+    display: flex; gap: 1.5rem; justify-content: center; align-items: center;
+    flex-wrap: wrap; max-width: 1200px; margin: 0 auto 3rem;
+    background: white; border-radius: 20px; padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .compare-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .compare-item img { border-radius: 12px; }
+  .compare-label { font-size: 0.6rem; font-weight: 600; color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<h1>Petals &mdash; <span>Variantes</span></h1>
+<p class="subtitle">Exploration du concept Petals : nombre, epaisseur, fonds, styles</p>
+
+<p class="section-label">Nombre de petales (sur gradient)</p>
+<div class="grid">
+  <div class="card">
+    <span class="tag">3 petales</span>
+    <img src="petals-grad-3.svg">
+    <div class="card-name">Trefle</div>
+    <div class="card-desc">3 petales a 120°. Minimal, equilibre, triangulaire.</div>
+  </div>
+  <div class="card">
+    <span class="tag">4 petales</span>
+    <img src="petals-grad-4.svg">
+    <div class="card-name">Quatrefeuille</div>
+    <div class="card-desc">4 petales a 45°. Symmetrique, classique.</div>
+  </div>
+  <div class="card">
+    <span class="tag">5 petales</span>
+    <img src="petals-grad-5.svg">
+    <div class="card-name">Fleur</div>
+    <div class="card-desc">5 petales a 72°. Organique, naturel.</div>
+  </div>
+  <div class="card">
+    <span class="tag">6 petales</span>
+    <img src="petals-grad-6.svg">
+    <div class="card-name">Rosace</div>
+    <div class="card-desc">6 petales a 60°. Dense, geometrique, mandala.</div>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Forme des petales (sur gradient, 4 petales)</p>
+<div class="grid">
+  <div class="card">
+    <span class="tag">fin</span>
+    <img src="petals-grad-thin.svg">
+    <div class="card-name">Thin</div>
+    <div class="card-desc">Petales fins et allonges. Etoile, asterisque, precision.</div>
+  </div>
+  <div class="card">
+    <span class="tag">standard</span>
+    <img src="petals-grad-4.svg">
+    <div class="card-name">Standard</div>
+    <div class="card-desc">Proportions equilibrees. Reference.</div>
+  </div>
+  <div class="card">
+    <span class="tag">large</span>
+    <img src="petals-grad-wide.svg">
+    <div class="card-name">Wide</div>
+    <div class="card-desc">Petales larges et ronds. Doux, enveloppant.</div>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Style de rendu (sur gradient)</p>
+<div class="grid">
+  <div class="card">
+    <span class="tag">filled</span>
+    <img src="petals-grad-4.svg">
+    <div class="card-name">Filled</div>
+    <div class="card-desc">Remplissage blanc translucide. Doux et lumineux.</div>
+  </div>
+  <div class="card">
+    <span class="tag">outline</span>
+    <img src="petals-outline.svg">
+    <div class="card-name">Outline</div>
+    <div class="card-desc">Contours blancs uniquement. Aerien, delicat.</div>
+  </div>
+  <div class="card">
+    <span class="tag">nested</span>
+    <img src="petals-nested.svg">
+    <div class="card-name">Nested</div>
+    <div class="card-desc">Deux couches de petales decalees. Riche, profond.</div>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Fonds colores</p>
+<div class="grid">
+  <div class="card">
+    <span class="tag">gradient</span>
+    <img src="petals-grad-4.svg">
+    <div class="card-name">Gradient</div>
+    <div class="card-desc">Fond coral → orange. Petales blancs.</div>
+  </div>
+  <div class="card">
+    <span class="tag">navy</span>
+    <img src="petals-navy.svg">
+    <div class="card-name">Navy</div>
+    <div class="card-desc">Fond #1E293B. Petales colores. Elegant, sombre.</div>
+  </div>
+  <div class="card">
+    <span class="tag">surface</span>
+    <img src="petals-surface.svg">
+    <div class="card-name">Surface</div>
+    <div class="card-desc">Fond #FFFBF5. Petales colores. Leger, chaleureux.</div>
+  </div>
+  <div class="card card--checker">
+    <span class="tag">original</span>
+    <img src="concept-petals.svg">
+    <div class="card-name">Sans fond</div>
+    <div class="card-desc">Transparent. Petales colores. Polyvalent.</div>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Comparaison des tailles</p>
+<div class="compare-row">
+  <div class="compare-item">
+    <img src="petals-grad-4.svg" width="120" height="120">
+    <span class="compare-label">120px</span>
+  </div>
+  <div class="compare-item">
+    <img src="petals-grad-4.svg" width="80" height="80">
+    <span class="compare-label">80px</span>
+  </div>
+  <div class="compare-item">
+    <img src="petals-grad-4.svg" width="48" height="48">
+    <span class="compare-label">48px</span>
+  </div>
+  <div class="compare-item">
+    <img src="petals-grad-4.svg" width="32" height="32">
+    <span class="compare-label">32px</span>
+  </div>
+  <div class="compare-item">
+    <img src="petals-grad-4.svg" width="20" height="20">
+    <span class="compare-label">20px</span>
+  </div>
+</div>
+
+</body>
+</html>

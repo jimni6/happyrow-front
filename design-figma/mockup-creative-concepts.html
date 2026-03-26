@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Creative Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #F97066;
+    --primary-soft: rgba(249,112,102,0.08);
+    --primary-medium: rgba(249,112,102,0.15);
+    --secondary: #1E293B;
+    --accent: #FBBF24;
+    --accent2: #FB923C;
+    --surface: #FFFBF5;
+    --surface-card: #FFFFFF;
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --border: #F1E8E3;
+    --success: #10B981;
+    --success-bg: #D1FAE5;
+    --success-text: #065F46;
+    --warning-bg: #FEF3C7;
+    --warning-text: #92400E;
+    --danger-bg: #FEE2E2;
+    --danger-text: #991B1B;
+    --info-bg: #DBEAFE;
+    --info-text: #1E40AF;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --shadow-sm: 0 1px 3px rgba(30,41,59,0.04);
+    --shadow-md: 0 4px 12px rgba(30,41,59,0.06);
+    --shadow-lg: 0 8px 24px rgba(30,41,59,0.08);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #E8E4E0;
+    color: var(--text-primary);
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--secondary);
+  }
+
+  .page-header h1 span { color: var(--primary); }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Concept section */
+  .concept {
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+  }
+
+  .concept-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .concept-letter {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .concept-info h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .concept-info p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .phone-row {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .phone-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+  }
+
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--surface);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-notch {
+    height: 48px;
+    background: inherit;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 5px;
+    flex-shrink: 0;
+  }
+
+  .notch-pill {
+    width: 110px;
+    height: 26px;
+    background: #1E293B;
+    border-radius: 20px;
+  }
+
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .screen::-webkit-scrollbar { width: 0; }
+
+  /* Shared small elements */
+  .avatar-xs {
+    width: 22px; height: 22px; border-radius: 50%;
+    color: white; font-size: 0.45rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .avatar-sm {
+    width: 28px; height: 28px; border-radius: 50%;
+    color: white; font-size: 0.55rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .avatar-md {
+    width: 36px; height: 36px; border-radius: 50%;
+    color: white; font-size: 0.65rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .bg-primary { background: var(--primary); }
+  .bg-secondary { background: var(--secondary); }
+  .bg-accent { background: var(--accent2); }
+  .bg-muted { background: #CBD5E1; }
+
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .dot-green { background: var(--success); }
+  .dot-amber { background: var(--accent); }
+  .dot-red { background: #EF4444; }
+  .dot-blue { background: #3B82F6; }
+
+  /* ================================================================ */
+  /*  CONCEPT A: "Hero + Timeline"                                     */
+  /* ================================================================ */
+  .ca-bg {
+    background: linear-gradient(180deg, #FFFBF5 0%, #FFF1EC 100%);
+    padding: 16px;
+    padding-bottom: 90px;
+    min-height: 100%;
+  }
+
+  .ca-greeting {
+    margin-bottom: 20px;
+  }
+
+  .ca-greeting-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .ca-greeting-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-top: 2px;
+  }
+
+  /* Hero card = next event */
+  .ca-hero {
+    background: linear-gradient(135deg, var(--primary), var(--accent2));
+    border-radius: var(--radius-2xl);
+    padding: 20px;
+    color: white;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ca-hero::after {
+    content: '';
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    top: -40px;
+    right: -30px;
+  }
+
+  .ca-hero-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+    margin-bottom: 10px;
+  }
+
+  .ca-hero-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .ca-hero-meta {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .ca-hero-stats {
+    display: flex;
+    gap: 10px;
+  }
+
+  .ca-hero-stat {
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .ca-hero-stat-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .ca-hero-stat-label {
+    font-size: 0.55rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Timeline events */
+  .ca-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .ca-timeline {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .ca-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+
+  .ca-timeline-item {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+
+  .ca-timeline-item:hover .ca-tl-card {
+    box-shadow: var(--shadow-md);
+    transform: translateX(2px);
+  }
+
+  .ca-timeline-dot {
+    position: absolute;
+    left: -18px;
+    top: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--surface);
+    z-index: 1;
+  }
+
+  .ca-timeline-dot--muted {
+    background: var(--text-muted);
+  }
+
+  .ca-tl-date {
+    min-width: 38px;
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .ca-tl-date-day {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--secondary);
+    line-height: 1;
+  }
+
+  .ca-tl-date-month {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .ca-tl-card {
+    flex: 1;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .ca-tl-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 3px;
+  }
+
+  .ca-tl-info {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ca-tl-avatars {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .ca-tl-avatars .avatar-xs {
+    margin-left: -6px;
+    border: 2px solid var(--surface-card);
+  }
+
+  .ca-tl-avatars .avatar-xs:first-child { margin-left: 0; }
+
+  /* Navbar */
+  .nav-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 16px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-pill {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 100px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+
+  .nav-btn {
+    width: 44px; height: 44px; border-radius: 50%; border: none;
+    background: transparent; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: all 0.2s;
+  }
+
+  .nav-btn svg { width: 20px; height: 20px; }
+  .nav-btn--active { background: var(--primary-medium); color: var(--primary); }
+  .nav-btn--inactive { color: var(--text-muted); }
+
+  .nav-fab {
+    width: 50px; height: 50px; border-radius: 50%; border: none;
+    background: var(--primary); color: white; font-size: 1.5rem; font-weight: 300;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(249,112,102,0.35);
+  }
+
+  /* ================================================================ */
+  /*  CONCEPT A: Event Detail with Dashboard Stats + Progress          */
+  /* ================================================================ */
+  .ca-detail-bg {
+    background: linear-gradient(180deg, #FFFBF5 0%, #FFF1EC 100%);
+    padding: 16px;
+    padding-bottom: 90px;
+    min-height: 100%;
+  }
+
+  .ca-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .ca-back {
+    width: 34px; height: 34px; border-radius: 50%; border: none;
+    background: var(--surface-card); color: var(--secondary); font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  }
+
+  .ca-detail-title {
+    flex: 1;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--secondary);
+  }
+
+  .ca-detail-edit {
+    padding: 6px 14px; border-radius: 100px; border: 1.5px solid var(--border);
+    background: none; font-size: 0.72rem; font-weight: 600; color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  /* Stat cards */
+  .ca-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .ca-stat-card {
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .ca-stat-val {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--secondary);
+    line-height: 1;
+  }
+
+  .ca-stat-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Date/location bar */
+  .ca-info-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ca-info-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: var(--surface-card);
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  /* Section in detail */
+  .ca-d-section {
+    margin-bottom: 14px;
+  }
+
+  .ca-d-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .ca-d-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .ca-d-add-btn {
+    font-size: 0.65rem; font-weight: 600; padding: 4px 10px;
+    border-radius: 100px; border: 1.5px solid var(--border);
+    background: none; color: var(--text-secondary); cursor: pointer;
+  }
+
+  /* Resource with progress */
+  .ca-resource-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ca-resource-row:last-child { border-bottom: none; }
+
+  .ca-resource-name {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .ca-resource-you {
+    font-size: 0.6rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .ca-progress-wrap {
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ca-progress-bar {
+    height: 6px;
+    background: #F1E8E3;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .ca-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  .ca-progress-fill--good { background: var(--success); }
+  .ca-progress-fill--partial { background: var(--accent); }
+  .ca-progress-fill--empty { background: var(--border); }
+
+  .ca-progress-label {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .ca-resource-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ca-res-btn {
+    width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: none; color: var(--text-secondary); font-size: 0.85rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .ca-res-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  /* Participants compact */
+  .ca-participants-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ca-participants-row:last-child { border-bottom: none; }
+
+  .ca-p-name {
+    flex: 1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .ca-p-you {
+    font-size: 0.55rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* ================================================================ */
+  /*  CONCEPT B: "Bento Grid"                                          */
+  /* ================================================================ */
+  .cb-bg {
+    background: var(--secondary);
+    padding: 16px;
+    padding-bottom: 90px;
+    min-height: 100%;
+  }
+
+  .cb-greeting {
+    margin-bottom: 20px;
+  }
+
+  .cb-greeting-sub {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    font-weight: 500;
+  }
+
+  .cb-greeting-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+  }
+
+  .cb-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .cb-card {
+    background: #2D3B4E;
+    border-radius: var(--radius-xl);
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .cb-card:hover { transform: translateY(-2px); }
+
+  .cb-card--big {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--primary), var(--accent2));
+    border: none;
+  }
+
+  .cb-card--big .cb-card-title { color: white; }
+  .cb-card--big .cb-card-meta { color: rgba(255,255,255,0.8); }
+
+  .cb-card-date {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+
+  .cb-card--big .cb-card-date { color: rgba(255,255,255,0.7); }
+
+  .cb-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .cb-card-meta {
+    font-size: 0.68rem;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .cb-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cb-avatars {
+    display: flex;
+  }
+
+  .cb-avatars .avatar-xs {
+    margin-left: -5px;
+    border: 2px solid #2D3B4E;
+  }
+
+  .cb-card--big .cb-avatars .avatar-xs {
+    border-color: transparent;
+  }
+
+  .cb-avatars .avatar-xs:first-child { margin-left: 0; }
+
+  .cb-count {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #94A3B8;
+  }
+
+  .cb-card--big .cb-count { color: rgba(255,255,255,0.7); }
+
+  .cb-badge {
+    font-size: 0.5rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .cb-badge--org { background: rgba(251,191,36,0.2); color: var(--accent); }
+  .cb-badge--part { background: rgba(249,112,102,0.2); color: var(--primary); }
+  .cb-card--big .cb-badge--org { background: rgba(255,255,255,0.2); color: white; }
+
+  /* Navbar dark */
+  .nav-bar-dark .nav-pill {
+    background: rgba(45,59,78,0.9);
+  }
+
+  .nav-bar-dark .nav-btn--active {
+    background: rgba(249,112,102,0.2);
+    color: var(--primary);
+  }
+
+  .nav-bar-dark .nav-btn--inactive { color: #64748B; }
+
+  /* ================================================================ */
+  /*  CONCEPT C: "Ultra-Minimal Home"                                  */
+  /* ================================================================ */
+  .cc-bg {
+    background: #FFFFFF;
+    padding: 16px;
+    padding-bottom: 90px;
+    min-height: 100%;
+  }
+
+  .cc-greeting {
+    margin-bottom: 24px;
+  }
+
+  .cc-greeting-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--secondary);
+  }
+
+  .cc-greeting-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* Date strip */
+  .cc-date-strip {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .cc-date-strip::-webkit-scrollbar { display: none; }
+
+  .cc-date-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 44px;
+    padding: 8px 6px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .cc-date-item--active {
+    background: var(--primary);
+    color: white;
+  }
+
+  .cc-date-item--has-event {
+    position: relative;
+  }
+
+  .cc-date-item--has-event::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+    position: absolute;
+    bottom: 3px;
+  }
+
+  .cc-date-item--active::after { background: white; }
+
+  .cc-date-dow {
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .cc-date-item--active .cc-date-dow { color: rgba(255,255,255,0.7); }
+
+  .cc-date-num {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .cc-date-item--active .cc-date-num { color: white; }
+
+  /* Section divider */
+  .cc-section {
+    margin-bottom: 20px;
+  }
+
+  .cc-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* Minimal event rows */
+  .cc-event {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F1F5F9;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .cc-event:hover { padding-left: 4px; }
+  .cc-event:last-child { border-bottom: none; }
+
+  .cc-event-color {
+    width: 4px;
+    height: 36px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .cc-event-color--primary { background: var(--primary); }
+  .cc-event-color--accent { background: var(--accent); }
+  .cc-event-color--secondary { background: var(--secondary); }
+
+  .cc-event-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cc-event-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 1px;
+  }
+
+  .cc-event-meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 8px;
+  }
+
+  .cc-event-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .cc-event-time {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .cc-event-avatars {
+    display: flex;
+  }
+
+  .cc-event-avatars .avatar-xs {
+    margin-left: -5px;
+    border: 2px solid white;
+  }
+
+  .cc-event-avatars .avatar-xs:first-child { margin-left: 0; }
+
+  /* Minimal nav */
+  .nav-bar-minimal .nav-pill {
+    background: white;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>HappyRow &mdash; <span>Creative Concepts</span></h1>
+  <p>3 directions visuelles pour la HomePage + EventDetail</p>
+</div>
+
+<!-- ================================================================ -->
+<!--  CONCEPT A: Hero + Timeline / Dashboard Detail                     -->
+<!-- ================================================================ -->
+<div class="concept">
+  <div class="concept-header">
+    <div class="concept-letter">A</div>
+    <div class="concept-info">
+      <h2>Hero + Timeline / Dashboard Detail</h2>
+      <p>Prochain event en hero card, les autres en timeline. Detail avec stats + barres de progression.</p>
+    </div>
+  </div>
+
+  <div class="phone-row">
+
+    <!-- Home -->
+    <div class="phone-wrapper">
+      <span class="phone-label">Home</span>
+      <div class="phone">
+        <div class="phone-notch"><div class="notch-pill"></div></div>
+        <div class="screen">
+          <div class="ca-bg">
+
+            <div class="ca-greeting">
+              <div class="ca-greeting-sub">Bonjour</div>
+              <div class="ca-greeting-name">Jean &#128075;</div>
+            </div>
+
+            <div class="ca-hero">
+              <div class="ca-hero-label">Prochain event</div>
+              <div class="ca-hero-title">Diner chez Marie</div>
+              <div class="ca-hero-meta">
+                <span>&#128205; Paris 11e</span>
+                <span>&#128339; Sam 12 avr, 19:30</span>
+              </div>
+              <div class="ca-hero-stats">
+                <div class="ca-hero-stat">
+                  <div class="ca-hero-stat-val">6</div>
+                  <div class="ca-hero-stat-label">Confirms</div>
+                </div>
+                <div class="ca-hero-stat">
+                  <div class="ca-hero-stat-val">5</div>
+                  <div class="ca-hero-stat-label">Items</div>
+                </div>
+                <div class="ca-hero-stat">
+                  <div class="ca-hero-stat-val">3</div>
+                  <div class="ca-hero-stat-label">Yours</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ca-section-label">A venir</div>
+
+            <div class="ca-timeline">
+              <div class="ca-timeline-item">
+                <div class="ca-timeline-dot"></div>
+                <div class="ca-tl-date">
+                  <div class="ca-tl-date-day">19</div>
+                  <div class="ca-tl-date-month">AVR</div>
+                </div>
+                <div class="ca-tl-card">
+                  <div class="ca-tl-title">BBQ au parc</div>
+                  <div class="ca-tl-info">
+                    <span>14:00 &bull; Buttes-Chaumont</span>
+                    <div class="ca-tl-avatars">
+                      <div class="avatar-xs bg-primary">ML</div>
+                      <div class="avatar-xs bg-secondary">TD</div>
+                      <div class="avatar-xs bg-accent">SB</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ca-timeline-item">
+                <div class="ca-timeline-dot"></div>
+                <div class="ca-tl-date">
+                  <div class="ca-tl-date-day">3</div>
+                  <div class="ca-tl-date-month">MAI</div>
+                </div>
+                <div class="ca-tl-card">
+                  <div class="ca-tl-title">Soiree jeux</div>
+                  <div class="ca-tl-info">
+                    <span>20:00 &bull; Chez Thomas</span>
+                    <div class="ca-tl-avatars">
+                      <div class="avatar-xs bg-accent">PM</div>
+                      <div class="avatar-xs bg-primary">LR</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ca-timeline-item">
+                <div class="ca-timeline-dot ca-timeline-dot--muted"></div>
+                <div class="ca-tl-date">
+                  <div class="ca-tl-date-day">17</div>
+                  <div class="ca-tl-date-month">MAI</div>
+                </div>
+                <div class="ca-tl-card">
+                  <div class="ca-tl-title">Brunch dominical</div>
+                  <div class="ca-tl-info">
+                    <span>11:00 &bull; Chez Marie</span>
+                    <div class="ca-tl-avatars">
+                      <div class="avatar-xs bg-secondary">ML</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-bar">
+            <div class="nav-pill">
+              <button class="nav-btn nav-btn--active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+              <button class="nav-btn nav-btn--inactive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+            </div>
+            <button class="nav-fab">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Detail -->
+    <div class="phone-wrapper">
+      <span class="phone-label">Event Detail</span>
+      <div class="phone">
+        <div class="phone-notch"><div class="notch-pill"></div></div>
+        <div class="screen">
+          <div class="ca-detail-bg">
+
+            <div class="ca-detail-header">
+              <button class="ca-back">&larr;</button>
+              <div class="ca-detail-title">Diner chez Marie</div>
+              <button class="ca-detail-edit">Edit</button>
+            </div>
+
+            <div class="ca-info-bar">
+              <div class="ca-info-chip">&#128197; Sam 12 avr, 19:30</div>
+              <div class="ca-info-chip">&#128205; Paris 11e</div>
+            </div>
+
+            <div class="ca-stats-row">
+              <div class="ca-stat-card">
+                <div class="ca-stat-val">6</div>
+                <div class="ca-stat-label">Confirms</div>
+              </div>
+              <div class="ca-stat-card">
+                <div class="ca-stat-val" style="color:var(--success)">4</div>
+                <div class="ca-stat-label">Covered</div>
+              </div>
+              <div class="ca-stat-card">
+                <div class="ca-stat-val" style="color:var(--primary)">3</div>
+                <div class="ca-stat-label">Your items</div>
+              </div>
+            </div>
+
+            <!-- Food -->
+            <div class="ca-d-section">
+              <div class="ca-d-section-header">
+                <div class="ca-d-section-title">&#127829; Food</div>
+                <button class="ca-d-add-btn">+ Add</button>
+              </div>
+              <div class="ca-resource-row">
+                <div style="flex:1">
+                  <div class="ca-resource-name">Quiche lorraine</div>
+                  <div class="ca-resource-you">You bring 2</div>
+                </div>
+                <div class="ca-progress-wrap">
+                  <div class="ca-progress-bar"><div class="ca-progress-fill ca-progress-fill--good" style="width:100%"></div></div>
+                  <div class="ca-progress-label">3/3</div>
+                </div>
+                <div class="ca-resource-actions">
+                  <button class="ca-res-btn">&minus;</button>
+                  <button class="ca-res-btn">+</button>
+                </div>
+              </div>
+              <div class="ca-resource-row">
+                <div style="flex:1">
+                  <div class="ca-resource-name">Salade verte</div>
+                </div>
+                <div class="ca-progress-wrap">
+                  <div class="ca-progress-bar"><div class="ca-progress-fill ca-progress-fill--partial" style="width:33%"></div></div>
+                  <div class="ca-progress-label">1/3</div>
+                </div>
+                <div class="ca-resource-actions">
+                  <button class="ca-res-btn">&minus;</button>
+                  <button class="ca-res-btn">+</button>
+                </div>
+              </div>
+              <div class="ca-resource-row">
+                <div style="flex:1">
+                  <div class="ca-resource-name">Fromage</div>
+                  <div class="ca-resource-you">You bring 1</div>
+                </div>
+                <div class="ca-progress-wrap">
+                  <div class="ca-progress-bar"><div class="ca-progress-fill ca-progress-fill--good" style="width:75%"></div></div>
+                  <div class="ca-progress-label">3/4</div>
+                </div>
+                <div class="ca-resource-actions">
+                  <button class="ca-res-btn">&minus;</button>
+                  <button class="ca-res-btn">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drinks -->
+            <div class="ca-d-section">
+              <div class="ca-d-section-header">
+                <div class="ca-d-section-title">&#129380; Drinks</div>
+                <button class="ca-d-add-btn">+ Add</button>
+              </div>
+              <div class="ca-resource-row">
+                <div style="flex:1">
+                  <div class="ca-resource-name">Vin rouge</div>
+                  <div class="ca-resource-you">You bring 1</div>
+                </div>
+                <div class="ca-progress-wrap">
+                  <div class="ca-progress-bar"><div class="ca-progress-fill ca-progress-fill--good" style="width:66%"></div></div>
+                  <div class="ca-progress-label">2/3</div>
+                </div>
+                <div class="ca-resource-actions">
+                  <button class="ca-res-btn">&minus;</button>
+                  <button class="ca-res-btn">+</button>
+                </div>
+              </div>
+              <div class="ca-resource-row">
+                <div style="flex:1">
+                  <div class="ca-resource-name">Jus d'orange</div>
+                </div>
+                <div class="ca-progress-wrap">
+                  <div class="ca-progress-bar"><div class="ca-progress-fill ca-progress-fill--empty" style="width:0%"></div></div>
+                  <div class="ca-progress-label">0/2</div>
+                </div>
+                <div class="ca-resource-actions">
+                  <button class="ca-res-btn">&minus;</button>
+                  <button class="ca-res-btn">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Participants -->
+            <div class="ca-d-section">
+              <div class="ca-d-section-header">
+                <div class="ca-d-section-title">&#128101; Participants (6)</div>
+                <button class="ca-d-add-btn">+ Invite</button>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-primary">JN</div>
+                <div style="flex:1"><div class="ca-p-name">Jean Dupont</div><div class="ca-p-you">You</div></div>
+                <div class="status-dot dot-green"></div>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-secondary">ML</div>
+                <div style="flex:1"><div class="ca-p-name">Marie Leroy</div></div>
+                <div class="status-dot dot-green"></div>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-accent">TD</div>
+                <div style="flex:1"><div class="ca-p-name">Thomas Duval</div></div>
+                <div class="status-dot dot-amber"></div>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-secondary">SB</div>
+                <div style="flex:1"><div class="ca-p-name">Sophie Bernard</div></div>
+                <div class="status-dot dot-blue"></div>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-primary">PM</div>
+                <div style="flex:1"><div class="ca-p-name">Pierre Martin</div></div>
+                <div class="status-dot dot-green"></div>
+              </div>
+              <div class="ca-participants-row">
+                <div class="avatar-sm bg-accent">LR</div>
+                <div style="flex:1"><div class="ca-p-name">Laura Roux</div></div>
+                <div class="status-dot dot-red"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!--  CONCEPT B: Dark Bento                                             -->
+<!-- ================================================================ -->
+<div class="concept">
+  <div class="concept-header">
+    <div class="concept-letter">B</div>
+    <div class="concept-info">
+      <h2>Dark Bento Grid</h2>
+      <p>Fond sombre, prochain event en hero large, les autres en grille de tuiles. Ambiance app premium.</p>
+    </div>
+  </div>
+
+  <div class="phone-row">
+    <div class="phone-wrapper">
+      <span class="phone-label">Home</span>
+      <div class="phone" style="background: var(--secondary);">
+        <div class="phone-notch" style="background: var(--secondary);"><div class="notch-pill" style="background: #475569;"></div></div>
+        <div class="screen">
+          <div class="cb-bg">
+
+            <div class="cb-greeting">
+              <div class="cb-greeting-sub">Bonjour</div>
+              <div class="cb-greeting-name">Jean &#128075;</div>
+            </div>
+
+            <div class="cb-bento">
+              <div class="cb-card cb-card--big">
+                <div class="cb-card-date">SAMEDI 12 AVRIL</div>
+                <div class="cb-card-title" style="font-size:1.2rem;">Diner chez Marie</div>
+                <div class="cb-card-meta">&#128205; Paris 11e &bull; 19:30</div>
+                <div class="cb-card-footer">
+                  <div class="cb-avatars">
+                    <div class="avatar-xs bg-primary">JN</div>
+                    <div class="avatar-xs bg-secondary">ML</div>
+                    <div class="avatar-xs bg-accent">TD</div>
+                    <div class="avatar-xs bg-muted">SB</div>
+                    <div class="avatar-xs bg-primary">PM</div>
+                  </div>
+                  <span class="cb-badge cb-badge--org">Organisateur</span>
+                </div>
+              </div>
+
+              <div class="cb-card">
+                <div class="cb-card-date">19 AVR</div>
+                <div class="cb-card-title">BBQ au parc</div>
+                <div class="cb-card-meta">14:00</div>
+                <div class="cb-card-footer">
+                  <div class="cb-avatars">
+                    <div class="avatar-xs bg-primary">ML</div>
+                    <div class="avatar-xs bg-accent">TD</div>
+                  </div>
+                  <span class="cb-badge cb-badge--part">Invite</span>
+                </div>
+              </div>
+
+              <div class="cb-card">
+                <div class="cb-card-date">3 MAI</div>
+                <div class="cb-card-title">Soiree jeux</div>
+                <div class="cb-card-meta">20:00</div>
+                <div class="cb-card-footer">
+                  <div class="cb-avatars">
+                    <div class="avatar-xs bg-accent">PM</div>
+                    <div class="avatar-xs bg-secondary">LR</div>
+                  </div>
+                  <span class="cb-badge cb-badge--org">Organis.</span>
+                </div>
+              </div>
+
+              <div class="cb-card">
+                <div class="cb-card-date">17 MAI</div>
+                <div class="cb-card-title">Brunch dominical</div>
+                <div class="cb-card-meta">11:00</div>
+                <div class="cb-card-footer">
+                  <div class="cb-avatars">
+                    <div class="avatar-xs bg-secondary">ML</div>
+                  </div>
+                  <span class="cb-badge cb-badge--part">Invite</span>
+                </div>
+              </div>
+
+              <div class="cb-card">
+                <div class="cb-card-date">24 MAI</div>
+                <div class="cb-card-title">Anniversaire Lea</div>
+                <div class="cb-card-meta">18:00</div>
+                <div class="cb-card-footer">
+                  <div class="cb-avatars">
+                    <div class="avatar-xs bg-primary">LG</div>
+                    <div class="avatar-xs bg-accent">AB</div>
+                    <div class="avatar-xs bg-secondary">CD</div>
+                  </div>
+                  <span class="cb-badge cb-badge--part">Invite</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-bar nav-bar-dark">
+            <div class="nav-pill">
+              <button class="nav-btn nav-btn--active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+              <button class="nav-btn nav-btn--inactive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+            </div>
+            <button class="nav-fab">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!--  CONCEPT C: Ultra-Minimal + Date Strip                            -->
+<!-- ================================================================ -->
+<div class="concept">
+  <div class="concept-header">
+    <div class="concept-letter">C</div>
+    <div class="concept-info">
+      <h2>Ultra-Minimal + Calendar Strip</h2>
+      <p>Fond blanc pur, barre de dates en haut, events en lignes plates. Zero bruit visuel.</p>
+    </div>
+  </div>
+
+  <div class="phone-row">
+    <div class="phone-wrapper">
+      <span class="phone-label">Home</span>
+      <div class="phone" style="background: white;">
+        <div class="phone-notch" style="background: white;"><div class="notch-pill"></div></div>
+        <div class="screen">
+          <div class="cc-bg">
+
+            <div class="cc-greeting">
+              <div class="cc-greeting-name">Bonjour Jean</div>
+              <div class="cc-greeting-sub">3 events a venir</div>
+            </div>
+
+            <div class="cc-date-strip">
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Lun</span>
+                <span class="cc-date-num">7</span>
+              </div>
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Mar</span>
+                <span class="cc-date-num">8</span>
+              </div>
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Mer</span>
+                <span class="cc-date-num">9</span>
+              </div>
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Jeu</span>
+                <span class="cc-date-num">10</span>
+              </div>
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Ven</span>
+                <span class="cc-date-num">11</span>
+              </div>
+              <div class="cc-date-item cc-date-item--active cc-date-item--has-event">
+                <span class="cc-date-dow">Sam</span>
+                <span class="cc-date-num">12</span>
+              </div>
+              <div class="cc-date-item">
+                <span class="cc-date-dow">Dim</span>
+                <span class="cc-date-num">13</span>
+              </div>
+            </div>
+
+            <div class="cc-section">
+              <div class="cc-section-title">Cette semaine</div>
+              <div class="cc-event">
+                <div class="cc-event-color cc-event-color--primary"></div>
+                <div class="cc-event-info">
+                  <div class="cc-event-title">Diner chez Marie</div>
+                  <div class="cc-event-meta">
+                    <span>&#128205; Paris 11e</span>
+                    <span>&bull; Organisateur</span>
+                  </div>
+                </div>
+                <div class="cc-event-right">
+                  <div class="cc-event-time">19:30</div>
+                  <div class="cc-event-avatars">
+                    <div class="avatar-xs bg-primary">ML</div>
+                    <div class="avatar-xs bg-secondary">TD</div>
+                    <div class="avatar-xs bg-accent">SB</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cc-section">
+              <div class="cc-section-title">La semaine prochaine</div>
+              <div class="cc-event">
+                <div class="cc-event-color cc-event-color--accent"></div>
+                <div class="cc-event-info">
+                  <div class="cc-event-title">BBQ au parc</div>
+                  <div class="cc-event-meta">
+                    <span>&#128205; Buttes-Chaumont</span>
+                    <span>&bull; Invite</span>
+                  </div>
+                </div>
+                <div class="cc-event-right">
+                  <div class="cc-event-time">14:00</div>
+                  <div class="cc-event-avatars">
+                    <div class="avatar-xs bg-primary">ML</div>
+                    <div class="avatar-xs bg-accent">TD</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cc-section">
+              <div class="cc-section-title">Plus tard</div>
+              <div class="cc-event">
+                <div class="cc-event-color cc-event-color--secondary"></div>
+                <div class="cc-event-info">
+                  <div class="cc-event-title">Soiree jeux</div>
+                  <div class="cc-event-meta">
+                    <span>&#128205; Chez Thomas</span>
+                    <span>&bull; 3 mai</span>
+                  </div>
+                </div>
+                <div class="cc-event-right">
+                  <div class="cc-event-time">20:00</div>
+                  <div class="cc-event-avatars">
+                    <div class="avatar-xs bg-accent">PM</div>
+                    <div class="avatar-xs bg-secondary">LR</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-event">
+                <div class="cc-event-color cc-event-color--primary"></div>
+                <div class="cc-event-info">
+                  <div class="cc-event-title">Brunch dominical</div>
+                  <div class="cc-event-meta">
+                    <span>&#128205; Chez Marie</span>
+                    <span>&bull; 17 mai</span>
+                  </div>
+                </div>
+                <div class="cc-event-right">
+                  <div class="cc-event-time">11:00</div>
+                  <div class="cc-event-avatars">
+                    <div class="avatar-xs bg-secondary">ML</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="nav-bar nav-bar-minimal">
+            <div class="nav-pill">
+              <button class="nav-btn nav-btn--active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+              <button class="nav-btn nav-btn--inactive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+            </div>
+            <button class="nav-fab">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Asymmetric burst radiating from off-center -->
+  <circle cx="72" cy="72" r="28" fill="white"/>
+  <circle cx="118" cy="56" r="12" fill="white" opacity="0.8"/>
+  <circle cx="48" cy="116" r="16" fill="white" opacity="0.7"/>
+  <circle cx="132" cy="100" r="20" fill="white" opacity="0.6"/>
+  <circle cx="92" cy="140" r="14" fill="white" opacity="0.5"/>
+  <circle cx="156" cy="144" r="10" fill="white" opacity="0.4"/>
+  <circle cx="152" cy="64" r="7" fill="white" opacity="0.45"/>
+  <circle cx="56" cy="152" r="8" fill="white" opacity="0.35"/>
+  <circle cx="140" cy="60" r="5" fill="white" opacity="0.3"/>
+</svg>

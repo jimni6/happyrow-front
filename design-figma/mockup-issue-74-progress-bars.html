@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #74: Resource Progress Bars</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #F97066;
+      --secondary: #1E293B;
+      --accent: #FBBF24;
+      --accent2: #FB923C;
+      --surface: #FFFBF5;
+      --surface-alt: #FFF7ED;
+      --white: #ffffff;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-subtle: #94A3B8;
+      --success: #10B981;
+      --warning: #FBBF24;
+      --danger: #EF4444;
+      --border: #F1E8E3;
+      --bar-empty: #E2E8F0;
+      --phone-w: 375px;
+      --phone-h: 812px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(160deg, var(--surface-alt) 0%, var(--surface) 50%, #fde8e6 100%);
+      color: var(--text);
+      padding: var(--space-page, 2rem) 1.5rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mockup-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .variant-label {
+      text-align: center;
+      max-width: 375px;
+    }
+
+    .variant-label .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      background: rgba(249, 112, 102, 0.12);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.35rem;
+    }
+
+    .variant-label h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .variant-label p {
+      margin: 0;
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    /* Phone chrome */
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: var(--white);
+      border-radius: 44px;
+      border: 3px solid var(--border);
+      box-shadow:
+        0 24px 48px rgba(30, 41, 59, 0.12),
+        0 8px 16px rgba(249, 112, 102, 0.08);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: var(--secondary);
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      height: 100%;
+      padding: 52px 16px 24px;
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .screen-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 4px;
+    }
+
+    .screen-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 0 0 1.25rem;
+    }
+
+    .section {
+      margin-bottom: 1.25rem;
+    }
+
+    .section-name {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-subtle);
+      margin: 0 0 0.5rem;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-step {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--secondary);
+      font-size: 1.125rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .you-bring {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    /* --- Variant A: Inline bar --- */
+    .va .resource-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .va .name-block {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .va .resource-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      line-height: 1.25;
+    }
+
+    .va .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .va .track {
+      flex: 1;
+      height: 6px;
+      background: var(--bar-empty);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .va .fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.2s;
+    }
+
+    .va .fill.green { background: var(--success); }
+    .va .fill.amber { background: var(--warning); }
+    .va .fill.gray { background: #CBD5E1; }
+
+    .va .ratio {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 2rem;
+      text-align: right;
+    }
+
+    /* --- Variant B: Circular --- */
+    .vb .resource-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vb .ring-wrap {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .vb .ring-wrap svg {
+      display: block;
+      width: 32px;
+      height: 32px;
+      transform: rotate(-90deg);
+    }
+
+    .vb .ring-bg {
+      fill: none;
+      stroke: var(--bar-empty);
+      stroke-width: 3;
+    }
+
+    .vb .ring-fg {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .vb .ring-fg.green { stroke: var(--success); }
+    .vb .ring-fg.amber { stroke: var(--warning); }
+
+    .vb .ring-inner-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.5625rem;
+      font-weight: 700;
+      color: var(--secondary);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .vb .mid {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .vb .resource-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    /* --- Variant C: Segmented --- */
+    .vc .resource-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+
+    .vc .seg-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .vc .segments {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .vc .seg {
+      flex: 1;
+      height: 10px;
+      min-width: 12px;
+      max-width: 36px;
+      border-radius: 4px;
+      background: var(--bar-empty);
+    }
+
+    .vc .seg.filled {
+      background: var(--primary);
+    }
+
+    @media (max-width: 1280px) {
+      .mockups {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #74: Resource Progress Bars</h1>
+    <p>3 variantes pour visualiser la couverture des ressources</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="mockup-column">
+      <div class="variant-label">
+        <div class="badge">VARIANTE A</div>
+        <h2>Barre de progression inline</h2>
+        <p>Barre horizontale fine sous le nom, ratio à droite, états vert / ambre / gris.</p>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen va">
+          <h3 class="screen-title">Picnic du lac</h3>
+          <p class="screen-sub">Ressources à couvrir</p>
+
+          <div class="section">
+            <p class="section-name">Nourriture</p>
+            <div class="card">
+              <div class="resource-top">
+                <div class="name-block">
+                  <div class="resource-name">Quiche lorraine</div>
+                  <div class="you-bring">You bring 1</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="track"><div class="fill green" style="width:100%"></div></div>
+                <span class="ratio">3/3</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-top">
+                <div class="name-block">
+                  <div class="resource-name">Salade verte</div>
+                  <div class="you-bring">You bring 0</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="track"><div class="fill amber" style="width:33.333%"></div></div>
+                <span class="ratio">1/3</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-top">
+                <div class="name-block">
+                  <div class="resource-name">Fromage</div>
+                  <div class="you-bring">You bring 2</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="track"><div class="fill amber" style="width:75%"></div></div>
+                <span class="ratio">3/4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-name">Boissons</p>
+            <div class="card">
+              <div class="resource-top">
+                <div class="name-block">
+                  <div class="resource-name">Vin rouge</div>
+                  <div class="you-bring">You bring 1</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="track"><div class="fill amber" style="width:66.667%"></div></div>
+                <span class="ratio">2/3</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-top">
+                <div class="name-block">
+                  <div class="resource-name">Jus d'orange</div>
+                  <div class="you-bring">You bring 0</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="track"><div class="fill gray" style="width:0%"></div></div>
+                <span class="ratio">0/2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="mockup-column">
+      <div class="variant-label">
+        <div class="badge">VARIANTE B</div>
+        <h2>Progression circulaire</h2>
+        <p>Anneau 32px à gauche, arc vert ou ambre, ratio au centre, texte à droite.</p>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen vb">
+          <h3 class="screen-title">Picnic du lac</h3>
+          <p class="screen-sub">Ressources à couvrir</p>
+
+          <div class="section">
+            <p class="section-name">Nourriture</p>
+            <div class="card">
+              <div class="resource-row">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+                    <circle class="ring-fg green" cx="16" cy="16" r="12.5"
+                      stroke-dasharray="78.54" stroke-dashoffset="0" />
+                  </svg>
+                  <span class="ring-inner-text">3/3</span>
+                </div>
+                <div class="mid">
+                  <div class="resource-name">Quiche lorraine</div>
+                  <div class="you-bring">You bring 1</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-row">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+                    <circle class="ring-fg amber" cx="16" cy="16" r="12.5"
+                      stroke-dasharray="78.54" stroke-dashoffset="52.36" />
+                  </svg>
+                  <span class="ring-inner-text">1/3</span>
+                </div>
+                <div class="mid">
+                  <div class="resource-name">Salade verte</div>
+                  <div class="you-bring">You bring 0</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-row">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+                    <circle class="ring-fg amber" cx="16" cy="16" r="12.5"
+                      stroke-dasharray="78.54" stroke-dashoffset="19.64" />
+                  </svg>
+                  <span class="ring-inner-text">3/4</span>
+                </div>
+                <div class="mid">
+                  <div class="resource-name">Fromage</div>
+                  <div class="you-bring">You bring 2</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-name">Boissons</p>
+            <div class="card">
+              <div class="resource-row">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+                    <circle class="ring-fg amber" cx="16" cy="16" r="12.5"
+                      stroke-dasharray="78.54" stroke-dashoffset="26.18" />
+                  </svg>
+                  <span class="ring-inner-text">2/3</span>
+                </div>
+                <div class="mid">
+                  <div class="resource-name">Vin rouge</div>
+                  <div class="you-bring">You bring 1</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-row">
+                <div class="ring-wrap">
+                  <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+                    <circle class="ring-fg amber" cx="16" cy="16" r="12.5"
+                      stroke-dasharray="78.54" stroke-dashoffset="78.54" />
+                  </svg>
+                  <span class="ring-inner-text">0/2</span>
+                </div>
+                <div class="mid">
+                  <div class="resource-name">Jus d'orange</div>
+                  <div class="you-bring">You bring 0</div>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="mockup-column">
+      <div class="variant-label">
+        <div class="badge">VARIANTE C</div>
+        <h2>Blocs segmentés</h2>
+        <p>Un bloc par unité nécessaire, remplissage couleur primaire — lisible pour les petits nombres.</p>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen vc">
+          <h3 class="screen-title">Picnic du lac</h3>
+          <p class="screen-sub">Ressources à couvrir</p>
+
+          <div class="section">
+            <p class="section-name">Nourriture</p>
+            <div class="card">
+              <div class="resource-name">Quiche lorraine</div>
+              <div class="you-bring">You bring 1</div>
+              <div class="seg-row">
+                <div class="segments">
+                  <span class="seg filled"></span>
+                  <span class="seg filled"></span>
+                  <span class="seg filled"></span>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-name">Salade verte</div>
+              <div class="you-bring">You bring 0</div>
+              <div class="seg-row">
+                <div class="segments">
+                  <span class="seg filled"></span>
+                  <span class="seg"></span>
+                  <span class="seg"></span>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-name">Fromage</div>
+              <div class="you-bring">You bring 2</div>
+              <div class="seg-row">
+                <div class="segments">
+                  <span class="seg filled"></span>
+                  <span class="seg filled"></span>
+                  <span class="seg filled"></span>
+                  <span class="seg"></span>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-name">Boissons</p>
+            <div class="card">
+              <div class="resource-name">Vin rouge</div>
+              <div class="you-bring">You bring 1</div>
+              <div class="seg-row">
+                <div class="segments">
+                  <span class="seg filled"></span>
+                  <span class="seg filled"></span>
+                  <span class="seg"></span>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="resource-name">Jus d'orange</div>
+              <div class="you-bring">You bring 0</div>
+              <div class="seg-row">
+                <div class="segments">
+                  <span class="seg"></span>
+                  <span class="seg"></span>
+                </div>
+                <div class="row-actions">
+                  <button type="button" class="btn-step" tabindex="-1">−</button>
+                  <button type="button" class="btn-step" tabindex="-1">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Diagonal flowing stream of dots -->
+  <circle cx="36" cy="52" r="6" fill="white" opacity="0.3"/>
+  <circle cx="52" cy="64" r="9" fill="white" opacity="0.4"/>
+  <circle cx="72" cy="76" r="13" fill="white" opacity="0.55"/>
+  <circle cx="96" cy="92" r="18" fill="white" opacity="0.75"/>
+  <circle cx="108" cy="104" r="22" fill="white"/>
+  <circle cx="128" cy="118" r="16" fill="white" opacity="0.65"/>
+  <circle cx="148" cy="132" r="12" fill="white" opacity="0.5"/>
+  <circle cx="160" cy="144" r="8" fill="white" opacity="0.35"/>
+  <circle cx="168" cy="156" r="5" fill="white" opacity="0.25"/>
+</svg>

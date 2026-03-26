@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #81: Auto-Generated Shopping List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #f97066;
+      --secondary: #1e293b;
+      --accent: #fbbf24;
+      --accent2: #fb923c;
+      --surface: #fffbf5;
+      --surface-warm: #fff7ed;
+      --white: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-soft: #94a3b8;
+      --success: #10b981;
+      --border: #f1e8e3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(165deg, var(--surface-warm) 0%, var(--surface) 45%, #fef3e8 100%);
+      color: var(--text);
+      padding: var(--space-page, 2rem) 1.5rem 3rem;
+    }
+
+    .page-title {
+      text-align: center;
+      max-width: 960px;
+      margin: 0 auto 0.5rem;
+    }
+
+    .page-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-title p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .mockup-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 100%;
+    }
+
+    .mockup-label {
+      text-align: center;
+      max-width: 375px;
+    }
+
+    .mockup-label strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .mockup-label span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .phone {
+      width: 375px;
+      height: 812px;
+      background: var(--white);
+      border-radius: 40px;
+      border: 3px solid var(--border);
+      box-shadow:
+        0 24px 48px rgba(30, 41, 59, 0.12),
+        0 8px 16px rgba(249, 112, 102, 0.08);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      height: 100%;
+      padding: 48px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .phone-screen.scroll {
+      overflow-y: auto;
+    }
+
+    /* Shared header */
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .hdr-back {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .hdr-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hdr-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .hdr-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 2px 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Variant A */
+    .banner-a {
+      background: rgba(249, 112, 102, 0.14);
+      border: 1px solid rgba(249, 112, 102, 0.25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+
+    .banner-a p {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #c2410c;
+    }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-soft);
+      margin: 14px 0 8px;
+    }
+
+    .section-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .row-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .row-item.done {
+      opacity: 0.85;
+      order: 99;
+    }
+
+    .row-item.done .item-name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .cb {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .cb.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .item-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin: 0 0 4px;
+    }
+
+    .item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .list-stack {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .list-stack .done-block {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .btn-outline {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: #ea580c;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    /* Variant B */
+    .screen-b {
+      padding-top: 44px;
+    }
+
+    .fake-nav {
+      height: 8px;
+      margin-bottom: 8px;
+    }
+
+    .event-title-b {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 16px;
+    }
+
+    .shop-section {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .shop-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--surface-warm);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .shop-head-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-ico {
+      font-size: 1.25rem;
+    }
+
+    .shop-head h3 {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .badge {
+      background: var(--primary);
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .collapsed-hint {
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .collapsed-hint p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .btn-primary-sm {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .expanded-block {
+      padding: 10px 12px 14px;
+    }
+
+    .row-b {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .row-b:last-child {
+      border-bottom: none;
+    }
+
+    .row-b .cb {
+      margin-top: 0;
+    }
+
+    .row-b .item-name {
+      margin: 0;
+      font-size: 0.8125rem;
+      flex: 1;
+    }
+
+    .qty-inline {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      font-weight: 600;
+    }
+
+    .btn-ill {
+      padding: 5px 10px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: #c2410c;
+      font-family: inherit;
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    .claimed {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6875rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Variant C */
+    .progress-top {
+      margin-bottom: 14px;
+    }
+
+    .progress-top .prog-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+
+    .prog-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      width: 33.333%;
+      background: linear-gradient(90deg, var(--primary), var(--accent2));
+      border-radius: 999px;
+    }
+
+    .cat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 12px 10px;
+      margin-bottom: 12px;
+    }
+
+    .cat-h {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: var(--secondary);
+    }
+
+    .row-c {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 4px;
+      border-radius: 10px;
+    }
+
+    .row-c + .row-c {
+      border-top: 1px solid var(--border);
+    }
+
+    .row-c.checked {
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .row-c.checked .name-c {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .name-c {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .pill-q {
+      background: var(--primary);
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .actions-c {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 8px;
+      flex-shrink: 0;
+    }
+
+    .actions-c button {
+      flex: 1;
+      padding: 11px 10px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: default;
+    }
+
+    .btn-wa {
+      background: #25d366;
+      color: white;
+      border: none;
+    }
+
+    .btn-copy {
+      background: var(--white);
+      border: 2px solid var(--border);
+      color: var(--secondary);
+    }
+
+    .phone-scroll-fill {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 1200px) {
+      .mockups {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-title">
+    <h1>HappyRow — Issue #81: Auto-Generated Shopping List</h1>
+    <p>3 variantes pour la liste de courses</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variante A">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen scroll">
+          <div class="hdr">
+            <div class="hdr-back" aria-hidden="true">←</div>
+            <div class="hdr-text">
+              <h2 class="hdr-title">Shopping List</h2>
+              <p class="hdr-sub">Diner chez Marie</p>
+            </div>
+          </div>
+          <div class="banner-a">
+            <p>4 items to buy</p>
+          </div>
+          <div class="list-stack">
+            <div class="section-label">Food</div>
+            <div class="row-item">
+              <div class="cb" aria-hidden="true"></div>
+              <div class="item-body">
+                <p class="item-name">Salade verte</p>
+                <p class="item-meta">need 2 more · needed by event · 28 mars</p>
+              </div>
+            </div>
+            <div class="row-item">
+              <div class="cb" aria-hidden="true"></div>
+              <div class="item-body">
+                <p class="item-name">Dessert</p>
+                <p class="item-meta">need 1 · needed by event · 28 mars</p>
+              </div>
+            </div>
+            <div class="section-label">Drinks</div>
+            <div class="row-item">
+              <div class="cb" aria-hidden="true"></div>
+              <div class="item-body">
+                <p class="item-name">Jus d'orange</p>
+                <p class="item-meta">need 2 · needed by event · 28 mars</p>
+              </div>
+            </div>
+            <div class="row-item">
+              <div class="cb" aria-hidden="true"></div>
+              <div class="item-body">
+                <p class="item-name">Biere</p>
+                <p class="item-meta">need 3 · needed by event · 28 mars</p>
+              </div>
+            </div>
+            <div class="done-block">
+              <div class="section-label">Checked</div>
+              <div class="row-item done">
+                <div class="cb checked" aria-hidden="true">✓</div>
+                <div class="item-body">
+                  <p class="item-name">Pain</p>
+                  <p class="item-meta">done</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-outline">Share list</button>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant A — Checklist Page</strong>
+        <span>Page dédiée depuis EventDetail : groupes, quantités, dates, partage.</span>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variante B">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen screen-b scroll">
+          <div class="fake-nav"></div>
+          <p class="event-title-b">Diner chez Marie</p>
+          <div class="shop-section">
+            <div class="shop-head">
+              <div class="shop-head-left">
+                <span class="cart-ico" aria-hidden="true">🛒</span>
+                <h3>Shopping List</h3>
+              </div>
+              <span class="badge">4 items</span>
+            </div>
+            <div class="collapsed-hint">
+              <p>4 items still needed</p>
+              <button type="button" class="btn-primary-sm">View list</button>
+            </div>
+            <div class="expanded-block">
+              <div class="row-b">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="item-name">Salade verte</span>
+                <span class="qty-inline">×2</span>
+                <button type="button" class="btn-ill">I'll get it</button>
+              </div>
+              <div class="row-b">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="item-name">Dessert</span>
+                <span class="qty-inline">×1</span>
+                <div class="claimed">
+                  <span class="avatar" aria-hidden="true"></span>
+                  You're getting this
+                </div>
+              </div>
+              <div class="row-b">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="item-name">Jus d'orange</span>
+                <span class="qty-inline">×2</span>
+                <button type="button" class="btn-ill">I'll get it</button>
+              </div>
+              <div class="row-b">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="item-name">Biere</span>
+                <span class="qty-inline">×3</span>
+                <button type="button" class="btn-ill">I'll get it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant B — Inline Summary in EventDetail</strong>
+        <span>Section repliable : badge, résumé replié, liste compacte et prise en charge.</span>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="mockup-column">
+      <div class="phone" aria-label="Variante C">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-screen scroll">
+          <div class="hdr">
+            <div class="hdr-back" aria-hidden="true">←</div>
+            <div class="hdr-text">
+              <h2 class="hdr-title">What to buy</h2>
+              <p class="hdr-sub">Diner chez Marie</p>
+            </div>
+          </div>
+          <div class="progress-top">
+            <div class="prog-label">
+              <span>Progress</span>
+              <span>2/6 items covered</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill"></div>
+            </div>
+          </div>
+          <div class="phone-scroll-fill">
+            <div class="cat-card">
+              <h3 class="cat-h">🍽 Food</h3>
+              <div class="row-c">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="name-c">Salade verte</span>
+                <span class="pill-q">×2</span>
+              </div>
+              <div class="row-c checked">
+                <div class="cb checked" aria-hidden="true">✓</div>
+                <span class="name-c">Dessert</span>
+                <span class="pill-q">×1</span>
+              </div>
+              <div class="row-c checked">
+                <div class="cb checked" aria-hidden="true">✓</div>
+                <span class="name-c">Pain</span>
+                <span class="pill-q">×2</span>
+              </div>
+            </div>
+            <div class="cat-card">
+              <h3 class="cat-h">🥤 Drinks</h3>
+              <div class="row-c">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="name-c">Jus d'orange</span>
+                <span class="pill-q">×2</span>
+              </div>
+              <div class="row-c">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="name-c">Biere</span>
+                <span class="pill-q">×3</span>
+              </div>
+            </div>
+            <div class="cat-card">
+              <h3 class="cat-h">🧻 Supplies</h3>
+              <div class="row-c">
+                <div class="cb" aria-hidden="true"></div>
+                <span class="name-c">Serviettes</span>
+                <span class="pill-q">×1</span>
+              </div>
+            </div>
+          </div>
+          <div class="actions-c">
+            <button type="button" class="btn-wa">Share via WhatsApp</button>
+            <button type="button" class="btn-copy">Copy list</button>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant C — Visual Cards by Category</strong>
+        <span>Cartes par catégorie, pastilles de quantité, barre de progression, partage.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyRow — Issue #77: Complete Editable Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #F97066;
+      --secondary: #1E293B;
+      --accent: #FBBF24;
+      --accent2: #FB923C;
+      --surface: #FFFBF5;
+      --surface-warm: #FFF7ED;
+      --white: #ffffff;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --text-subtle: #94A3B8;
+      --border: #F1E8E3;
+      --phone-w: 375px;
+      --phone-h: 812px;
+      --radius-phone: 40px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, sans-serif;
+      background: linear-gradient(160deg, var(--surface-warm) 0%, var(--surface) 50%, #fde8e4 100%);
+      color: var(--text);
+      padding: var(--space-5, 2rem) var(--space-4, 1.5rem) 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .mockups {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mockup-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mockup-label {
+      text-align: center;
+      max-width: var(--phone-w);
+    }
+
+    .mockup-label strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    .mockup-label span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: var(--secondary);
+      border-radius: var(--radius-phone);
+      padding: 10px;
+      box-shadow:
+        0 25px 50px -12px rgba(30, 41, 59, 0.35),
+        0 0 0 1px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 32px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--surface);
+      border-radius: calc(var(--radius-phone) - 6px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .screen-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 52px 16px 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* --- Variant A --- */
+    .a-profile-top {
+      text-align: center;
+      padding-bottom: 1rem;
+    }
+
+    .a-avatar-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .a-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border: 3px solid var(--white);
+      box-shadow: 0 8px 24px rgba(249, 112, 102, 0.35);
+    }
+
+    .a-camera {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 32px;
+      height: 32px;
+      background: var(--white);
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .a-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 0.2rem;
+    }
+
+    .a-email {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .a-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .a-stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+    }
+
+    .a-stat-val {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .a-stat-label {
+      font-size: 0.65rem;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 10px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .field-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .field-row.readonly-email .field-value {
+      font-size: 0.75rem;
+    }
+
+    .field-row.prefs-intro {
+      border-bottom: none;
+      padding-top: 0;
+    }
+
+    .prefs-allergies-label {
+      margin-top: 10px;
+    }
+
+    .field-label {
+      color: var(--text-subtle);
+      font-size: 0.8rem;
+    }
+
+    .field-value {
+      color: var(--text);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .edit-icon {
+      opacity: 0.6;
+      font-size: 0.85rem;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+    }
+
+    .chip.on {
+      background: rgba(249, 112, 102, 0.12);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .textarea-mock {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      min-height: 36px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 26px;
+      background: var(--primary);
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: var(--white);
+      border-radius: 50%;
+      top: 2px;
+      right: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .toggle.off {
+      background: #cbd5e1;
+    }
+
+    .toggle.off::after {
+      right: auto;
+      left: 2px;
+    }
+
+    .btn-edit {
+      width: 100%;
+      padding: 12px;
+      margin-top: 4px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: default;
+    }
+
+    .btn-signout {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    /* --- Variant B --- */
+    .b-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .b-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      flex-shrink: 0;
+    }
+
+    .b-header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .b-header-text h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .b-edit-link {
+      font-size: 0.8rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .b-form label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .b-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      margin-bottom: 14px;
+      background: var(--white);
+    }
+
+    .b-input.readonly {
+      background: #f8fafc;
+      color: var(--text-subtle);
+    }
+
+    .b-textarea {
+      min-height: 64px;
+      resize: none;
+    }
+
+    .b-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .b-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text-muted);
+    }
+
+    .b-tag.sel {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: var(--accent);
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    .b-sticky-wrap {
+      margin-top: auto;
+      padding: 12px 16px 16px;
+      background: linear-gradient(to top, var(--surface) 70%, transparent);
+    }
+
+    .b-screen-inner {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .b-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 52px 16px 8px;
+    }
+
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: var(--primary);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 1rem;
+      font-family: inherit;
+      box-shadow: 0 8px 20px rgba(249, 112, 102, 0.35);
+    }
+
+    .b-signout {
+      text-align: center;
+      padding: 14px 0 8px;
+      font-size: 0.875rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* --- Variant C --- */
+    .c-header {
+      text-align: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .c-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      background: linear-gradient(145deg, var(--accent2), var(--primary));
+    }
+
+    .c-header h2 {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .c-header p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .settings-group {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 14px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-row .label {
+      flex: 1;
+      color: var(--text);
+    }
+
+    .settings-row .value {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chev {
+      color: var(--text-subtle);
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    .sep {
+      height: 10px;
+      background: transparent;
+    }
+
+    .settings-row.danger .label,
+    .settings-row.danger {
+      color: var(--primary);
+      font-weight: 600;
+      justify-content: center;
+    }
+
+    .settings-row.danger .chev {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>HappyRow — Issue #77: Complete Editable Profile</h1>
+    <p>3 variantes pour le profil utilisateur</p>
+  </header>
+
+  <div class="mockups">
+    <!-- Variant A -->
+    <div class="mockup-column">
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="screen-scroll">
+            <div class="a-profile-top">
+              <div class="a-avatar-wrap">
+                <div class="a-avatar"></div>
+                <div class="a-camera" title="Change photo">📷</div>
+              </div>
+              <p class="a-name">Jean Dupont</p>
+              <p class="a-email">jean@example.com</p>
+            </div>
+
+            <div class="a-stats">
+              <div class="a-stat-card">
+                <div class="a-stat-val">12</div>
+                <div class="a-stat-label">Events</div>
+              </div>
+              <div class="a-stat-card">
+                <div class="a-stat-val">8</div>
+                <div class="a-stat-label">Organized</div>
+              </div>
+              <div class="a-stat-card">
+                <div class="a-stat-val">47</div>
+                <div class="a-stat-label">Contributions</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-edit">Edit profile</button>
+
+            <div class="card">
+              <h3 class="card-title">Personal Info</h3>
+              <div class="field-row">
+                <span class="field-label">Display name</span>
+                <span class="field-value">Jean Dupont <span class="edit-icon">✎</span></span>
+              </div>
+              <div class="field-row readonly-email">
+                <span class="field-label">Email</span>
+                <span class="field-value">jean@example.com</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Phone</span>
+                <span class="field-value">+33 6 12 34 56 78 <span class="edit-icon">✎</span></span>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">Preferences</h3>
+              <div class="field-row prefs-intro">
+                <span class="field-label">Dietary</span>
+              </div>
+              <div class="chips">
+                <span class="chip on">Vegetarian</span>
+                <span class="chip">Vegan</span>
+                <span class="chip">Gluten-free</span>
+              </div>
+              <div class="field-label prefs-allergies-label">Allergies</div>
+              <div class="textarea-mock">None</div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">Notifications</h3>
+              <div class="toggle-row">
+                <span>Push</span>
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                <span>Email</span>
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                <span>Reminders</span>
+                <div class="toggle off"></div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-signout">Sign out</button>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant A — Card Sections</strong>
+        <span>Cartes empilées, stats en haut, bouton Éditer qui passerait les champs en saisie.</span>
+      </div>
+    </div>
+
+    <!-- Variant B -->
+    <div class="mockup-column">
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="b-screen-inner">
+            <div class="b-scroll">
+              <div class="b-header">
+                <div class="b-avatar"></div>
+                <div class="b-header-text">
+                  <h2>Jean Dupont</h2>
+                </div>
+                <a class="b-edit-link" href="#">Edit profile</a>
+              </div>
+
+              <label for="b-name">Display name</label>
+              <input id="b-name" class="b-input" type="text" value="Jean Dupont" readonly />
+
+              <label for="b-email">Email</label>
+              <input id="b-email" class="b-input readonly" type="email" value="jean@example.com" readonly />
+
+              <label for="b-phone">Phone</label>
+              <input id="b-phone" class="b-input" type="tel" value="+33 6 12 34 56 78" readonly />
+
+              <label for="b-bio">Bio</label>
+              <textarea id="b-bio" class="b-input b-textarea" readonly>J’aime organiser des apéros et des sorties vélo le week-end.</textarea>
+
+              <label>Dietary preferences</label>
+              <div class="b-tags">
+                <span class="b-tag sel">Vegetarian</span>
+                <span class="b-tag">Vegan</span>
+                <span class="b-tag">Gluten-free</span>
+                <span class="b-tag">Halal</span>
+              </div>
+
+              <label>Notifications</label>
+              <div class="toggle-row">
+                <span>Push notifications</span>
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                <span>Email updates</span>
+                <div class="toggle"></div>
+              </div>
+              <div class="toggle-row">
+                <span>Event reminders</span>
+                <div class="toggle off"></div>
+              </div>
+            </div>
+            <div class="b-sticky-wrap">
+              <button type="button" class="btn-save">Save</button>
+              <div class="b-signout">Sign out</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant B — Full-page Form</strong>
+        <span>Formulaire continu, en-tête compact, bouton Save fixe en bas.</span>
+      </div>
+    </div>
+
+    <!-- Variant C -->
+    <div class="mockup-column">
+      <div class="phone" aria-hidden="true">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="screen-scroll">
+            <div class="c-header">
+              <div class="c-avatar"></div>
+              <h2>Jean Dupont</h2>
+              <p>jean@example.com</p>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-row">
+                <span class="label">Display Name</span>
+                <span class="value">Jean Dupont <span class="chev">›</span></span>
+              </div>
+              <div class="settings-row">
+                <span class="label">Phone</span>
+                <span class="value">+33 6 12 34 56 78 <span class="chev">›</span></span>
+              </div>
+              <div class="settings-row">
+                <span class="label">Dietary Preferences</span>
+                <span class="value">Vegetarian <span class="chev">›</span></span>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="settings-group">
+              <div class="settings-row">
+                <span class="label">Notifications</span>
+                <span class="value">On <span class="chev">›</span></span>
+              </div>
+              <div class="settings-row">
+                <span class="label">Language</span>
+                <span class="value">French <span class="chev">›</span></span>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="settings-group">
+              <div class="settings-row danger">
+                <span class="label">Sign Out</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-label">
+        <strong>Variant C — Settings-style List</strong>
+        <span>Liste type réglages système, chevrons, lignes tap = édition ou feuille.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

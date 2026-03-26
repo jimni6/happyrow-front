@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Palette Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f1f1;
+    color: #1e293b;
+    padding: 2rem 1rem;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 3rem;
+  }
+
+  .palette-section {
+    max-width: 1100px;
+    margin: 0 auto 4rem;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .palette-header {
+    padding: 2rem 2.5rem;
+    color: white;
+  }
+
+  .palette-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .palette-header p {
+    opacity: 0.85;
+    font-size: 0.95rem;
+  }
+
+  .palette-body {
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* Swatches */
+  .swatches {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .swatch-color {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid rgba(0,0,0,0.06);
+  }
+
+  .swatch-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .swatch-hex {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  /* Mock sections */
+  .mock-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .mock-row { grid-template-columns: 1fr; }
+  }
+
+  .mock-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Buttons */
+  .buttons-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    padding: 0.75rem 1.75rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn:hover { transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    border: 2px solid;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: none;
+  }
+
+  /* Event Card Mock */
+  .event-card-mock {
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .card-date {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    text-align: center;
+    color: white;
+  }
+
+  .card-date .month {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .card-date .day {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0.25rem 0;
+  }
+
+  .card-date .time {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .card-body {
+    flex: 1;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .card-meta {
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  .card-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    color: white;
+    width: fit-content;
+  }
+
+  .card-footer {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .card-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Navbar mock */
+  .navbar-mock {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-radius: 100px;
+    max-width: 320px;
+  }
+
+  .navbar-pill {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.35rem;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-fab {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  /* Welcome mock */
+  .welcome-mock {
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .welcome-brand {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .welcome-tagline {
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+
+  .welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .welcome-buttons .btn {
+    width: 100%;
+  }
+
+  /* Profile mock */
+  .profile-mock {
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .profile-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .profile-email {
+    font-size: 0.85rem;
+    opacity: 0.5;
+  }
+
+  /* ==================== PALETTE A ==================== */
+  .pa-header { background: linear-gradient(135deg, #F97066, #FB923C); }
+  .pa-body { background: #FFFBF5; }
+  .pa-card { background: white; }
+  .pa-card .card-date { background: linear-gradient(135deg, #F97066, #FB923C); }
+  .pa-card .card-title { color: #1E293B; }
+  .pa-card .card-badge { background: #FBBF24; color: #78350F; }
+  .pa-card .card-action { background: #1E293B; }
+  .pa-btn-primary { background: #F97066; color: white; box-shadow: 0 4px 14px rgba(249,112,102,0.3); }
+  .pa-btn-secondary { background: #1E293B; color: white; }
+  .pa-btn-outline { border-color: #F97066; color: #F97066; }
+  .pa-btn-ghost { color: #F97066; }
+  .pa-nav-active { background: rgba(249,112,102,0.12); color: #F97066; }
+  .pa-nav-inactive { color: #94a3b8; }
+  .pa-fab { background: #F97066; }
+  .pa-welcome { background: linear-gradient(180deg, #FFFBF5 0%, #FFF1EC 50%, #FFF7ED 100%); }
+  .pa-welcome .welcome-brand { color: #F97066; }
+  .pa-welcome .welcome-tagline { color: #1E293B; }
+  .pa-profile { background: white; }
+  .pa-profile .profile-avatar { background: linear-gradient(135deg, #F97066, #FBBF24); }
+  .pa-profile .profile-name { color: #1E293B; }
+
+  /* ==================== PALETTE B ==================== */
+  .pb-header { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
+  .pb-body { background: #F8FAFC; }
+  .pb-card { background: white; }
+  .pb-card .card-date { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
+  .pb-card .card-title { color: #0F172A; }
+  .pb-card .card-badge { background: #F472B6; color: white; }
+  .pb-card .card-action { background: #0F172A; }
+  .pb-btn-primary { background: #6366F1; color: white; box-shadow: 0 4px 14px rgba(99,102,241,0.3); }
+  .pb-btn-secondary { background: #0F172A; color: white; }
+  .pb-btn-outline { border-color: #6366F1; color: #6366F1; }
+  .pb-btn-ghost { color: #6366F1; }
+  .pb-nav-active { background: rgba(99,102,241,0.1); color: #6366F1; }
+  .pb-nav-inactive { color: #94a3b8; }
+  .pb-fab { background: #6366F1; }
+  .pb-welcome { background: linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 50%, #F5F3FF 100%); }
+  .pb-welcome .welcome-brand { color: #6366F1; }
+  .pb-welcome .welcome-tagline { color: #0F172A; }
+  .pb-profile { background: white; }
+  .pb-profile .profile-avatar { background: linear-gradient(135deg, #6366F1, #F472B6); }
+  .pb-profile .profile-name { color: #0F172A; }
+
+  /* ==================== PALETTE C ==================== */
+  .pc-header { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .pc-body { background: #F0FDF9; }
+  .pc-card { background: white; }
+  .pc-card .card-date { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .pc-card .card-title { color: #1E293B; }
+  .pc-card .card-badge { background: #FB923C; color: white; }
+  .pc-card .card-action { background: #1E293B; }
+  .pc-btn-primary { background: #14B8A6; color: white; box-shadow: 0 4px 14px rgba(20,184,166,0.3); }
+  .pc-btn-secondary { background: #1E293B; color: white; }
+  .pc-btn-outline { border-color: #14B8A6; color: #14B8A6; }
+  .pc-btn-ghost { color: #14B8A6; }
+  .pc-nav-active { background: rgba(20,184,166,0.1); color: #14B8A6; }
+  .pc-nav-inactive { color: #94a3b8; }
+  .pc-fab { background: #14B8A6; }
+  .pc-welcome { background: linear-gradient(180deg, #F0FDF9 0%, #ECFDF5 50%, #F0FDFA 100%); }
+  .pc-welcome .welcome-brand { color: #14B8A6; }
+  .pc-welcome .welcome-tagline { color: #1E293B; }
+  .pc-profile { background: white; }
+  .pc-profile .profile-avatar { background: linear-gradient(135deg, #14B8A6, #FB923C); }
+  .pc-profile .profile-name { color: #1E293B; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">HappyRow - Palette Preview</h1>
+<p class="page-subtitle">3 options de palette appliquees aux composants reels de l'app (font: Inter)</p>
+
+<!-- ===================== PALETTE A ===================== -->
+<section class="palette-section">
+  <div class="palette-header pa-header">
+    <h2>Option A : "Warm Social"</h2>
+    <p>Festif, chaleureux, convivial &mdash; diners, fetes, celebrations</p>
+  </div>
+  <div class="palette-body pa-body">
+
+    <div>
+      <div class="mock-label">Couleurs</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F97066"></div>
+          <span class="swatch-label">Primary</span>
+          <span class="swatch-hex">#F97066</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1E293B"></div>
+          <span class="swatch-label">Secondary</span>
+          <span class="swatch-hex">#1E293B</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FBBF24"></div>
+          <span class="swatch-label">Accent</span>
+          <span class="swatch-hex">#FBBF24</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FB923C"></div>
+          <span class="swatch-label">Accent 2</span>
+          <span class="swatch-hex">#FB923C</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FFFBF5; border-color: #e5e2dc"></div>
+          <span class="swatch-label">Surface</span>
+          <span class="swatch-hex">#FFFBF5</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FFF7ED; border-color: #e5e2dc"></div>
+          <span class="swatch-label">Surface alt</span>
+          <span class="swatch-hex">#FFF7ED</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mock-label">Boutons</div>
+      <div class="buttons-row">
+        <button class="btn pa-btn-primary">Creer un event</button>
+        <button class="btn pa-btn-secondary">Confirmer</button>
+        <button class="btn btn-outline pa-btn-outline">Se connecter</button>
+        <button class="btn btn-ghost pa-btn-ghost">Annuler</button>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Event Card</div>
+        <div class="event-card-mock pa-card">
+          <div class="card-date">
+            <span class="month">AVR</span>
+            <span class="day">12</span>
+            <span class="time">19:30</span>
+          </div>
+          <div class="card-body">
+            <span class="card-badge" style="background:#FBBF24;color:#78350F">Organisateur</span>
+            <div class="card-title">Diner chez Marie</div>
+            <div class="card-meta">6 participants &bull; Apporter un plat</div>
+            <div class="card-footer">
+              <button class="card-action" style="background:#1E293B">&#10003;</button>
+              <button class="card-action" style="background:#F97066">&#10005;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Welcome Screen</div>
+        <div class="welcome-mock pa-welcome">
+          <div class="welcome-brand">HappyRow</div>
+          <div class="welcome-tagline">Organisez vos moments entre amis</div>
+          <div class="welcome-buttons">
+            <button class="btn pa-btn-primary" style="width:100%">Creer un compte</button>
+            <button class="btn btn-outline pa-btn-outline" style="width:100%">Se connecter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Navbar</div>
+        <div style="background: #FFFBF5; border-radius: 20px; padding: 1.5rem; display:flex; justify-content:center;">
+          <div class="navbar-mock">
+            <div class="navbar-pill">
+              <button class="nav-btn pa-nav-active">&#127968;</button>
+              <button class="nav-btn pa-nav-inactive">&#128100;</button>
+            </div>
+            <div style="width:1rem"></div>
+            <button class="nav-fab pa-fab">+</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Profile</div>
+        <div class="profile-mock pa-profile">
+          <div class="profile-avatar pa-profile .profile-avatar" style="background: linear-gradient(135deg, #F97066, #FBBF24);">JN</div>
+          <div class="profile-name" style="color:#1E293B">Jean Dupont</div>
+          <div class="profile-email">jean@example.com</div>
+          <button class="btn pa-btn-primary" style="margin-top:0.5rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Deconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PALETTE B ===================== -->
+<section class="palette-section">
+  <div class="palette-header pb-header">
+    <h2>Option B : "Fresh Indigo"</h2>
+    <p>Moderne, epure, tendance &mdash; clean mobile app, Instagram-like</p>
+  </div>
+  <div class="palette-body pb-body">
+
+    <div>
+      <div class="mock-label">Couleurs</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#6366F1"></div>
+          <span class="swatch-label">Primary</span>
+          <span class="swatch-hex">#6366F1</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0F172A"></div>
+          <span class="swatch-label">Secondary</span>
+          <span class="swatch-hex">#0F172A</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F472B6"></div>
+          <span class="swatch-label">Accent</span>
+          <span class="swatch-hex">#F472B6</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#8B5CF6"></div>
+          <span class="swatch-label">Accent 2</span>
+          <span class="swatch-hex">#8B5CF6</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F8FAFC; border-color: #e2e8f0"></div>
+          <span class="swatch-label">Surface</span>
+          <span class="swatch-hex">#F8FAFC</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#EEF2FF; border-color: #e2e8f0"></div>
+          <span class="swatch-label">Surface alt</span>
+          <span class="swatch-hex">#EEF2FF</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mock-label">Boutons</div>
+      <div class="buttons-row">
+        <button class="btn pb-btn-primary">Creer un event</button>
+        <button class="btn pb-btn-secondary">Confirmer</button>
+        <button class="btn btn-outline pb-btn-outline">Se connecter</button>
+        <button class="btn btn-ghost pb-btn-ghost">Annuler</button>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Event Card</div>
+        <div class="event-card-mock pb-card">
+          <div class="card-date">
+            <span class="month">AVR</span>
+            <span class="day">12</span>
+            <span class="time">19:30</span>
+          </div>
+          <div class="card-body">
+            <span class="card-badge" style="background:#F472B6;color:white">Organisateur</span>
+            <div class="card-title">Diner chez Marie</div>
+            <div class="card-meta">6 participants &bull; Apporter un plat</div>
+            <div class="card-footer">
+              <button class="card-action" style="background:#0F172A">&#10003;</button>
+              <button class="card-action" style="background:#6366F1">&#10005;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Welcome Screen</div>
+        <div class="welcome-mock pb-welcome">
+          <div class="welcome-brand">HappyRow</div>
+          <div class="welcome-tagline">Organisez vos moments entre amis</div>
+          <div class="welcome-buttons">
+            <button class="btn pb-btn-primary" style="width:100%">Creer un compte</button>
+            <button class="btn btn-outline pb-btn-outline" style="width:100%">Se connecter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Navbar</div>
+        <div style="background: #F8FAFC; border-radius: 20px; padding: 1.5rem; display:flex; justify-content:center;">
+          <div class="navbar-mock">
+            <div class="navbar-pill">
+              <button class="nav-btn pb-nav-active">&#127968;</button>
+              <button class="nav-btn pb-nav-inactive">&#128100;</button>
+            </div>
+            <div style="width:1rem"></div>
+            <button class="nav-fab pb-fab">+</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Profile</div>
+        <div class="profile-mock pb-profile">
+          <div class="profile-avatar" style="background: linear-gradient(135deg, #6366F1, #F472B6);">JN</div>
+          <div class="profile-name" style="color:#0F172A">Jean Dupont</div>
+          <div class="profile-email">jean@example.com</div>
+          <button class="btn pb-btn-primary" style="margin-top:0.5rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Deconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PALETTE C ===================== -->
+<section class="palette-section">
+  <div class="palette-header pc-header">
+    <h2>Option C : "Nature & Joy"</h2>
+    <p>Frais, equilibre, organique &mdash; naturel et joyeux</p>
+  </div>
+  <div class="palette-body pc-body">
+
+    <div>
+      <div class="mock-label">Couleurs</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#14B8A6"></div>
+          <span class="swatch-label">Primary</span>
+          <span class="swatch-hex">#14B8A6</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1E293B"></div>
+          <span class="swatch-label">Secondary</span>
+          <span class="swatch-hex">#1E293B</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FB923C"></div>
+          <span class="swatch-label">Accent</span>
+          <span class="swatch-hex">#FB923C</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0D9488"></div>
+          <span class="swatch-label">Primary dark</span>
+          <span class="swatch-hex">#0D9488</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F0FDF9; border-color: #d1ece5"></div>
+          <span class="swatch-label">Surface</span>
+          <span class="swatch-hex">#F0FDF9</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#ECFDF5; border-color: #d1ece5"></div>
+          <span class="swatch-label">Surface alt</span>
+          <span class="swatch-hex">#ECFDF5</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mock-label">Boutons</div>
+      <div class="buttons-row">
+        <button class="btn pc-btn-primary">Creer un event</button>
+        <button class="btn pc-btn-secondary">Confirmer</button>
+        <button class="btn btn-outline pc-btn-outline">Se connecter</button>
+        <button class="btn btn-ghost pc-btn-ghost">Annuler</button>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Event Card</div>
+        <div class="event-card-mock pc-card">
+          <div class="card-date">
+            <span class="month">AVR</span>
+            <span class="day">12</span>
+            <span class="time">19:30</span>
+          </div>
+          <div class="card-body">
+            <span class="card-badge">Organisateur</span>
+            <div class="card-title">Diner chez Marie</div>
+            <div class="card-meta">6 participants &bull; Apporter un plat</div>
+            <div class="card-footer">
+              <button class="card-action" style="background:#1E293B">&#10003;</button>
+              <button class="card-action" style="background:#14B8A6">&#10005;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Welcome Screen</div>
+        <div class="welcome-mock pc-welcome">
+          <div class="welcome-brand">HappyRow</div>
+          <div class="welcome-tagline">Organisez vos moments entre amis</div>
+          <div class="welcome-buttons">
+            <button class="btn pc-btn-primary" style="width:100%">Creer un compte</button>
+            <button class="btn btn-outline pc-btn-outline" style="width:100%">Se connecter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mock-row">
+      <div>
+        <div class="mock-label">Navbar</div>
+        <div style="background: #F0FDF9; border-radius: 20px; padding: 1.5rem; display:flex; justify-content:center;">
+          <div class="navbar-mock">
+            <div class="navbar-pill">
+              <button class="nav-btn pc-nav-active">&#127968;</button>
+              <button class="nav-btn pc-nav-inactive">&#128100;</button>
+            </div>
+            <div style="width:1rem"></div>
+            <button class="nav-fab pc-fab">+</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-label">Profile</div>
+        <div class="profile-mock pc-profile">
+          <div class="profile-avatar" style="background: linear-gradient(135deg, #14B8A6, #FB923C);">JN</div>
+          <div class="profile-name" style="color:#1E293B">Jean Dupont</div>
+          <div class="profile-email">jean@example.com</div>
+          <button class="btn pc-btn-primary" style="margin-top:0.5rem; font-size:0.85rem; padding:0.6rem 1.5rem;">Deconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

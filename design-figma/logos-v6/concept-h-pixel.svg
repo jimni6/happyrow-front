@@ -1,0 +1,30 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Pixelated H: 5x7 grid, cell=20px, gap=4px -->
+  <!-- Left column (col 0) -->
+  <rect x="42" y="18" width="20" height="20" rx="5" fill="white" opacity="0.5"/>
+  <rect x="42" y="42" width="20" height="20" rx="5" fill="white" opacity="0.55"/>
+  <rect x="42" y="66" width="20" height="20" rx="5" fill="white" opacity="0.6"/>
+  <rect x="42" y="90" width="20" height="20" rx="5" fill="white" opacity="0.8"/>
+  <rect x="42" y="114" width="20" height="20" rx="5" fill="white" opacity="0.6"/>
+  <rect x="42" y="138" width="20" height="20" rx="5" fill="white" opacity="0.55"/>
+  <rect x="42" y="162" width="20" height="20" rx="5" fill="white" opacity="0.5"/>
+  <!-- Crossbar (row 3, cols 1-3) -->
+  <rect x="66" y="90" width="20" height="20" rx="5" fill="white" opacity="0.65"/>
+  <rect x="90" y="90" width="20" height="20" rx="5" fill="white" opacity="0.9"/>
+  <rect x="114" y="90" width="20" height="20" rx="5" fill="white" opacity="0.65"/>
+  <!-- Right column (col 4) -->
+  <rect x="138" y="18" width="20" height="20" rx="5" fill="white" opacity="0.5"/>
+  <rect x="138" y="42" width="20" height="20" rx="5" fill="white" opacity="0.55"/>
+  <rect x="138" y="66" width="20" height="20" rx="5" fill="white" opacity="0.6"/>
+  <rect x="138" y="90" width="20" height="20" rx="5" fill="white" opacity="0.8"/>
+  <rect x="138" y="114" width="20" height="20" rx="5" fill="white" opacity="0.6"/>
+  <rect x="138" y="138" width="20" height="20" rx="5" fill="white" opacity="0.55"/>
+  <rect x="138" y="162" width="20" height="20" rx="5" fill="white" opacity="0.5"/>
+</svg>

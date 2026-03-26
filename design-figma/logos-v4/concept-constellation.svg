@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Connecting lines (behind dots) -->
+  <line x1="60" y1="60" x2="108" y2="84" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+  <line x1="108" y1="84" x2="148" y2="64" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+  <line x1="108" y1="84" x2="76" y2="136" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+  <line x1="76" y1="136" x2="140" y2="140" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+  <line x1="148" y1="64" x2="140" y2="140" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.2"/>
+  <!-- Star dots -->
+  <circle cx="60" cy="60" r="12" fill="white"/>
+  <circle cx="108" cy="84" r="16" fill="white"/>
+  <circle cx="148" cy="64" r="10" fill="white" opacity="0.85"/>
+  <circle cx="76" cy="136" r="13" fill="white" opacity="0.75"/>
+  <circle cx="140" cy="140" r="11" fill="white" opacity="0.65"/>
+</svg>

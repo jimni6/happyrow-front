@@ -1,0 +1,15 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Three-blade pinwheel (pie slices with gaps) -->
+  <path d="M100,100 L100,40 A60,60 0 0,1 160,100 Z" fill="white" opacity="0.55" transform="rotate(0, 100, 100)"/>
+  <path d="M100,100 L100,40 A60,60 0 0,1 160,100 Z" fill="white" opacity="0.4" transform="rotate(120, 100, 100)"/>
+  <path d="M100,100 L100,40 A60,60 0 0,1 160,100 Z" fill="white" opacity="0.65" transform="rotate(240, 100, 100)"/>
+  <!-- Center dot -->
+  <circle cx="100" cy="100" r="8" fill="white" opacity="0.9"/>
+</svg>
