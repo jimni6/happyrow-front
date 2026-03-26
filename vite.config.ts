@@ -140,7 +140,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://happyrow-core.onrender.com',
+        target: process.env.VITE_DEV_API_URL || 'http://localhost:8080',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ''),
         configure: proxy => {

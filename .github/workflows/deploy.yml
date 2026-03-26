@@ -23,22 +23,17 @@ jobs:
         node-version: '20'
         cache: 'npm'
 
-    - name: Security check - Validate lockfile
-      run: |
-        npm install --save-dev lockfile-lint
-        npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https
-
     - name: Install dependencies (secure mode)
       run: npm ci --ignore-scripts
+
+    - name: Security check - Validate lockfile
+      run: npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https
 
     - name: Run linter
       run: npm run lint
 
     - name: Run tests
-      run: npm run test
-
-    - name: Clean install
-      run: npm run clean
+      run: npm run test:ci
 
     - name: Build application
       run: npm run build
@@ -124,13 +119,11 @@ jobs:
         node-version: '20'
         cache: 'npm'
 
-    - name: Security check - Lockfile validation
-      run: |
-        npm install --save-dev lockfile-lint
-        npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https
-
     - name: Install dependencies (secure mode)
       run: npm ci --ignore-scripts
+
+    - name: Security check - Lockfile validation
+      run: npx lockfile-lint --path package-lock.json --type npm --allowed-hosts npm --validate-https
 
     - name: Build application
       run: npm run build
