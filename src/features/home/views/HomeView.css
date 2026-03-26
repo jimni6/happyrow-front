@@ -21,10 +21,27 @@
 
 /* Greeting */
 .home-greeting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.home-greeting__logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.home-greeting__sub {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-medium);
+}
+
+.home-greeting__name {
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--color-secondary);
-  margin: 0;
 }
 
 .home-section-title {
@@ -76,7 +93,12 @@
     gap: var(--space-3);
   }
 
-  .home-greeting {
+  .home-greeting__name {
     font-size: var(--text-xl);
+  }
+
+  .home-greeting__logo {
+    width: 32px;
+    height: 32px;
   }
 }

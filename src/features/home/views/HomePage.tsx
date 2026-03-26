@@ -84,7 +84,13 @@ export const HomePage: React.FC<HomePageProps> = ({ user }) => {
   return (
     <div className="home-screen">
       <div className="home-content">
-        <h1 className="home-greeting">Bonjour {user.firstname}</h1>
+        <div className="home-greeting">
+          <img src="/logo.svg" alt="" className="home-greeting__logo" />
+          <div>
+            <div className="home-greeting__sub">Bonjour</div>
+            <div className="home-greeting__name">{user.firstname}</div>
+          </div>
+        </div>
         <h2 className="home-section-title">Mes events</h2>
         {loading ? (
           <div className="loading-events">Loading events...</div>

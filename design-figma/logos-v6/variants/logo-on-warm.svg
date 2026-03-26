@@ -1,0 +1,16 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="warmGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffbf5"/>
+      <stop offset="100%" stop-color="#fff1ec"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="32" fill="url(#warmGrad)"/>
+  <g transform="translate(20, 20)">
+    <circle cx="54" cy="58" r="38" fill="#F97066" opacity="0.5"/>
+    <circle cx="66" cy="140" r="30" fill="#F97066" opacity="0.65"/>
+    <circle cx="146" cy="66" r="32" fill="#FB923C" opacity="0.6"/>
+    <circle cx="134" cy="138" r="36" fill="#FB923C" opacity="0.5"/>
+    <ellipse cx="100" cy="100" rx="54" ry="20" fill="#FBBF24" opacity="0.45" transform="rotate(-4, 100, 100)"/>
+  </g>
+</svg>
