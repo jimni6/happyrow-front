@@ -1,0 +1,104 @@
+/* Hero Card — Next upcoming event */
+.hero-card {
+  background: var(--gradient-primary);
+  border-radius: var(--radius-3xl);
+  padding: var(--space-4);
+  color: var(--color-text-white);
+  margin-bottom: var(--space-4);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.hero-card::after {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  top: -40px;
+  right: -30px;
+  pointer-events: none;
+}
+
+.hero-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
+.hero-card:focus {
+  outline: 2px solid var(--color-text-white);
+  outline-offset: 2px;
+}
+
+.hero-card__label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+  margin-bottom: var(--space-2);
+}
+
+.hero-card__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  margin: 0 0 var(--space-1) 0;
+  line-height: var(--leading-tight);
+}
+
+.hero-card__meta {
+  font-size: var(--text-sm);
+  opacity: 0.85;
+  margin-bottom: var(--space-3);
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.hero-card__meta-item {
+  white-space: nowrap;
+}
+
+.hero-card__stats {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.hero-card__stat {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-xl);
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  flex: 1;
+}
+
+.hero-card__stat-val {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+}
+
+.hero-card__stat-label {
+  font-size: var(--text-xs);
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+  .hero-card {
+    padding: var(--space-3);
+  }
+
+  .hero-card__title {
+    font-size: var(--text-xl);
+  }
+
+  .hero-card__meta {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
