@@ -9,8 +9,8 @@ interface SupabaseConfig {
 }
 
 /**
- * Get Supabase configuration from environment variables
- * Returns default values if environment variables are not set (for development)
+ * Get Supabase configuration from environment variables.
+ * Throws if variables are missing to prevent DNS squatting and silent misconfiguration.
  */
 export const getSupabaseConfig = (): SupabaseConfig => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
