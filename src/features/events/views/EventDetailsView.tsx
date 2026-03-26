@@ -200,11 +200,15 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           <h1 className="event-name">{currentEvent.name}</h1>
           <div className="event-meta">
             <span className="event-meta-item">
-              <span className="meta-icon">👥</span>
+              <span className="meta-icon" aria-hidden="true">
+                👥
+              </span>
               {participantCount} participant{participantCount !== 1 ? 's' : ''}
             </span>
             <span className="event-meta-item">
-              <span className="meta-icon">📍</span>
+              <span className="meta-icon" aria-hidden="true">
+                📍
+              </span>
               {currentEvent.location}
             </span>
           </div>
@@ -265,7 +269,10 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
       <div className="participants-section">
         <div className="participants-section-header">
           <h2 className="participants-section-title">
-            <span className="meta-icon">👥</span> Participants
+            <span className="meta-icon" aria-hidden="true">
+              👥
+            </span>{' '}
+            Participants
           </h2>
           {isOrganizer && (
             <button

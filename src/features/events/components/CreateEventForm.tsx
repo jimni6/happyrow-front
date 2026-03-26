@@ -165,7 +165,11 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
           placeholder="Enter event name"
           disabled={isLoading}
         />
-        {errors.name && <span className="error-message">{errors.name}</span>}
+        {errors.name && (
+          <span className="error-message" role="alert">
+            {errors.name}
+          </span>
+        )}
       </div>
 
       <div className="form-group">
@@ -181,7 +185,9 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
           rows={3}
         />
         {errors.description && (
-          <span className="error-message">{errors.description}</span>
+          <span className="error-message" role="alert">
+            {errors.description}
+          </span>
         )}
       </div>
 
@@ -198,7 +204,11 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
             className={errors.date ? 'error' : ''}
             disabled={isLoading}
           />
-          {errors.date && <span className="error-message">{errors.date}</span>}
+          {errors.date && (
+            <span className="error-message" role="alert">
+              {errors.date}
+            </span>
+          )}
         </div>
         <div className="form-group">
           <label htmlFor="time">Event Time *</label>
@@ -212,7 +222,11 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
             disabled={isLoading}
             step="300"
           />
-          {errors.time && <span className="error-message">{errors.time}</span>}
+          {errors.time && (
+            <span className="error-message" role="alert">
+              {errors.time}
+            </span>
+          )}
         </div>
       </div>
 
@@ -229,7 +243,9 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
           disabled={isLoading}
         />
         {errors.location && (
-          <span className="error-message">{errors.location}</span>
+          <span className="error-message" role="alert">
+            {errors.location}
+          </span>
         )}
       </div>
 
@@ -249,7 +265,11 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
           <option value={EventType.DINER}>Diner</option>
           <option value={EventType.SNACK}>Snack</option>
         </select>
-        {errors.type && <span className="error-message">{errors.type}</span>}
+        {errors.type && (
+          <span className="error-message" role="alert">
+            {errors.type}
+          </span>
+        )}
       </div>
 
       <div className="form-actions">
