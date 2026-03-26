@@ -1,59 +1,70 @@
-# Backend Contract: Nudge / relance des invites
+# Backend Contract: Nudge / Reminder System
 
-**Issue:** #89 — feat: systeme de nudge / relance des invites
+> Issue #89 — `feat: systeme de nudge / relance des invites`
 
 ## Context
 
-The event organizer can send reminders (“nudges”) to guests who have not responded to the invitation or have not contributed, with cooldown and caps to limit spam.
+The organizer can nudge guests who haven't responded to the invitation or who haven't contributed any resources. Includes cooldown and anti-spam logic.
 
-**Auth:** `Authorization: Bearer <Supabase JWT>`
+Auth: Bearer JWT. Only the event organizer can send nudges.
 
-Only the **event organizer** may call nudge endpoints. The backend validates organizer role (or equivalent) for `eventId`.
+## Decisions
 
-Notifications (push and/or email) are sent asynchronously; the API records intent and returns which targets were nudged vs skipped.
+| Decision             | Choice                                                             |
+| -------------------- | ------------------------------------------------------------------ |
+| Who can nudge        | Event organizer only                                               |
+| Cooldown             | 24 hours between nudges to the same user for the same type         |
+| Max nudges           | 3 per user per event per type                                      |
+| Nudge types          | NO_RESPONSE (no status change), NO_CONTRIBUTION (no contributions) |
+| Notification channel | Push notification (from #80) or email                              |
 
-## What the frontend will provide
+## Data Model
 
-### Send nudge(s)
+### Table `nudge_history`
 
-`POST /events/{eventId}/nudge`
+| Column           | Type        | Notes                              |
+| ---------------- | ----------- | ---------------------------------- |
+| id               | UUID        | PK                                 |
+| eventId          | UUID        | FK to events                       |
+| senderId         | UUID        | FK to auth.users (organizer)       |
+| targetUserId     | UUID        | FK to auth.users                   |
+| type             | VARCHAR(20) | 'NO_RESPONSE' or 'NO_CONTRIBUTION' |
+| sentAt           | TIMESTAMP   |                                    |
+| notificationSent | BOOLEAN     | Whether push/email was delivered   |
+
+## What the Frontend Will Provide
+
+### `POST /events/{eventId}/nudge`
+
+Send nudge to specific users or all pending users.
 
 ```json
 {
-  "targetUserIds": ["uuid1", "uuid2"],
+  "targetUserIds": ["uuid-user-1", "uuid-user-2"],
   "type": "NO_RESPONSE"
 }
 ```
 
-Or nudge all eligible pending users:
+Or for bulk nudge:
 
 ```json
 {
   "targetUserIds": "all_pending",
-  "type": "NO_CONTRIBUTION"
+  "type": "NO_RESPONSE"
 }
 ```
 
-- `type`: required — `NO_RESPONSE` | `NO_CONTRIBUTION`.
-- `targetUserIds`: required — either a non-empty array of participant `userId` values, or the literal `"all_pending"`. Backend resolves `"all_pending"` to users matching the nudge type (e.g. no RSVP yet, or no contribution yet) **and** eligible under cooldown/max rules.
+`"all_pending"` means: all participants with status INVITED (no response) for NO_RESPONSE type, or all participants with 0 contributions for NO_CONTRIBUTION type.
 
-### Get nudge history
+## What the Backend Must Return
 
-`GET /events/{eventId}/nudge/history`
-
-- No body. Organizer only.
-
-## What the backend must return
-
-### `POST /events/{eventId}/nudge`
-
-- **200** with per-target outcome:
+### `POST /events/{eventId}/nudge` -- response
 
 ```json
 {
   "sent": [
     {
-      "userId": "uuid1",
+      "userId": "uuid-user-1",
       "userName": "Marie",
       "type": "NO_RESPONSE",
       "sentAt": 1711900000000
@@ -61,7 +72,7 @@ Or nudge all eligible pending users:
   ],
   "skipped": [
     {
-      "userId": "uuid2",
+      "userId": "uuid-user-2",
       "userName": "Paul",
       "reason": "COOLDOWN_ACTIVE",
       "retryAfter": 1711950000000
@@ -70,25 +81,25 @@ Or nudge all eligible pending users:
 }
 ```
 
-- `sent`: users for whom a nudge was recorded and notification dispatch was accepted (define whether failed notification still counts as sent; recommend: record row only after enqueue success).
-- `skipped`: users not nudged; `reason` examples: `COOLDOWN_ACTIVE`, `MAX_NUDGES_REACHED`, `NOT_ORGANIZER` (should be 403 before this body), `INVALID_TARGET`, `NOT_PENDING`.
+Possible skip reasons:
 
-**Cooldown:** If the last nudge to the same user for the same `type` on this event was less than **24 hours** ago, do not send. Include that user in `skipped` with `reason: "COOLDOWN_ACTIVE"` and `retryAfter` (Unix ms) when a new nudge is allowed.
+- `COOLDOWN_ACTIVE`: nudged less than 24h ago
+- `MAX_NUDGES_REACHED`: already nudged 3 times for this type
+- `ALREADY_RESPONDED`: participant already changed status (for NO_RESPONSE)
+- `ALREADY_CONTRIBUTED`: participant already has contributions (for NO_CONTRIBUTION)
 
-**HTTP 429:** When **every** target in the request is skipped due to `COOLDOWN_ACTIVE` (no row in `sent`), respond with **429 Too Many Requests** and a **`Retry-After`** header (seconds until the earliest eligible time, derived from the minimum `retryAfter` among skipped targets, or HTTP-date). When **at least one** target is in `sent`, respond **200** and list cooldown-blocked users under `skipped` with body `retryAfter` as above.
+If ALL targets are skipped, return `429 Too Many Requests` with `Retry-After` header.
 
-**Max nudges:** **3** nudges per user per event per `type`. Further attempts: `skipped` with `reason: "MAX_NUDGES_REACHED"` (no 429 required unless specified).
+### `GET /events/{eventId}/nudge/history` -- response
 
-### `GET /events/{eventId}/nudge/history`
-
-- **200** — organizer-only list:
+Nudge history for the event (organizer only).
 
 ```json
 {
   "nudges": [
     {
       "identifier": "uuid",
-      "targetUserId": "uuid1",
+      "targetUserId": "uuid-user-1",
       "targetUserName": "Marie",
       "type": "NO_RESPONSE",
       "sentAt": 1711900000000,
@@ -99,74 +110,56 @@ Or nudge all eligible pending users:
 }
 ```
 
-- Rows represent history aggregated or listed per logical nudge event; backend may return one row per send or aggregated per user/type — the example shows enriched summary. `nudgeCount` is how many times this user was nudged for this type (or on this event, per chosen aggregation); `maxNudges` is always `3`.
+### Notification payload
 
-**403** if not organizer. **404** if event not found.
-
-### Notification payload (push / data channel)
-
-Backend (or notification worker) should deliver something equivalent to:
+The backend sends a push notification to nudged users:
 
 ```json
 {
   "title": "Rappel",
-  "body": "Jean te rappelle de repondre a l'evenement BBQ du samedi",
+  "body": "{organizerName} te rappelle de repondre a {eventName}",
+  "icon": "/icons/icon-192x192.png",
   "data": {
     "type": "NUDGE",
     "eventId": "uuid",
-    "url": "/events/uuid"
+    "url": "/events/{eventId}"
   }
 }
 ```
 
-- `body` should personalize organizer name and event title from stored data.
+## API Summary
 
-## Business rules (backend)
+| Endpoint                          | Method | Auth               | Description   |
+| --------------------------------- | ------ | ------------------ | ------------- |
+| `/events/{eventId}/nudge`         | POST   | Bearer (organizer) | Send nudge(s) |
+| `/events/{eventId}/nudge/history` | GET    | Bearer (organizer) | Nudge history |
 
-| Rule               | Detail                                                                                                                                                      |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Organizer only     | Only organizer may `POST` nudge and `GET` history                                                                                                           |
-| Cooldown           | 24 hours between nudges to the **same user** for the **same** `type` on the **same** event                                                                  |
-| Max nudges         | 3 per user per event per `type`                                                                                                                             |
-| Cooldown violation | Do not send; return in `skipped` with `COOLDOWN_ACTIVE` and `retryAfter`; use **429** + `Retry-After` header where the contract requires HTTP-level backoff |
-| Delivery           | Send push notification and/or email to each nudged user                                                                                                     |
+## Field Naming
 
-## Data model: `nudge_history`
+| Field         | Type                      | Description                         |
+| ------------- | ------------------------- | ----------------------------------- |
+| targetUserIds | string[] or "all_pending" | Request: who to nudge               |
+| type          | string                    | "NO_RESPONSE" or "NO_CONTRIBUTION"  |
+| sent          | object[]                  | Response: successfully nudged users |
+| skipped       | object[]                  | Response: users skipped with reason |
+| reason        | string                    | Skip reason code                    |
+| retryAfter    | number                    | Epoch ms when cooldown expires      |
+| nudgeCount    | number                    | Times nudged for this type          |
+| maxNudges     | number                    | Maximum allowed (3)                 |
 
-| Column             | Type      | Notes                                                    |
-| ------------------ | --------- | -------------------------------------------------------- |
-| `id`               | UUID PK   |                                                          |
-| `eventId`          | UUID FK   |                                                          |
-| `senderId`         | UUID      | Organizer `userId`                                       |
-| `targetUserId`     | UUID      | Invited participant                                      |
-| `type`             | ENUM      | `NO_RESPONSE`, `NO_CONTRIBUTION`                         |
-| `sentAt`           | timestamp |                                                          |
-| `notificationSent` | boolean   | Whether notification was enqueued/delivered successfully |
+## Error Codes
 
-Indexes recommended on `(eventId, targetUserId, type, sentAt)` for cooldown and counts.
+| Status | Condition                                        |
+| ------ | ------------------------------------------------ |
+| 401    | Missing or invalid JWT                           |
+| 403    | User is not the event organizer                  |
+| 404    | Event not found                                  |
+| 429    | All targets on cooldown (Retry-After header set) |
 
-## API summary
+## What the Frontend Handles
 
-| Endpoint                          | Method | Auth                   | Description                                               |
-| --------------------------------- | ------ | ---------------------- | --------------------------------------------------------- |
-| `/events/{eventId}/nudge`         | POST   | Bearer JWT (organizer) | Send nudges; applies cooldown and max 3 per user per type |
-| `/events/{eventId}/nudge/history` | GET    | Bearer JWT (organizer) | List nudge history for the event                          |
-
-## Field naming
-
-| Field              | Type                          | Description                                                                        |
-| ------------------ | ----------------------------- | ---------------------------------------------------------------------------------- |
-| `targetUserIds`    | `string[]` \| `"all_pending"` | Explicit ids or resolve all pending                                                |
-| `type`             | string                        | `NO_RESPONSE` \| `NO_CONTRIBUTION`                                                 |
-| `sent`             | array                         | Successfully nudged entries                                                        |
-| `skipped`          | array                         | Not nudged; includes `reason`, optional `retryAfter` (ms epoch)                    |
-| `retryAfter`       | number                        | Unix timestamp in ms when cooldown ends (body); header `Retry-After` per HTTP spec |
-| `identifier`       | UUID                          | History row id                                                                     |
-| `targetUserId`     | UUID                          | Nudged user                                                                        |
-| `targetUserName`   | string                        | Display name                                                                       |
-| `sentAt`           | number                        | Ms epoch, consistent with other APIs                                               |
-| `nudgeCount`       | number                        | Count toward cap                                                                   |
-| `maxNudges`        | number                        | Constant `3` in responses                                                          |
-| `notificationSent` | boolean                       | DB column for pipeline tracking                                                    |
-
-JSON uses **camelCase**. Enum values in uppercase strings to match existing `status`-style conventions.
+- "Nudge" button next to participants without response
+- "Nudge all" button for bulk action
+- Displaying nudge count/remaining for each participant
+- Disabled state when cooldown is active (with countdown timer)
+- Confirmation toast after successful nudge

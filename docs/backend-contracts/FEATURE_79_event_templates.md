@@ -1,74 +1,69 @@
-# Backend Contract: Pre-filled event templates (Issue #79)
+# Backend Contract: Event Templates
+
+> Issue #79 — `feat: templates d'evenements pre-remplis`
 
 ## Context
 
-Users create events faster when templates (BBQ, birthday, brunch, apéro, dinner, Christmas, etc.) suggest default resources by event type. Templates should be **backend-served** so copy and resource lists can change without a frontend deploy.
+Pre-filled event templates (BBQ, Birthday, Brunch, Apero, Dinner, Christmas...) with auto-suggested resources based on event type. Templates reduce creation friction and guide new users.
 
-The frontend uses template data to pre-fill event creation: for each template resource, it multiplies `suggestedQuantityPerPerson` by the expected number of participants to compute `suggestedQuantity` when creating `Resource` rows on the event (aligned with the existing `Resource` model: `suggestedQuantity`, `category`, etc.).
+Recommended approach: backend-served templates so they can be updated without a frontend deploy.
 
-**Authentication:** Both `GET /templates` and `GET /templates/{id}` require a valid Bearer token (Supabase JWT): `Authorization: Bearer <jwt>`.
-
-There is **no** `POST` / `PUT` / `DELETE` for templates in this iteration; templates are seeded or managed by admin processes outside the public API.
+Auth: Bearer JWT.
 
 ## Decisions
 
-| Decision           | Choice                                                                                        |
-| ------------------ | --------------------------------------------------------------------------------------------- |
-| Template storage   | Table `event_templates` + `resources` as JSONB array on each row                              |
-| Admin CRUD         | Out of scope; data loaded via migrations or internal tools                                    |
-| Ordering           | `sortOrder` ascending for list endpoint                                                       |
-| Inactive templates | `isActive = false` excluded from `GET /templates` (and optionally from `GET /templates/{id}`) |
+| Decision             | Choice                                                     |
+| -------------------- | ---------------------------------------------------------- |
+| Storage              | Backend table `event_templates`                            |
+| Management           | Seed data / admin only (no public CRUD)                    |
+| Resource quantities  | Per-person basis, frontend multiplies by participant count |
+| Template count (MVP) | 5-6 templates                                              |
 
-## What the frontend will provide
+## Data Model
 
-### `GET /templates`
+### Table `event_templates`
 
-- Standard `Authorization: Bearer <jwt>` header only.
-- Optional query parameters (future): locale, `type` filter. Not required for v1 unless backend adds them.
+| Column      | Type         | Notes                                     |
+| ----------- | ------------ | ----------------------------------------- |
+| id          | UUID         | PK                                        |
+| name        | VARCHAR(100) | e.g. "Barbecue"                           |
+| type        | VARCHAR(20)  | EventType (PARTY, BIRTHDAY, DINER, SNACK) |
+| description | TEXT         | Template description                      |
+| iconUrl     | VARCHAR(255) | Path to template icon                     |
+| resources   | JSONB        | Array of suggested resources              |
+| isActive    | BOOLEAN      | Default true                              |
+| sortOrder   | INT          | Display order                             |
+| createdAt   | TIMESTAMP    |                                           |
+| updatedAt   | TIMESTAMP    |                                           |
 
-### `GET /templates/{id}`
+### Resource JSONB structure
 
-- Bearer token.
-- `id` is the template `identifier` returned in the list.
+```json
+[
+  {
+    "name": "Saucisses",
+    "category": "FOOD",
+    "suggestedQuantityPerPerson": 2
+  },
+  {
+    "name": "Bieres",
+    "category": "DRINK",
+    "suggestedQuantityPerPerson": 3
+  }
+]
+```
 
-### Resource creation from a template
+## What the Frontend Will Provide
 
-The frontend does **not** send template definitions to the backend when saving an event. It:
+No request body — templates are read-only for regular users.
 
-1. Fetches a template (list or by id).
-2. Lets the user adjust participant count and template selection in the UI.
-3. Creates the event and resources via existing `POST /events` and `POST /events/{eventId}/resources` (or batch flow), setting `suggestedQuantity` = `suggestedQuantityPerPerson * expectedParticipants` (rounded per product rules).
+The frontend fetches templates at event creation, lets the user pick one, then creates the event with pre-filled data. The frontend computes `suggestedQuantity = suggestedQuantityPerPerson * expectedParticipantCount`.
 
-## What the backend must return
+## What the Backend Must Return
 
-### New persistence: `event_templates`
+### `GET /templates` -- response
 
-| Column        | Type             | Notes                                                                    |
-| ------------- | ---------------- | ------------------------------------------------------------------------ |
-| `id`          | UUID (PK)        | Exposed as `identifier` in API                                           |
-| `name`        | string           | Display name, e.g. "Barbecue"                                            |
-| `type`        | enum / string    | Same values as `Event.type`: `PARTY`, `BIRTHDAY`, `DINER`, `SNACK`, etc. |
-| `description` | text             | Short description for UI                                                 |
-| `icon_url`    | string, nullable | Path or URL, e.g. `/icons/bbq.svg`                                       |
-| `resources`   | JSONB            | Array of suggested items (see schema below)                              |
-| `is_active`   | boolean          | If false, omit from public list                                          |
-| `sort_order`  | integer          | List ordering                                                            |
-| `created_at`  | timestamp        |                                                                          |
-| `updated_at`  | timestamp        |                                                                          |
-
-### JSONB item shape inside `resources`
-
-Each element:
-
-| Property                     | Type   | Description                                                                     |
-| ---------------------------- | ------ | ------------------------------------------------------------------------------- |
-| `name`                       | string | Resource name                                                                   |
-| `category`                   | string | `FOOD`, `DRINK`, `UTENSIL`, `DECORATION`, `OTHER` (same as `Resource.category`) |
-| `suggestedQuantityPerPerson` | number | Multiplier for the frontend to compute `suggestedQuantity`                      |
-
-### `GET /templates` -- response (200 OK)
-
-Returns an array of active templates, sorted by `sortOrder` ascending.
+List all active templates, sorted by `sortOrder`.
 
 ```json
 [
@@ -76,7 +71,7 @@ Returns an array of active templates, sorted by `sortOrder` ascending.
     "identifier": "uuid",
     "name": "Barbecue",
     "type": "PARTY",
-    "description": "Un BBQ entre amis avec grillades et boissons fraîches",
+    "description": "Un BBQ entre amis avec grillades et boissons fraiches",
     "iconUrl": "/icons/bbq.svg",
     "resources": [
       {
@@ -86,7 +81,7 @@ Returns an array of active templates, sorted by `sortOrder` ascending.
       },
       { "name": "Pain", "category": "FOOD", "suggestedQuantityPerPerson": 1 },
       {
-        "name": "Bières",
+        "name": "Bieres",
         "category": "DRINK",
         "suggestedQuantityPerPerson": 3
       },
@@ -103,53 +98,81 @@ Returns an array of active templates, sorted by `sortOrder` ascending.
       }
     ],
     "sortOrder": 1
+  },
+  {
+    "identifier": "uuid",
+    "name": "Anniversaire",
+    "type": "BIRTHDAY",
+    "description": "Fete d'anniversaire avec gateau et decorations",
+    "iconUrl": "/icons/birthday.svg",
+    "resources": [
+      { "name": "Gateau", "category": "FOOD", "suggestedQuantityPerPerson": 1 },
+      {
+        "name": "Bougies",
+        "category": "DECORATION",
+        "suggestedQuantityPerPerson": 1
+      },
+      {
+        "name": "Boissons",
+        "category": "DRINK",
+        "suggestedQuantityPerPerson": 2
+      },
+      {
+        "name": "Assiettes",
+        "category": "UTENSIL",
+        "suggestedQuantityPerPerson": 1
+      },
+      {
+        "name": "Ballons",
+        "category": "DECORATION",
+        "suggestedQuantityPerPerson": 2
+      }
+    ],
+    "sortOrder": 2
   }
 ]
 ```
 
-List items may omit heavy fields if the backend prefers a summary variant; if so, document it. The recommended contract is full `resources` in the list for fewer round-trips, or a slim list + `GET /templates/{id}` for detail.
+### `GET /templates/{id}` -- response
 
-### `GET /templates/{id}` -- response (200 OK)
+Single template with full detail. Same shape as one item in the list.
 
-Returns a single template object with the same shape as one element in the array above, including the full `resources` array.
+## API Summary
 
-Errors: `404` if id unknown or template inactive (if inactive templates are hidden from API).
+| Endpoint          | Method | Auth   | Description           |
+| ----------------- | ------ | ------ | --------------------- |
+| `/templates`      | GET    | Bearer | List active templates |
+| `/templates/{id}` | GET    | Bearer | Get template detail   |
 
-## API summary
+## Field Naming
 
-| Endpoint          | Method | Auth   | Description                                   |
-| ----------------- | ------ | ------ | --------------------------------------------- |
-| `/templates`      | GET    | Bearer | List active templates, ordered by `sortOrder` |
-| `/templates/{id}` | GET    | Bearer | Single template with full `resources`         |
+| Field                                  | Type     | Description              |
+| -------------------------------------- | -------- | ------------------------ |
+| identifier                             | string   | Template UUID            |
+| name                                   | string   | Template name            |
+| type                                   | string   | EventType                |
+| description                            | string   | Template description     |
+| iconUrl                                | string   | Icon path                |
+| resources                              | object[] | Suggested resources      |
+| resources[].name                       | string   | Resource name            |
+| resources[].category                   | string   | ResourceCategory         |
+| resources[].suggestedQuantityPerPerson | number   | Quantity per participant |
+| sortOrder                              | number   | Display order            |
 
-No `POST` / `PUT` / `DELETE` in this contract.
+## Seed Data (MVP)
 
-## Field naming in API
+The backend should seed these templates:
 
-| Field                        | Type           | Context       | Description                                                                        |
-| ---------------------------- | -------------- | ------------- | ---------------------------------------------------------------------------------- |
-| `identifier`                 | string (UUID)  | Template      | Template id (maps to DB `id`)                                                      |
-| `name`                       | string         | Template      | Display name                                                                       |
-| `type`                       | string         | Template      | `EventType` value for suggested default event type                                 |
-| `description`                | string         | Template      | Marketing / helper text                                                            |
-| `iconUrl`                    | string \| null | Template      | Relative path or absolute URL for icon asset                                       |
-| `resources`                  | array          | Template      | Suggested resources; not persisted as `Resource` rows until user creates event     |
-| `sortOrder`                  | number         | Template      | Order in list                                                                      |
-| `name`                       | string         | Resource item | Suggested resource name                                                            |
-| `category`                   | string         | Resource item | `FOOD`, `DRINK`, `UTENSIL`, `DECORATION`, `OTHER`                                  |
-| `suggestedQuantityPerPerson` | number         | Resource item | Per-person multiplier; frontend computes `suggestedQuantity` for `POST /resources` |
+1. Barbecue (PARTY)
+2. Anniversaire (BIRTHDAY)
+3. Brunch (SNACK)
+4. Apero (PARTY)
+5. Diner (DINER)
 
-### Optional fields on template detail (if added later)
+## What the Frontend Handles
 
-| Field       | Type   | Description |
-| ----------- | ------ | ----------- |
-| `createdAt` | number | Epoch ms    |
-| `updatedAt` | number | Epoch ms    |
-
-Include only if the backend exposes them; not required for the minimal list contract above.
-
-## What the frontend handles on its side
-
-- Template picker UI and mapping `type` to new event defaults.
-- Multiplying `suggestedQuantityPerPerson` by expected participants to set `suggestedQuantity` on created resources.
-- Loading icons from `iconUrl` (public or CDN paths as configured).
+- Template selection screen at event creation
+- "Start from scratch" option
+- Preview of template resources
+- Multiplying per-person quantities by expected participant count
+- Allowing user to customize after template selection

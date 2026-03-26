@@ -91,7 +91,7 @@ Update notification preferences (all fields optional).
 ### `POST /notifications/subscribe` -- response
 
 ```
-201 Created
+201 Created (or 200 OK if upsert)
 ```
 
 ```json
@@ -99,8 +99,6 @@ Update notification preferences (all fields optional).
   "message": "Subscription registered"
 }
 ```
-
-If subscription already exists for this user+endpoint, return `200 OK` (upsert).
 
 ### `DELETE /notifications/subscribe` -- response
 
@@ -149,7 +147,7 @@ Trigger: participant added to event (`POST /events/{eventId}/participants`).
 
 ### 2. Event Reminder (type: `REMINDER`)
 
-Trigger: scheduled job, `reminderHoursBefore` hours before event date. Notify all CONFIRMED participants.
+Trigger: scheduled job, `reminderHoursBefore` before event date. Notify all CONFIRMED participants.
 
 ```json
 {
@@ -227,7 +225,7 @@ Trigger: event updated (`PUT /events/{id}`) with date or location change. Notify
 - Respect user preferences before sending
 - Handle 410 Gone from push services (remove dead subscriptions)
 - Run a scheduled job for event reminders (cron or Supabase Edge Function)
-- Do NOT send duplicate notifications (idempotency)
+- Idempotency: do NOT send duplicate notifications
 
 ## What the Frontend Handles
 

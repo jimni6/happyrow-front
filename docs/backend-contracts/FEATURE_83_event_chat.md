@@ -92,7 +92,7 @@ No body. Sets `deletedAt` to current timestamp.
 }
 ```
 
-Messages are sorted by `createdAt DESC` (newest first). Deleted messages are either excluded or returned with `isDeleted: true` and `content: null` (to preserve thread continuity).
+Messages sorted by `createdAt DESC` (newest first). Deleted messages returned with `isDeleted: true` and `content: null` to preserve thread continuity.
 
 ### `POST /events/{eventId}/messages` -- response
 

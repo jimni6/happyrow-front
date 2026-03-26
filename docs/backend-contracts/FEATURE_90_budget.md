@@ -2,7 +2,7 @@
 
 > Issue #90 — `feat: cagnotte / budget d'evenement`
 >
-> Depends on: Issue #87 (expense splitting — `event_expenses` table)
+> Depends on: Issue #87 (expense splitting -- `event_expenses` table)
 
 ## Context
 
@@ -37,11 +37,7 @@ Auth: Bearer JWT. Only the event organizer can create/update/delete the budget. 
 
 ### Extension to `event_expenses` (from #87)
 
-The `category` column on `event_expenses` is required for budget breakdown. If not already present, add:
-
-| Column   | Type        | Notes                                                                       |
-| -------- | ----------- | --------------------------------------------------------------------------- |
-| category | VARCHAR(20) | Nullable. Values: FOOD, DRINK, UTENSIL, DECORATION, OTHER, VENUE, TRANSPORT |
+The `category` column on `event_expenses` is required for budget breakdown. See FEATURE_87 for the column definition.
 
 ## What the Frontend Will Provide
 
@@ -56,13 +52,13 @@ The `category` column on `event_expenses` is required for budget breakdown. If n
 
 ### `PUT /events/{eventId}/budget`
 
+All fields optional. Only provided fields are updated.
+
 ```json
 {
   "totalBudget": 250.0
 }
 ```
-
-All fields optional. Only provided fields are updated.
 
 ## What the Backend Must Return
 
@@ -99,7 +95,7 @@ Computed fields:
 - `totalSpent` = `SUM(amount) FROM event_expenses WHERE eventId = :eventId`
 - `remaining` = `totalBudget - totalSpent` (can be negative)
 - `percentUsed` = `(totalSpent / totalBudget) * 100`, rounded to 2 decimals
-- `expensesByCategory` = `GROUP BY category`, only categories with expenses
+- `expensesByCategory` = grouped by category, only categories with expenses
 - `alerts[BUDGET_80_PERCENT].triggered` = true when `percentUsed >= 80`
 - `alerts[BUDGET_EXCEEDED].triggered` = true when `totalSpent > totalBudget`
 
@@ -146,7 +142,6 @@ Deletes the budget record. Does NOT delete associated expenses (those belong to 
 | expenseCount       | number   | Computed        | Number of expenses           |
 | expensesByCategory | object[] | Computed        | Spending grouped by category |
 | alerts             | object[] | Computed        | Threshold alert flags        |
-| createdBy          | string   | Stored          | Organizer UUID               |
 
 ## Error Codes
 
@@ -161,7 +156,7 @@ Deletes the budget record. Does NOT delete associated expenses (those belong to 
 
 - Budget creation form (amount input)
 - Budget dashboard with progress bar (percentUsed)
-- Color coding: green (<80%), orange (80-99%), red (>=100%)
-- Category breakdown pie/bar chart
+- Color coding: green (below 80%), orange (80-99%), red (100%+)
+- Category breakdown chart
 - Alert banners when thresholds are crossed
 - Link to expense list (#87) from budget view

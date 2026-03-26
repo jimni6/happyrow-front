@@ -79,7 +79,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load events';
         setError(errorMessage);
-        console.error('Error loading events:', err);
         // Reset on error to allow retry
         loadedOrganizerIdRef.current = null;
       } finally {
@@ -102,7 +101,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to create event';
         setError(errorMessage);
-        console.error('Error creating event:', err);
         throw err;
       }
     },
@@ -130,7 +128,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to update event';
         setError(errorMessage);
-        console.error('Error updating event:', err);
         // Rollback on error
         setEvents(previousEvents);
         throw err;
@@ -153,7 +150,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to delete event';
         setError(errorMessage);
-        console.error('Error deleting event:', err);
         // Rollback on error
         setEvents(previousEvents);
         throw err;
@@ -174,7 +170,6 @@ export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to refresh event';
         setError(errorMessage);
-        console.error('Error refreshing event:', err);
         throw err;
       }
     },

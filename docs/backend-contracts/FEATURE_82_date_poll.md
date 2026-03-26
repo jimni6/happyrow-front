@@ -1,20 +1,64 @@
-# Backend Contract: Date poll (Doodle-like)
+# Backend Contract: Date Poll (Doodle-like)
+
+> Issue #82 — `feat: sondage de date (Doodle-like)`
 
 ## Context
 
-Issue #82: feat: sondage de date (Doodle-like).
+The organizer proposes multiple dates, participants vote for their preferences. The best date is highlighted. This avoids relying on external tools like Doodle or Framadate.
 
-The organizer proposes multiple date (or time-range) options for an event; participants vote for their preferences; the UI highlights the best option (typically by vote count). The frontend will create polls, list them, fetch poll detail with aggregates, submit and replace votes, close a poll with an optional winning option, and delete polls.
+Auth: Bearer JWT. Only event participants can view and vote. Only the organizer can create, close, or delete polls.
 
-**Authorization:** All endpoints require `Authorization: Bearer <Supabase JWT>`. The backend must enforce that only the event **organizer** (or `creator`) can create, close, or delete polls, and that only **event participants** can view polls and vote (align with existing event access rules).
+## Decisions
 
-Existing event patterns: `GET/POST /events`, `GET/PUT/DELETE /events/{id}`, `GET/POST /events/{eventId}/participants`. An event has `identifier`, `name`, `description`, `eventDate`, `location`, `type`, `creator`.
+| Decision           | Choice                                               |
+| ------------------ | ---------------------------------------------------- |
+| Poll type          | DATE for now (extensible to LOCATION later)          |
+| Vote model         | Multi-select (vote for multiple options)             |
+| Vote replacement   | New vote replaces previous (no partial update)       |
+| Close behavior     | Organizer closes poll and optionally sets event date |
+| One poll per event | Yes for MVP (can be relaxed later)                   |
 
-## What the frontend will provide
+## Data Model
 
-### Create poll — `POST /events/{eventId}/polls`
+### Table `event_polls`
 
-Body:
+| Column    | Type        | Notes                        |
+| --------- | ----------- | ---------------------------- |
+| id        | UUID        | PK                           |
+| eventId   | UUID        | FK to events, indexed        |
+| type      | VARCHAR(10) | Default 'DATE'               |
+| status    | VARCHAR(10) | 'OPEN' or 'CLOSED'           |
+| createdBy | UUID        | FK to auth.users (organizer) |
+| createdAt | TIMESTAMP   |                              |
+| closedAt  | TIMESTAMP   | Nullable                     |
+
+### Table `poll_options`
+
+| Column    | Type         | Notes                  |
+| --------- | ------------ | ---------------------- |
+| id        | UUID         | PK                     |
+| pollId    | UUID         | FK to event_polls      |
+| label     | VARCHAR(100) | e.g. "Samedi 5 avril"  |
+| dateStart | TIMESTAMP    | Start of proposed slot |
+| dateEnd   | TIMESTAMP    | Nullable, end of slot  |
+| sortOrder | INT          | Display order          |
+
+### Table `poll_votes`
+
+| Column    | Type      | Notes              |
+| --------- | --------- | ------------------ |
+| id        | UUID      | PK                 |
+| optionId  | UUID      | FK to poll_options |
+| userId    | UUID      | FK to auth.users   |
+| createdAt | TIMESTAMP |                    |
+
+Unique constraint on `(optionId, userId)`.
+
+## What the Frontend Will Provide
+
+### `POST /events/{eventId}/polls`
+
+Create a poll (organizer only).
 
 ```json
 {
@@ -27,193 +71,183 @@ Body:
     },
     {
       "label": "Dimanche 6 avril",
-      "dateStart": "2026-04-06T10:00:00Z",
+      "dateStart": "2026-04-06T12:00:00Z",
+      "dateEnd": "2026-04-06T20:00:00Z"
+    },
+    {
+      "label": "Samedi 12 avril",
+      "dateStart": "2026-04-12T14:00:00Z",
       "dateEnd": null
     }
   ]
 }
 ```
 
-- `type` is `"DATE"` for this feature (default on the server may be `DATE` if omitted).
-- `options` is ordered; `sortOrder` on the server should follow array order (0-based or 1-based, documented by backend).
-- `dateEnd` may be `null` for a single instant or open-ended slot, depending on product rules.
+### `POST /events/{eventId}/polls/{pollId}/vote`
 
-### Cast votes — `POST /events/{eventId}/polls/{pollId}/vote`
-
-Body:
+Cast votes. Replaces all previous votes for this user on this poll.
 
 ```json
 {
-  "optionIds": ["uuid1", "uuid2"]
+  "optionIds": ["uuid-option-1", "uuid-option-3"]
 }
 ```
 
-This **replaces** all previous votes for the current user on that poll (not additive). An empty array means "clear all votes" if the backend allows it, or **400** if at least one option is required (product decision).
+### `DELETE /events/{eventId}/polls/{pollId}/vote`
 
-### Close poll — `PUT /events/{eventId}/polls/{pollId}/close`
+Remove all votes for current user. No body.
 
-Body:
+### `PUT /events/{eventId}/polls/{pollId}/close`
+
+Close the poll and optionally set event date (organizer only).
 
 ```json
 {
-  "selectedOptionId": "uuid"
+  "selectedOptionId": "uuid-option-1"
 }
 ```
 
-`selectedOptionId` may be required or optional: if provided, the poll closes and the event's `eventDate` is updated to the selected option's `dateStart`. If omitted, the poll may close without changing the event (backend should define behavior).
+If `selectedOptionId` is provided, the backend updates the event's `eventDate` to the selected option's `dateStart`.
 
-### Path parameters
+## What the Backend Must Return
 
-- `eventId` and `pollId` (and `optionIds` in the body) are UUIDs matching existing API conventions (`identifier` in responses).
+### `GET /events/{eventId}/polls` -- response
 
-## What the backend must return
+```json
+[
+  {
+    "identifier": "uuid-poll",
+    "eventId": "uuid-event",
+    "type": "DATE",
+    "status": "OPEN",
+    "createdBy": "uuid-organizer",
+    "createdAt": 1711900000000,
+    "closedAt": null
+  }
+]
+```
 
-### Data model (persistence)
+### `GET /events/{eventId}/polls/{pollId}` -- response
 
-**Table `event_polls`**
-
-| Column      | Type            | Notes                            |
-| ----------- | --------------- | -------------------------------- |
-| `id`        | UUID (PK)       |                                  |
-| `eventId`   | UUID (FK)       | References event                 |
-| `type`      | VARCHAR         | Default `'DATE'`                 |
-| `status`    | ENUM            | `'OPEN'`, `'CLOSED'`             |
-| `createdBy` | UUID            | Organizer user id                |
-| `createdAt` | TIMESTAMP       |                                  |
-| `closedAt`  | TIMESTAMP, NULL | Set when status becomes `CLOSED` |
-
-**Table `poll_options`**
-
-| Column      | Type            | Notes                |
-| ----------- | --------------- | -------------------- |
-| `id`        | UUID (PK)       |                      |
-| `pollId`    | UUID (FK)       |                      |
-| `label`     | TEXT            | Human-readable label |
-| `dateStart` | TIMESTAMP       |                      |
-| `dateEnd`   | TIMESTAMP, NULL |                      |
-| `sortOrder` | INT             | Display order        |
-
-**Table `poll_votes`**
-
-| Column      | Type      | Notes |
-| ----------- | --------- | ----- |
-| `id`        | UUID (PK) |       |
-| `optionId`  | UUID (FK) |       |
-| `userId`    | UUID      |       |
-| `createdAt` | TIMESTAMP |       |
-
-Constraint: **UNIQUE(`optionId`, `userId`)** so one vote per user per option; replacing votes is implemented by deleting existing rows for that `userId` and `pollId` then inserting the new set, or equivalent transactional logic.
-
-### Side effect when closing with `selectedOptionId`
-
-When `PUT .../close` includes `selectedOptionId` that belongs to the poll:
-
-1. Set poll `status` to `CLOSED` and `closedAt` to now.
-2. Update the parent event's `eventDate` to the **selected option's `dateStart`** (ISO instant stored consistently with `GET /events/{id}`).
-
-### `POST /events/{eventId}/polls`
-
-**201 Created** with the created poll resource including `identifier`, `eventId`, `type`, `status` (`OPEN`), `createdBy`, `createdAt`, and embedded or linked `options` with `identifier`, `label`, `dateStart`, `dateEnd`, `sortOrder`.
-
-**403 Forbidden** if caller is not the organizer. **404** if event not found or not visible.
-
-### `GET /events/{eventId}/polls`
-
-**200 OK** with an array of poll summaries (each includes at least `identifier`, `eventId`, `type`, `status`, `createdAt`; options may be omitted or summarized for list view).
-
-### `GET /events/{eventId}/polls/{pollId}`
-
-**200 OK** — full detail for one poll. Example shape:
+Full poll with options, vote counts, and voter details.
 
 ```json
 {
-  "identifier": "uuid",
-  "eventId": "uuid",
+  "identifier": "uuid-poll",
+  "eventId": "uuid-event",
   "type": "DATE",
   "status": "OPEN",
-  "createdBy": "uuid",
+  "createdBy": "uuid-organizer",
   "options": [
     {
-      "identifier": "uuid",
+      "identifier": "uuid-option-1",
       "label": "Samedi 5 avril",
       "dateStart": "2026-04-05T14:00:00Z",
       "dateEnd": "2026-04-05T22:00:00Z",
       "voteCount": 5,
-      "voters": ["uuid1", "uuid2", "uuid3", "uuid4", "uuid5"],
+      "voters": [
+        { "userId": "uuid-1", "userName": "JeanD" },
+        { "userId": "uuid-2", "userName": "Marie" },
+        { "userId": "uuid-3", "userName": "Paul" },
+        { "userId": "uuid-4", "userName": "Sophie" },
+        { "userId": "uuid-5", "userName": "Ahmed" }
+      ],
+      "hasVoted": true
+    },
+    {
+      "identifier": "uuid-option-2",
+      "label": "Dimanche 6 avril",
+      "dateStart": "2026-04-06T12:00:00Z",
+      "dateEnd": "2026-04-06T20:00:00Z",
+      "voteCount": 3,
+      "voters": [
+        { "userId": "uuid-1", "userName": "JeanD" },
+        { "userId": "uuid-6", "userName": "Luc" },
+        { "userId": "uuid-7", "userName": "Emma" }
+      ],
       "hasVoted": true
     }
   ],
   "totalVoters": 8,
-  "createdAt": 1711900000000
+  "createdAt": 1711900000000,
+  "closedAt": null
 }
 ```
 
-- `voteCount` is the number of votes for that option.
-- `voters` is the list of `userId` values who voted for that option (order undefined unless specified).
-- `hasVoted` is **per option**: `true` if the authenticated user voted for that option.
-- `totalVoters` is the count of **distinct users** who voted on at least one option in this poll.
-- `createdAt` uses the same epoch-milliseconds convention as participant `joinedAt` in existing contracts.
+`hasVoted` is relative to the current authenticated user. `totalVoters` is the count of distinct users who voted on any option.
 
-**404** if poll or event missing. **403** if user cannot access the event.
+### `POST /events/{eventId}/polls/{pollId}/vote` -- response
 
-### `POST /events/{eventId}/polls/{pollId}/vote`
+Returns the updated poll (same shape as GET detail).
 
-**200 OK** or **204 No Content** after votes stored. Optionally return updated poll detail as `GET` (product choice).
+### `PUT /events/{eventId}/polls/{pollId}/close` -- response
 
-**400** if any `optionId` does not belong to the poll. **403** if not a participant.
+Returns the updated poll with `status: "CLOSED"` and `closedAt` set.
 
-### `DELETE /events/{eventId}/polls/{pollId}/vote`
+If `selectedOptionId` was provided, the event's `eventDate` is also updated (side effect). The response includes a confirmation:
 
-**204 No Content** after removing all votes for the current user on that poll.
+```json
+{
+  "poll": { ... },
+  "eventDateUpdated": true,
+  "newEventDate": "2026-04-05T14:00:00Z"
+}
+```
 
-**403** if not a participant.
+### `DELETE /events/{eventId}/polls/{pollId}` -- response
 
-### `PUT /events/{eventId}/polls/{pollId}/close`
+```
+204 No Content
+```
 
-**200 OK** with closed poll representation (status `CLOSED`, `closedAt` set). Event `eventDate` updated when `selectedOptionId` is provided as specified above.
+Deletes poll, options, and all votes. Organizer only.
 
-**403** if not organizer.
+## API Summary
 
-### `DELETE /events/{eventId}/polls/{pollId}`
+| Endpoint                                 | Method | Auth               | Description          |
+| ---------------------------------------- | ------ | ------------------ | -------------------- |
+| `/events/{eventId}/polls`                | GET    | Bearer             | List polls for event |
+| `/events/{eventId}/polls`                | POST   | Bearer (organizer) | Create poll          |
+| `/events/{eventId}/polls/{pollId}`       | GET    | Bearer             | Get poll with votes  |
+| `/events/{eventId}/polls/{pollId}`       | DELETE | Bearer (organizer) | Delete poll          |
+| `/events/{eventId}/polls/{pollId}/vote`  | POST   | Bearer             | Cast votes           |
+| `/events/{eventId}/polls/{pollId}/vote`  | DELETE | Bearer             | Remove votes         |
+| `/events/{eventId}/polls/{pollId}/close` | PUT    | Bearer (organizer) | Close poll, set date |
 
-**204 No Content** on success. **403** if not organizer. **404** if not found.
+## Field Naming
 
-Deleting a poll should delete dependent `poll_options` and `poll_votes` (cascade or explicit).
+| Field            | Type           | Description                         |
+| ---------------- | -------------- | ----------------------------------- |
+| identifier       | string         | Poll or option UUID                 |
+| type             | string         | "DATE"                              |
+| status           | string         | "OPEN" or "CLOSED"                  |
+| options          | object[]       | Poll options                        |
+| label            | string         | Human-readable option label         |
+| dateStart        | string         | ISO timestamp                       |
+| dateEnd          | string or null | ISO timestamp                       |
+| voteCount        | number         | Votes for this option               |
+| voters           | object[]       | { userId, userName }                |
+| hasVoted         | boolean        | Current user voted for this option  |
+| totalVoters      | number         | Distinct voters across all options  |
+| optionIds        | string[]       | Request: option UUIDs to vote for   |
+| selectedOptionId | string         | Request: chosen option when closing |
 
-## API summary
+## Error Codes
 
-| Endpoint                                 | Method | Description                                                       |
-| ---------------------------------------- | ------ | ----------------------------------------------------------------- |
-| `/events/{eventId}/polls`                | POST   | Create poll (organizer only)                                      |
-| `/events/{eventId}/polls`                | GET    | List polls for the event                                          |
-| `/events/{eventId}/polls/{pollId}`       | GET    | Poll detail with options, counts, and current user's vote flags   |
-| `/events/{eventId}/polls/{pollId}/vote`  | POST   | Replace current user's votes with `optionIds`                     |
-| `/events/{eventId}/polls/{pollId}/vote`  | DELETE | Remove all votes for current user on this poll                    |
-| `/events/{eventId}/polls/{pollId}/close` | PUT    | Close poll; optional `selectedOptionId` updates event `eventDate` |
-| `/events/{eventId}/polls/{pollId}`       | DELETE | Delete poll (organizer only)                                      |
+| Status | Condition                                                        |
+| ------ | ---------------------------------------------------------------- |
+| 400    | Empty options list, invalid dates                                |
+| 401    | Missing or invalid JWT                                           |
+| 403    | User not participant, or not organizer (for create/close/delete) |
+| 404    | Event, poll, or option not found                                 |
+| 409    | Poll already exists for this event (MVP: one poll per event)     |
+| 410    | Poll is already closed (for vote/close)                          |
 
-## Field naming
+## What the Frontend Handles
 
-| Field                 | Type                      | Location        | Description                                                                                                                                                            |
-| --------------------- | ------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `identifier`          | UUID string               | Response        | Poll or option id (API id field; mirrors `id` in DB)                                                                                                                   |
-| `eventId`             | UUID string               | Path / Response | Parent event                                                                                                                                                           |
-| `pollId`              | UUID string               | Path            | Poll id                                                                                                                                                                |
-| `type`                | `string`                  | Body / Response | Poll type; `"DATE"` for this feature                                                                                                                                   |
-| `status`              | `string`                  | Response        | `OPEN` or `CLOSED`                                                                                                                                                     |
-| `createdBy`           | UUID string               | Response        | User id of organizer who created the poll                                                                                                                              |
-| `createdAt`           | `number` (epoch ms)       | Response        | Creation time                                                                                                                                                          |
-| `closedAt`            | `number` or ISO string    | Response        | When closed; `null` if open (backend should pick one convention; prefer epoch ms for consistency with `createdAt` in the example or document ISO for date fields only) |
-| `options`             | `array`                   | Body / Response | Poll options                                                                                                                                                           |
-| `options[].label`     | `string`                  | Body / Response | Display label                                                                                                                                                          |
-| `options[].dateStart` | ISO 8601 string           | Body / Response | Range start                                                                                                                                                            |
-| `options[].dateEnd`   | ISO 8601 string or `null` | Body / Response | Range end                                                                                                                                                              |
-| `options[].sortOrder` | `number`                  | Response        | Display order                                                                                                                                                          |
-| `options[].voteCount` | `number`                  | Response        | Votes for this option                                                                                                                                                  |
-| `options[].voters`    | `string[]` (UUID)         | Response        | User ids who voted this option                                                                                                                                         |
-| `options[].hasVoted`  | `boolean`                 | Response        | Whether current user voted this option                                                                                                                                 |
-| `totalVoters`         | `number`                  | Response        | Distinct voters in the poll                                                                                                                                            |
-| `optionIds`           | `string[]` (UUID)         | Request body    | Options the user selects (replaces prior votes)                                                                                                                        |
-| `selectedOptionId`    | UUID string               | Request body    | Winning option when closing; drives `eventDate` update                                                                                                                 |
-
-Use **camelCase** in JSON. For timestamp fields, align with the rest of the app: if `eventDate` in events is ISO strings, keep `dateStart` / `dateEnd` as ISO strings; use epoch milliseconds for `createdAt` where the frontend already expects numeric timestamps on participants.
+- Poll creation form (date picker for each option)
+- Voting UI (checkbox per option, submit button)
+- Results visualization (bar chart or vote count per option)
+- Highlighting the winning option
+- Close poll action for organizer
+- Confirmation dialog before setting event date

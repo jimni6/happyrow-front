@@ -32,8 +32,8 @@ export function useContributionOperations({
       try {
         const eventResources = await getResourcesUseCase.execute({ eventId });
         setResources(eventResources);
-      } catch (syncErr) {
-        console.error('Background sync failed:', syncErr);
+      } catch {
+        // Background sync failed; UI state unchanged
       }
     },
     [getResourcesUseCase, setResources]
@@ -85,7 +85,6 @@ export function useContributionOperations({
             err instanceof Error ? err.message : 'Failed to add contribution';
           setError(errorMessage);
         }
-        console.error('Error adding contribution:', err);
         throw err;
       }
     },
@@ -146,7 +145,6 @@ export function useContributionOperations({
               : 'Failed to update contribution';
           setError(errorMessage);
         }
-        console.error('Error updating contribution:', err);
         throw err;
       }
     },
@@ -179,7 +177,6 @@ export function useContributionOperations({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to delete contribution';
         setError(errorMessage);
-        console.error('Error deleting contribution:', err);
         throw err;
       }
     },
@@ -205,7 +202,6 @@ export function useContributionOperations({
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to refresh resource';
       setError(errorMessage);
-      console.error('Error refreshing resource:', err);
       throw err;
     }
   }, [getResourcesUseCase, currentEventId, setResources, setError]);

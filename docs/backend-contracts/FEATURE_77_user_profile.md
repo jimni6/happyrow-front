@@ -1,25 +1,43 @@
-# Backend Contract: Full editable user profile (Issue #77)
+# Backend Contract: Complete Editable Profile
+
+> Issue #77 — `feat: profil complet et editable`
 
 ## Context
 
-The profile screen today is limited (name, email, sign out). Extended profile data (photo, bio, phone, dietary preferences) should live outside Supabase Auth payloads in a dedicated `user_profiles` table, while core identity (`email`, names from auth) remains in Supabase.
+Enrich the user profile with photo, bio, phone, and dietary preferences. Currently the profile page is basic (name, email, sign out) with a "coming soon" badge. User data lives in Supabase auth but needs a dedicated profile table for extended fields.
 
-**Authentication:** All endpoints in this contract require a valid Bearer token (Supabase JWT): `Authorization: Bearer <jwt>`. The backend resolves `userId` from the JWT (`sub`); clients do not pass a user id in the URL for `me` routes.
+Auth: Bearer JWT on all endpoints.
 
 ## Decisions
 
-| Decision                                  | Choice                                                                                               |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Source of truth for email and legal names | Supabase Auth; profile table extends with bio, phone, avatar, dietary preferences                    |
-| `displayName`                             | Returned in profile aggregate; sourced from metadata or profile overrides per existing product rules |
-| Avatar upload                             | `POST /users/me/avatar` with `multipart/form-data`; storage URL returned as `avatarUrl`              |
-| Dietary preferences                       | JSONB array of string tags (free-form or enum-like strings agreed with frontend)                     |
+| Decision                   | Choice                                               |
+| -------------------------- | ---------------------------------------------------- |
+| Storage                    | New `user_profiles` table (separate from auth.users) |
+| Avatar storage             | Supabase Storage or S3-compatible bucket             |
+| Dietary preferences format | JSONB array of strings                               |
+| Profile creation           | Auto-created on first GET (lazy initialization)      |
+| Endpoint pattern           | `/users/me/profile` (uses JWT to identify user)      |
 
-## What the frontend will provide
+## Data Model
+
+### Table `user_profiles`
+
+| Column             | Type        | Notes                          |
+| ------------------ | ----------- | ------------------------------ |
+| userId             | UUID        | PK, FK to auth.users           |
+| bio                | TEXT        | Nullable, max 500 chars        |
+| phone              | VARCHAR(20) | Nullable                       |
+| avatarUrl          | TEXT        | Nullable, URL to stored image  |
+| dietaryPreferences | JSONB       | Default '[]', array of strings |
+| updatedAt          | TIMESTAMP   |                                |
+
+Standard preference values: `vegetarian`, `vegan`, `gluten-free`, `lactose-free`, `halal`, `kosher`, `nut-allergy`, `shellfish-allergy`, `other`
+
+## What the Frontend Will Provide
 
 ### `PUT /users/me/profile`
 
-Request body: JSON. **All fields optional**; omitted fields are left unchanged (PATCH-like semantics on PUT).
+All fields optional, only provided fields are updated.
 
 ```json
 {
@@ -31,47 +49,26 @@ Request body: JSON. **All fields optional**; omitted fields are left unchanged (
 }
 ```
 
-- `firstname` / `lastname`: When provided, backend updates auth user metadata or linked identity store as per your stack, and reflects them on subsequent `GET`.
-- `bio`, `phone`, `dietaryPreferences`: Stored on `user_profiles`.
-- Empty string for `bio` or `phone` may clear the field if the API defines that behavior.
+`firstname` and `lastname` are updated in Supabase auth metadata. The other fields go to `user_profiles`.
 
 ### `POST /users/me/avatar`
 
-- `Content-Type: multipart/form-data`
-- One file field (name to be agreed, for example `file` or `avatar`); image types (for example `image/jpeg`, `image/png`, `image/webp`).
-- Backend stores the file (object storage), updates `user_profiles.avatar_url`, and returns the new `avatarUrl`.
+Multipart form data with a single `avatar` file field. Max size: 2MB. Accepted formats: JPEG, PNG, WebP.
 
 ### `DELETE /users/me/avatar`
 
-- No body. Removes stored avatar object (or marks deleted) and clears `avatarUrl` on the profile.
+No body. Removes the avatar and sets `avatarUrl` to null.
 
-### Headers
+## What the Backend Must Return
 
-```
-Authorization: Bearer <supabase_jwt>
-```
+### `GET /users/me/profile` -- response
 
-## What the backend must return
-
-### New persistence: `user_profiles`
-
-| Column                | Type                        | Notes                                                                                   |
-| --------------------- | --------------------------- | --------------------------------------------------------------------------------------- |
-| `user_id`             | UUID (PK, FK to auth.users) | One row per user                                                                        |
-| `bio`                 | text, nullable              |                                                                                         |
-| `phone`               | text, nullable              |                                                                                         |
-| `avatar_url`          | text, nullable              | HTTPS URL after upload                                                                  |
-| `dietary_preferences` | JSONB                       | Array of strings, e.g. `["vegetarian", "gluten-free", "halal", "vegan", "nut-allergy"]` |
-| `updated_at`          | timestamp                   |                                                                                         |
-
-`created_at` on the profile row is optional but recommended for the `createdAt` field in API responses.
-
-### `GET /users/me/profile` -- response (200 OK)
+Merges data from auth.users and user_profiles.
 
 ```json
 {
   "userId": "uuid",
-  "email": "user@example.com",
+  "email": "jean@example.com",
   "firstname": "Jean",
   "lastname": "Dupont",
   "displayName": "JeanD",
@@ -84,18 +81,17 @@ Authorization: Bearer <supabase_jwt>
 }
 ```
 
-- On first access, if no profile row exists, the backend should create one with defaults or return the same shape with null/empty extended fields and timestamps set appropriately.
-- `displayName` resolution should match the participant display name contract where applicable.
+If no profile row exists yet, create one with defaults and return it (lazy init).
 
-### `PUT /users/me/profile` -- response (200 OK)
+### `PUT /users/me/profile` -- response
 
-Same JSON shape as `GET /users/me/profile`, reflecting the updated aggregate after apply.
+Returns the full updated profile (same shape as GET).
 
-Errors: `401` unauthorized; `400` validation (invalid phone format, dietary preference shape, etc.).
+### `POST /users/me/avatar` -- response
 
-### `POST /users/me/avatar` -- response (200 OK)
-
-Returns at minimum:
+```
+201 Created
+```
 
 ```json
 {
@@ -103,52 +99,47 @@ Returns at minimum:
 }
 ```
 
-Alternatively, the API may return the full profile object as in `GET` for convenience; document the chosen behavior.
+### `DELETE /users/me/avatar` -- response
 
-Errors: `401`; `400` if file missing, wrong type, or size limit exceeded; `413` if payload too large (if used).
+```
+204 No Content
+```
 
-### `DELETE /users/me/avatar` -- response (204 No Content)
+## API Summary
 
-Or `200 OK` with updated profile body including `avatarUrl: null`. Document the chosen pattern consistently.
+| Endpoint            | Method | Auth   | Description              |
+| ------------------- | ------ | ------ | ------------------------ |
+| `/users/me/profile` | GET    | Bearer | Get current user profile |
+| `/users/me/profile` | PUT    | Bearer | Update profile fields    |
+| `/users/me/avatar`  | POST   | Bearer | Upload avatar image      |
+| `/users/me/avatar`  | DELETE | Bearer | Remove avatar            |
 
-## API summary
+## Field Naming
 
-| Endpoint            | Method | Auth   | Description                                                 |
-| ------------------- | ------ | ------ | ----------------------------------------------------------- |
-| `/users/me/profile` | GET    | Bearer | Full profile for the authenticated user                     |
-| `/users/me/profile` | PUT    | Bearer | Partial update of profile fields (all body fields optional) |
-| `/users/me/avatar`  | POST   | Bearer | Upload avatar (`multipart/form-data`); returns `avatarUrl`  |
-| `/users/me/avatar`  | DELETE | Bearer | Remove avatar and clear `avatarUrl`                         |
+| Field              | Type           | Description                 |
+| ------------------ | -------------- | --------------------------- |
+| userId             | string         | User UUID                   |
+| email              | string         | From auth.users (read-only) |
+| firstname          | string         | From auth metadata          |
+| lastname           | string         | From auth metadata          |
+| displayName        | string         | From auth metadata          |
+| bio                | string or null | Free text, max 500 chars    |
+| phone              | string or null | Phone number                |
+| avatarUrl          | string or null | URL to avatar image         |
+| dietaryPreferences | string[]       | Array of preference strings |
 
-## Field naming in API
+## Error Codes
 
-| Field                | Type           | Required in GET response | Description                                                               |
-| -------------------- | -------------- | ------------------------ | ------------------------------------------------------------------------- |
-| `userId`             | string (UUID)  | Yes                      | Auth user id                                                              |
-| `email`              | string         | Yes                      | From Supabase Auth                                                        |
-| `firstname`          | string \| null | Yes                      | From metadata / profile                                                   |
-| `lastname`           | string \| null | Yes                      | From metadata / profile                                                   |
-| `displayName`        | string \| null | Yes                      | Shown name in UI                                                          |
-| `bio`                | string \| null | Yes                      | Short user bio                                                            |
-| `phone`              | string \| null | Yes                      | E.164 or validated string                                                 |
-| `avatarUrl`          | string \| null | Yes                      | Public URL to avatar image                                                |
-| `dietaryPreferences` | string[]       | Yes                      | Tags such as `vegetarian`, `gluten-free`, `halal`, `vegan`, `nut-allergy` |
-| `createdAt`          | number         | Yes                      | Epoch milliseconds (profile or account creation, document semantics)      |
-| `updatedAt`          | number         | Yes                      | Epoch milliseconds                                                        |
+| Status | Condition                                                     |
+| ------ | ------------------------------------------------------------- |
+| 400    | Invalid phone format, bio too long, invalid image format/size |
+| 401    | Missing or invalid JWT                                        |
+| 413    | Avatar file too large (> 2MB)                                 |
 
-### `PUT` request body (all optional)
+## What the Frontend Handles
 
-| Field                | Type     | Description                                                                              |
-| -------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `firstname`          | string   |                                                                                          |
-| `lastname`           | string   |                                                                                          |
-| `bio`                | string   |                                                                                          |
-| `phone`              | string   |                                                                                          |
-| `dietaryPreferences` | string[] | Replaces entire list when sent, or merge per backend rule (document if merge vs replace) |
-
-## What the frontend handles on its side
-
-- Profile form UI for bio, phone, dietary multi-select or tags, and name fields allowed by product.
-- Image picker and upload to `POST /users/me/avatar`.
-- Display of `avatarUrl` and fallbacks when null.
-- Caching or refetch of profile after PUT/avatar operations.
+- Profile edit form with validation
+- Avatar upload with preview and crop (optional)
+- Dietary preferences multi-select
+- Phone format validation (international format)
+- Save confirmation toast

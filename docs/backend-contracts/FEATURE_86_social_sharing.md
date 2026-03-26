@@ -23,14 +23,14 @@ Auth: The OG metadata endpoint should be public (no auth) for crawlers to access
 
 When a share link is opened by a crawler (WhatsApp, Facebook, Twitter, iMessage), it needs to find Open Graph meta tags to generate a rich preview (title, description, image).
 
-### `GET /events/join/{token}/og` (or server-rendered HTML at `/join/{token}`)
+### `GET /events/join/{token}/og`
 
-The backend (or a serverless function) should return HTML with OG tags when the User-Agent is a known crawler, or redirect to the SPA for normal users.
+The backend (or a serverless function) should return HTML with OG tags when the User-Agent is a known crawler, or return JSON for the frontend to use.
 
 Required OG tags:
 
 ```html
-<meta property="og:title" content="BBQ du samedi — HappyRow" />
+<meta property="og:title" content="BBQ du samedi -- HappyRow" />
 <meta
   property="og:description"
   content="Jean t'invite a un evenement ! 8 participants, le 5 avril 2026"
@@ -45,16 +45,10 @@ Required OG tags:
 
 The OG image can be:
 
-- A static branded image (simplest)
+- A static branded image (simplest, MVP)
 - A dynamically generated image with event details (advanced, via serverless)
 
-### Endpoint (if not using SSR)
-
-| Endpoint                  | Method | Auth   | Description                          |
-| ------------------------- | ------ | ------ | ------------------------------------ |
-| `/events/join/{token}/og` | GET    | Public | Return OG metadata for a share token |
-
-Response:
+### JSON endpoint alternative
 
 ```json
 {
@@ -65,7 +59,12 @@ Response:
 }
 ```
 
-The frontend or a Vercel Edge Function can use this JSON to render the appropriate HTML with OG tags.
+## API Summary
+
+| Endpoint                  | Method | Auth   | Description                   |
+| ------------------------- | ------ | ------ | ----------------------------- |
+| `/events/join/{token}/og` | GET    | Public | OG metadata for link previews |
+| `/events/join/{token}`    | GET    | Public | Event preview (from #73)      |
 
 ## What the Frontend Handles
 
@@ -73,36 +72,25 @@ The frontend or a Vercel Edge Function can use this JSON to render the appropria
 
 ```javascript
 navigator.share({
-  title: 'BBQ du samedi — HappyRow',
-  text: "Jean t'invite a BBQ du samedi ! Rejoins-nous sur HappyRow",
+  title: 'BBQ du samedi -- HappyRow',
+  text: 'Rejoins-nous sur HappyRow !',
   url: 'https://app.happyrow.com/join/{token}',
 });
 ```
 
 ### Fallback Buttons (desktop)
 
-- **WhatsApp**: `https://wa.me/?text={encodedMessage}`
-- **SMS**: `sms:?body={encodedMessage}`
-- **Copy link**: copy share URL to clipboard
-- **Email**: `mailto:?subject={subject}&body={encodedMessage}`
+- WhatsApp: `https://wa.me/?text={encodedMessage}`
+- SMS: `sms:?body={encodedMessage}`
+- Copy link: copy share URL to clipboard
+- Email: `mailto:?subject={subject}&body={encodedMessage}`
 
 The pre-formatted message includes: event name, date, location, and the share link.
 
-### Share Tracking (optional future)
+## Backend Requirements Summary
 
-The frontend sends a `POST /events/{eventId}/share/track` with `{ channel: "whatsapp" | "sms" | "copy" | "native" }` to track which channels are most used. This is optional and not required for MVP.
-
-## API Summary
-
-| Endpoint                  | Method | Auth   | Change                             |
-| ------------------------- | ------ | ------ | ---------------------------------- |
-| `/events/join/{token}/og` | GET    | Public | New: OG metadata for link previews |
-| `/events/join/{token}`    | GET    | Public | Existing from #73: event preview   |
-
-## What the Backend Must Provide
-
-1. The share token system from #73 (prerequisite)
+1. Share token system from #73 (prerequisite)
 2. OG metadata endpoint or server-side rendering for link previews
-3. Event preview data (name, date, location, participant count, organizer name) accessible via the share token without authentication
+3. Event preview data accessible without authentication via share token
 
 No other backend changes needed. The sharing logic (Web Share API, deep links) is entirely frontend.

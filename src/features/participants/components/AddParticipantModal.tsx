@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '@/shared/components/Modal';
+import { isValidEmail } from '@/shared/utils/validation';
 import './AddParticipantModal.css';
 
 interface AddParticipantModalProps {
@@ -26,9 +27,7 @@ export const AddParticipantModal: React.FC<AddParticipantModalProps> = ({
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!isValidEmail(email.trim())) {
       setError('Please enter a valid email address');
       return;
     }

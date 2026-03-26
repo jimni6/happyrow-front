@@ -37,7 +37,6 @@ export function useParticipants({ eventId, session }: UseParticipantsParams) {
       if (err instanceof ApiError && err.isForbidden) {
         setForbidden(true);
       }
-      console.error('Failed to load participants:', err);
     }
   }, [eventId, getParticipantsUseCase]);
 

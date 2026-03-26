@@ -1,94 +1,92 @@
-# Backend Contract: Event share link and QR code (Issue #73)
+# Backend Contract: Event Share Link + QR Code
+
+> Issue #73 — `feat: lien de partage d'evenement + QR code`
 
 ## Context
 
-Organizers need a way to invite participants without knowing their email. The backend issues a unique, shareable token per event (or per share link record). The frontend builds the public URL (for example `https://app.happyrow.com/join/{token}`) and generates a QR code from that URL client-side.
+Organizers need a way to invite participants without knowing their email. The backend issues a unique, shareable token per event. The frontend builds the public URL (`https://app.happyrow.com/join/{token}`) and generates a QR code client-side.
 
-Authenticated users who open the app via the link (or scan the QR code) join the event as a participant with status `CONFIRMED`. A public, unauthenticated endpoint allows the app to show an event preview before sign-in.
-
-**Authentication:** All endpoints except `GET /events/join/{token}` require a valid Bearer token (Supabase JWT) in the `Authorization` header: `Authorization: Bearer <jwt>`.
+Auth: Bearer JWT for token management. Public access for event preview via token.
 
 ## Decisions
 
-| Decision                               | Choice                                                                                                                                              |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Token format                           | Opaque string, unique globally (stored in `event_share_links.token`); URL-safe (no ambiguous characters if possible)                                |
-| Who can create/revoke/list share links | Event organizer (or creator); backend enforces ownership                                                                                            |
-| Join behavior                          | `POST /events/join/{token}` adds current user as participant with `CONFIRMED`; idempotent if already participant (return success, no duplicate row) |
-| Preview endpoint                       | Public, no auth; minimal fields only; no PII beyond organizer display name                                                                          |
-| QR code                                | Generated entirely on the frontend from the share URL                                                                                               |
+| Decision           | Choice                                                     |
+| ------------------ | ---------------------------------------------------------- |
+| Token format       | UUID v4 (short enough for URLs, unguessable)               |
+| QR code generation | Frontend (from share URL)                                  |
+| Token scope        | One token per share link, multiple links per event allowed |
+| Expiration         | Optional, set by organizer                                 |
+| Revocation         | Organizer can deactivate a link                            |
+| Join behavior      | Adds user as participant with status CONFIRMED             |
 
-## What the frontend will provide
+## Data Model
 
-### Share URL and QR code
+### Table `event_share_links`
 
-- The frontend constructs the full join URL: `https://app.happyrow.com/join/{token}` (or the configured app base URL + `/join/{token}`).
-- The frontend renders the QR code from that URL; no backend endpoint for QR image generation.
+| Column      | Type        | Notes                           |
+| ----------- | ----------- | ------------------------------- |
+| id          | UUID        | PK                              |
+| eventId     | UUID        | FK to events, indexed           |
+| token       | VARCHAR(36) | Unique, indexed                 |
+| createdBy   | UUID        | FK to auth.users (organizer)    |
+| expiresAt   | TIMESTAMP   | Nullable (null = no expiration) |
+| isActive    | BOOLEAN     | Default true                    |
+| maxUses     | INT         | Nullable (null = unlimited)     |
+| currentUses | INT         | Default 0                       |
+| createdAt   | TIMESTAMP   |                                 |
+
+Unique constraint on `token`.
+
+## What the Frontend Will Provide
 
 ### `POST /events/{eventId}/share`
 
-No request body required, or optional body for future fields (for example `expiresAt`, `maxUses`). If the first version has no body, the backend applies defaults (see backend return / table).
-
-### `POST /events/join/{token}`
-
-No request body required. The participant identity is taken from the JWT (`sub` / user id). The frontend only navigates to the join flow and calls this endpoint after the user is authenticated.
-
-### Headers (authenticated routes)
-
-```
-Authorization: Bearer <supabase_jwt>
-```
-
-## What the backend must return
-
-### New persistence: `event_share_links`
-
-| Column         | Type                | Notes                                                     |
-| -------------- | ------------------- | --------------------------------------------------------- |
-| `id`           | UUID (PK)           | Internal row id                                           |
-| `event_id`     | UUID (FK)           | References event                                          |
-| `token`        | string, unique      | Opaque share token                                        |
-| `created_by`   | UUID                | User id of organizer who created the link                 |
-| `expires_at`   | timestamp, nullable | Null means no expiry                                      |
-| `is_active`    | boolean             | Soft revoke without deleting row                          |
-| `max_uses`     | integer, nullable   | Null means unlimited                                      |
-| `current_uses` | integer             | Increment on successful join via token (if tracking uses) |
-| `created_at`   | timestamp           |                                                           |
-
-API responses should use camelCase field names as in existing APIs (`eventId`, `expiresAt`, etc.).
-
-### `POST /events/{eventId}/share` -- response (201 Created)
-
-Returns the created share link (organizer only). Example:
+Generate a new share link. Only the event organizer can call this.
 
 ```json
 {
-  "identifier": "uuid-share-link-row",
-  "eventId": "uuid-event-123",
-  "token": "opaque-url-safe-token",
-  "createdBy": "uuid-user-organizer",
-  "expiresAt": 1711986400000,
+  "expiresAt": "2026-04-30T23:59:59Z",
+  "maxUses": 50
+}
+```
+
+Both fields are optional. If omitted: no expiration, unlimited uses.
+
+### `DELETE /events/{eventId}/share/{tokenId}`
+
+Deactivate a share link. No body.
+
+## What the Backend Must Return
+
+### `POST /events/{eventId}/share` -- response
+
+```
+201 Created
+```
+
+```json
+{
+  "identifier": "uuid-link-id",
+  "eventId": "uuid-event",
+  "token": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "expiresAt": "2026-04-30T23:59:59Z",
   "isActive": true,
-  "maxUses": null,
+  "maxUses": 50,
   "currentUses": 0,
   "createdAt": 1711900000000
 }
 ```
 
-`expiresAt` may be `null` if not set. Timestamps as epoch milliseconds if the rest of the API uses that convention (match existing `Event` / `Participant` responses).
+### `GET /events/{eventId}/share` -- response
 
-### `GET /events/{eventId}/share` -- response (200 OK)
-
-Returns share links for the event that the caller is allowed to manage (typically all links for that event for the organizer). Example:
+List all share links for the event (organizer only).
 
 ```json
 [
   {
-    "identifier": "uuid-share-link-row",
-    "eventId": "uuid-event-123",
-    "token": "opaque-url-safe-token",
-    "createdBy": "uuid-user-organizer",
-    "expiresAt": null,
+    "identifier": "uuid-link-id",
+    "token": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "expiresAt": "2026-04-30T23:59:59Z",
     "isActive": true,
     "maxUses": 50,
     "currentUses": 12,
@@ -97,76 +95,105 @@ Returns share links for the event that the caller is allowed to manage (typicall
 ]
 ```
 
-### `DELETE /events/{eventId}/share/{tokenId}` -- response (204 No Content)
+### `GET /events/join/{token}` -- response (PUBLIC, no auth)
 
-`tokenId` is the share link row identifier (`identifier` in API responses). Revokes the link (set `isActive` to false or delete row per backend policy). Returns 204 on success.
-
-Errors: `403` if not organizer, `404` if event or share link not found.
-
-### `GET /events/join/{token}` -- response (200 OK, public)
-
-No `Authorization` header. Returns a preview of the event only:
+Event preview for anyone with the token. Used for the landing page before joining.
 
 ```json
 {
-  "eventId": "uuid-event-123",
-  "name": "Soirée BBQ",
-  "eventDate": 1712000000000,
-  "location": "Jardin",
+  "eventId": "uuid-event",
+  "name": "BBQ du samedi",
+  "description": "Un BBQ entre amis",
+  "eventDate": "2026-04-05T14:00:00Z",
+  "location": "Parc de la Tete d'Or",
   "type": "PARTY",
   "organizerName": "JeanD",
-  "participantCount": 8
+  "participantCount": 8,
+  "isValid": true
 }
 ```
 
-`organizerName` should follow the same resolution rules as `userName` / display name for participants (see display name contract). If the token is invalid, expired, inactive, or max uses exceeded, return `404` (or `410 Gone` for expired/revoked, if the API distinguishes).
+Return `isValid: false` with a `reason` field if token is expired, inactive, or max uses reached.
 
-### `POST /events/join/{token}` -- response (200 OK)
+```json
+{
+  "isValid": false,
+  "reason": "TOKEN_EXPIRED"
+}
+```
 
-Requires Bearer token. On success, returns the created or existing participant in the same shape as `POST /events/{eventId}/participants` (including `userName`, `identifier`, `userId`, `eventId`, `status` `CONFIRMED`, timestamps).
+Reasons: `TOKEN_EXPIRED`, `TOKEN_INACTIVE`, `MAX_USES_REACHED`, `TOKEN_NOT_FOUND`.
 
-If the user is already a participant for that event, return `200` with the current participant record (idempotent).
+### `POST /events/join/{token}` -- response (auth required)
 
-Errors: `401` if missing/invalid token; `404` if token invalid; `403` if token valid but join not allowed; `410` if link expired/revoked; `409` or `422` if business rules forbid join (document chosen status code consistently).
+Join the event via share token. The authenticated user is added as a participant.
 
-## API summary
+```json
+{
+  "identifier": "uuid-participant",
+  "userId": "uuid-user",
+  "userName": "Marie",
+  "eventId": "uuid-event",
+  "status": "CONFIRMED",
+  "joinedAt": 1711900500000,
+  "createdAt": 1711900500000
+}
+```
 
-| Endpoint                            | Method | Auth   | Description                                     |
-| ----------------------------------- | ------ | ------ | ----------------------------------------------- |
-| `/events/{eventId}/share`           | POST   | Bearer | Create a new share link (organizer only)        |
-| `/events/{eventId}/share`           | GET    | Bearer | List share links for the event (organizer only) |
-| `/events/{eventId}/share/{tokenId}` | DELETE | Bearer | Revoke a share link by share-link `identifier`  |
-| `/events/join/{token}`              | GET    | None   | Public event preview from token                 |
-| `/events/join/{token}`              | POST   | Bearer | Join event via token; participant `CONFIRMED`   |
+Backend must:
 
-Path parameters: `eventId`, `token`, `tokenId` (share link row id as returned in `identifier`).
+1. Validate the token (active, not expired, uses remaining)
+2. Check user is not already a participant
+3. Add participant with status CONFIRMED
+4. Increment `currentUses` on the share link
 
-## Field naming in API
+If user is already a participant, return `409 Conflict`.
 
-| Field              | Type           | Context          | Description                                                                                                |
-| ------------------ | -------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| `identifier`       | string (UUID)  | Share link rows  | Primary id of the share link record in responses                                                           |
-| `token`            | string         | Share link       | Secret token embedded in the public URL                                                                    |
-| `tokenId`          | string (UUID)  | DELETE path only | Same as share link `identifier`                                                                            |
-| `eventId`          | string (UUID)  | All              | Event id                                                                                                   |
-| `createdBy`        | string (UUID)  | Share link       | User id of creator                                                                                         |
-| `expiresAt`        | number \| null | Share link       | Epoch ms or null                                                                                           |
-| `isActive`         | boolean        | Share link       | Whether the link accepts new joins                                                                         |
-| `maxUses`          | number \| null | Share link       | Cap on successful joins; null = unlimited                                                                  |
-| `currentUses`      | number         | Share link       | Count of successful joins via this link (if implemented)                                                   |
-| `createdAt`        | number         | Share link       | Epoch ms                                                                                                   |
-| `name`             | string         | Preview          | Event name                                                                                                 |
-| `eventDate`        | number         | Preview          | Event date (match `Event.eventDate` semantics)                                                             |
-| `location`         | string         | Preview          | Event location                                                                                             |
-| `type`             | string         | Preview          | `PARTY`, `BIRTHDAY`, `DINER`, `SNACK`, etc.                                                                |
-| `organizerName`    | string \| null | Preview          | Resolved display name of organizer                                                                         |
-| `participantCount` | number         | Preview          | Number of participants (definition: confirmed only vs all statuses -- backend should document chosen rule) |
+### `DELETE /events/{eventId}/share/{tokenId}` -- response
 
-Participant fields after join align with existing `Participant` model (`identifier`, `userId`, `userName`, `eventId`, `status`, `joinedAt`, `createdAt`, `updatedAt`).
+```
+204 No Content
+```
 
-## What the frontend handles on its side
+Sets `isActive = false`. Does not delete the record.
 
-- Building `https://app.happyrow.com/join/{token}` (or environment-specific base URL).
-- QR code generation from that URL.
-- Calling `GET /events/join/{token}` on the landing route for preview UI.
-- After login, calling `POST /events/join/{token}` and syncing local event/participant state.
+## API Summary
+
+| Endpoint                            | Method | Auth               | Description             |
+| ----------------------------------- | ------ | ------------------ | ----------------------- |
+| `/events/{eventId}/share`           | POST   | Bearer (organizer) | Generate share link     |
+| `/events/{eventId}/share`           | GET    | Bearer (organizer) | List share links        |
+| `/events/{eventId}/share/{tokenId}` | DELETE | Bearer (organizer) | Deactivate share link   |
+| `/events/join/{token}`              | GET    | Public             | Event preview via token |
+| `/events/join/{token}`              | POST   | Bearer             | Join event via token    |
+
+## Field Naming
+
+| Field       | Type           | Description                         |
+| ----------- | -------------- | ----------------------------------- |
+| identifier  | string         | Share link UUID                     |
+| token       | string         | Unique shareable token              |
+| expiresAt   | string or null | ISO timestamp, null = no expiration |
+| isActive    | boolean        | Whether the link is usable          |
+| maxUses     | number or null | Max join count, null = unlimited    |
+| currentUses | number         | Number of times used                |
+| isValid     | boolean        | Token validity check result         |
+| reason      | string         | Invalidity reason code              |
+
+## Error Codes
+
+| Status | Condition                                              |
+| ------ | ------------------------------------------------------ |
+| 401    | Missing or invalid JWT (for POST join)                 |
+| 403    | User is not the event organizer (for share management) |
+| 404    | Token not found                                        |
+| 409    | User already a participant                             |
+| 410    | Token expired or max uses reached                      |
+
+## What the Frontend Handles
+
+- QR code generation from share URL (using a JS library)
+- Copy-to-clipboard for share URL
+- Share link management UI (list, create, revoke)
+- Join page: show event preview, then join button
+- Redirect to event detail after successful join

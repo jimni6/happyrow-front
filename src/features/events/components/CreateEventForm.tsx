@@ -132,8 +132,8 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
         type: '',
       });
       setErrors({});
-    } catch (error) {
-      console.error('Error creating event:', error);
+    } catch {
+      // Submit failed; parent may surface error via UI
     }
   };
 

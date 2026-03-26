@@ -1,55 +1,37 @@
-# Backend Contract: Dietary preferences visible on the event (Issue #84)
+# Backend Contract: Dietary Preferences Visible on Event
+
+> Issue #84 — `feat: preferences alimentaires visibles sur l'evenement`
+>
+> Depends on: Issue #77 (user profile with `dietaryPreferences` in `user_profiles`)
 
 ## Context
 
-Organizers need to see participants' dietary preferences (allergies, vegan, halal, vegetarian, and similar) on the event page so they can adapt food, venues, and resources. This feature depends on issue #77: user profile data stores dietary preferences in `user_profiles.dietary_preferences` as a JSONB array of string values.
+Display participants' dietary preferences (allergies, vegan, halal, vegetarian...) on the event page so the organizer can adapt resources. The preferences are stored per-user in the profile (#77) and need to be aggregated per-event.
 
-**Authentication:** All endpoints described here require a valid Bearer token (Supabase JWT) in the `Authorization` header: `Authorization: Bearer <jwt>`.
+Auth: Bearer JWT.
 
 ## Decisions
 
-| Decision                      | Choice                                                                                                                                       |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Participant statuses included | `CONFIRMED` and `MAYBE` only (exclude declined or pending as product defines)                                                                |
-| Who sees dietary data         | Same rules as viewing the event participant list (organizer and participants per existing product policy; backend must enforce consistently) |
-| Summary content               | Only preferences that at least one included participant has set; empty `summary` array if no participant has preferences                     |
-| Dual delivery                 | Provide both the aggregation endpoint and per-participant `dietaryPreferences` on the participants payload (recommended)                     |
+| Decision           | Choice                                                            |
+| ------------------ | ----------------------------------------------------------------- |
+| Data source        | `user_profiles.dietaryPreferences` (JSONB array)                  |
+| Participant filter | CONFIRMED and MAYBE statuses only                                 |
+| Delivery method    | Both: aggregated summary endpoint + enriched participant response |
+| Empty preferences  | Users without preferences are excluded from summary               |
 
-## What the frontend will provide
-
-### Headers (all routes)
-
-```
-Authorization: Bearer <supabase_jwt>
-```
-
-### `GET /events/{eventId}/dietary-summary`
-
-No request body. Path parameter: `eventId` (event UUID).
-
-### `GET /events/{eventId}/participants`
-
-No change to how the frontend calls the endpoint; the backend enriches each participant object with `dietaryPreferences` when present.
-
-## What the backend must return
-
-### Data model (profile, issue #77)
-
-Preferences are read from `user_profiles.dietary_preferences` (JSONB array of strings). The API exposes this field as `dietaryPreferences` (camelCase) on enriched participant objects.
-
-### Aggregation query (conceptual)
-
-Join `participants` (filtered by `event_id` and `status IN ('CONFIRMED', 'MAYBE')`) with `user_profiles` on the participant's user id. For each user, expand each entry in `dietary_preferences` into contribution rows, then group by preference value to produce counts and participant lists. Users with null or empty `dietary_preferences` do not contribute any row to `summary`.
-
-### Suggested canonical preference values (enum)
-
-The backend may validate stored values against a shared enum with the frontend. Suggested values:
+## Standard Preference Values
 
 `vegetarian`, `vegan`, `gluten-free`, `lactose-free`, `halal`, `kosher`, `nut-allergy`, `shellfish-allergy`, `other`
 
-Unknown or legacy strings may still appear in data; the API should return them as stored rather than dropping them, unless a migration normalizes them.
+## What the Frontend Will Provide
 
-### `GET /events/{eventId}/dietary-summary` -- response (200 OK)
+No new request body. The frontend calls the new endpoint and reads enriched participant data.
+
+## What the Backend Must Return
+
+### `GET /events/{eventId}/dietary-summary` -- response (new endpoint)
+
+Aggregated dietary preferences for all CONFIRMED/MAYBE participants.
 
 ```json
 {
@@ -60,70 +42,85 @@ Unknown or legacy strings may still appear in data; the API should return them a
       "preference": "vegetarian",
       "count": 2,
       "participants": [
-        { "userId": "uuid1", "userName": "Marie" },
-        { "userId": "uuid2", "userName": "Sophie" }
+        { "userId": "uuid-1", "userName": "Marie" },
+        { "userId": "uuid-2", "userName": "Sophie" }
       ]
     },
     {
       "preference": "gluten-free",
       "count": 1,
-      "participants": [{ "userId": "uuid1", "userName": "Marie" }]
+      "participants": [{ "userId": "uuid-1", "userName": "Marie" }]
     },
     {
       "preference": "halal",
       "count": 1,
-      "participants": [{ "userId": "uuid3", "userName": "Ahmed" }]
+      "participants": [{ "userId": "uuid-3", "userName": "Ahmed" }]
     }
   ]
 }
 ```
 
-- `participantCount`: number of participants included in the aggregation (same status filter as above).
-- `summary`: one object per distinct preference string that appears on at least one included participant; `participants` lists each user who has that preference (a user with multiple preferences appears under multiple summary entries).
+If no participants have dietary preferences, return `{ "eventId": "uuid", "participantCount": 8, "summary": [] }`.
 
-Errors: `401` if missing or invalid token; `403` if the caller cannot access the event; `404` if the event does not exist.
+### `GET /events/{eventId}/participants` -- response (enriched, existing endpoint)
 
-### `GET /events/{eventId}/participants` -- enriched participant shape
-
-Each participant in the list includes `dietaryPreferences` when the profile has data; otherwise omit the field or return an empty array per API consistency rules (prefer one convention and document it).
+Add `dietaryPreferences` to each participant:
 
 ```json
-{
-  "identifier": "uuid",
-  "userId": "uuid",
-  "userName": "Marie",
-  "status": "CONFIRMED",
-  "dietaryPreferences": ["vegetarian", "gluten-free"],
-  "joinedAt": 1711900000000
-}
+[
+  {
+    "identifier": "uuid",
+    "userId": "uuid-1",
+    "userName": "Marie",
+    "status": "CONFIRMED",
+    "dietaryPreferences": ["vegetarian", "gluten-free"],
+    "joinedAt": 1711900000000,
+    "createdAt": 1711900000000,
+    "updatedAt": null
+  },
+  {
+    "identifier": "uuid",
+    "userId": "uuid-4",
+    "userName": "Paul",
+    "status": "CONFIRMED",
+    "dietaryPreferences": [],
+    "joinedAt": 1711900000000,
+    "createdAt": 1711900000000,
+    "updatedAt": null
+  }
+]
 ```
 
-Field names and timestamp format must match existing `Participant` responses elsewhere in the API (`identifier`, `userId`, `userName`, `status`, `joinedAt`, etc.).
+The backend joins `participants` with `user_profiles` to resolve `dietaryPreferences`. Empty array for users without preferences set.
 
-## API summary
+## API Summary
 
-| Endpoint                            | Method | Auth   | Description                                                                    |
-| ----------------------------------- | ------ | ------ | ------------------------------------------------------------------------------ |
-| `/events/{eventId}/dietary-summary` | GET    | Bearer | Aggregated dietary preferences for confirmed and maybe participants            |
-| `/events/{eventId}/participants`    | GET    | Bearer | Existing list; each item may include `dietaryPreferences` from `user_profiles` |
+| Endpoint                            | Method | Auth   | Change                                             |
+| ----------------------------------- | ------ | ------ | -------------------------------------------------- |
+| `/events/{eventId}/dietary-summary` | GET    | Bearer | New: aggregated dietary summary                    |
+| `/events/{eventId}/participants`    | GET    | Bearer | Enriched: add `dietaryPreferences` per participant |
 
-Path parameter: `eventId` (event UUID).
+## Field Naming
 
-## Field naming in API
+| Field                  | Type     | Description                                 |
+| ---------------------- | -------- | ------------------------------------------- |
+| participantCount       | number   | Total participants (CONFIRMED + MAYBE)      |
+| summary                | object[] | Aggregated preferences                      |
+| summary[].preference   | string   | Preference name                             |
+| summary[].count        | number   | Number of participants with this preference |
+| summary[].participants | object[] | { userId, userName }                        |
+| dietaryPreferences     | string[] | Per-participant preference list             |
 
-| Field                | Type          | Context               | Description                                                      |
-| -------------------- | ------------- | --------------------- | ---------------------------------------------------------------- |
-| `eventId`            | string (UUID) | Summary root          | Event id                                                         |
-| `participantCount`   | number        | Summary               | Count of participants in the aggregation set                     |
-| `summary`            | array         | Summary               | One entry per preference value with counts and participant refs  |
-| `preference`         | string        | Summary item          | Single dietary preference key (see suggested enum)               |
-| `count`              | number        | Summary item          | Number of participants who have this preference                  |
-| `participants`       | array         | Summary item          | `{ userId, userName }` for each participant with this preference |
-| `userId`             | string (UUID) | Summary / participant | User id                                                          |
-| `userName`           | string        | Summary / participant | Display name (same resolution as elsewhere)                      |
-| `dietaryPreferences` | string[]      | Participant           | Values from profile JSONB; camelCase in JSON                     |
-| `identifier`         | string (UUID) | Participant           | Participant row id                                               |
-| `status`             | string        | Participant           | e.g. `CONFIRMED`, `MAYBE`                                        |
-| `joinedAt`           | number        | Participant           | Epoch ms if that is the project convention                       |
+## Backend Implementation Notes
 
-Database column `dietary_preferences` maps to API `dietaryPreferences`.
+- Join `participants` (status IN ('CONFIRMED', 'MAYBE')) with `user_profiles` on userId
+- Unnest the JSONB array and aggregate by preference value
+- The enriched participant endpoint adds a LEFT JOIN to user_profiles
+- Participants without a user_profiles row get `dietaryPreferences: []`
+
+## What the Frontend Handles
+
+- Dietary summary badges on event page (icon + count per preference)
+- Expandable detail: which participants have which preferences
+- Per-participant dietary badges in participant list
+- Color-coded preference tags

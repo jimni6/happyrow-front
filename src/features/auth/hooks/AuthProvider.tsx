@@ -29,13 +29,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             setUser(currentSession.user);
           } else {
             // Session expired, try to refresh
-            console.log('Session expired, attempting refresh...');
             try {
               const refreshedSession = await authRepository.refreshSession();
               setSession(refreshedSession);
               setUser(refreshedSession.user);
-            } catch (refreshError) {
-              console.error('Session refresh failed:', refreshError);
+            } catch {
               // Clear expired session
               setSession(null);
               setUser(null);
@@ -43,13 +41,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           }
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
         // If session is invalid (403 error), clear it
         if (
           error instanceof Error &&
           error.message.includes('session_not_found')
         ) {
-          console.log('Invalid session detected, clearing auth state');
           setSession(null);
           setUser(null);
         }

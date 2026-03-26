@@ -129,18 +129,6 @@ No body. Marks the share as paid (`isPaid = true`, `paidAt = now()`).
 
 The payer's own share is automatically marked as "paid" (they paid for it).
 
-### `GET /events/{eventId}/expenses/{expenseId}` -- response
-
-Same shape as a single expense from the list above.
-
-### `POST /events/{eventId}/expenses` -- response
-
-```
-201 Created
-```
-
-Returns the created expense with computed shares (same shape as GET single).
-
 ### `GET /events/{eventId}/balances` -- response
 
 ```json
@@ -160,9 +148,9 @@ Returns the created expense with computed shares (same shape as GET single).
 }
 ```
 
-`balance` is positive if others owe you money, negative if you owe money.
+`balance`: positive = others owe you, negative = you owe others.
 
-`settlements` uses a debt simplification algorithm to minimize the number of transactions. Example: if A owes B 10 and B owes C 10, simplify to A owes C 10.
+`settlements`: simplified debt transactions (minimum number of transfers).
 
 ### `DELETE /events/{eventId}/expenses/{expenseId}` -- response
 
@@ -176,7 +164,7 @@ Deletes the expense and all associated shares. Returns 403 if user is not the cr
 
 | Endpoint                                                     | Method | Auth   | Description                       |
 | ------------------------------------------------------------ | ------ | ------ | --------------------------------- |
-| `/events/{eventId}/expenses`                                 | GET    | Bearer | List all expenses for event       |
+| `/events/{eventId}/expenses`                                 | GET    | Bearer | List all expenses                 |
 | `/events/{eventId}/expenses`                                 | POST   | Bearer | Create expense with split         |
 | `/events/{eventId}/expenses/{expenseId}`                     | GET    | Bearer | Get expense detail                |
 | `/events/{eventId}/expenses/{expenseId}`                     | PUT    | Bearer | Update expense (creator only)     |
@@ -186,22 +174,21 @@ Deletes the expense and all associated shares. Returns 403 if user is not the cr
 
 ## Field Naming
 
-| Field       | Type              | Description                                               |
-| ----------- | ----------------- | --------------------------------------------------------- |
-| identifier  | string            | Expense UUID                                              |
-| description | string            | Expense description                                       |
-| amount      | number            | Total amount (2 decimal places)                           |
-| currency    | string            | ISO currency code (default EUR)                           |
-| category    | string or null    | FOOD, DRINK, UTENSIL, DECORATION, OTHER, VENUE, TRANSPORT |
-| paidBy      | object            | { userId, userName } of who paid                          |
-| splitType   | string            | "equal"                                                   |
-| sharedWith  | string[] or "all" | Request only: who to split with                           |
-| shares      | object[]          | Response only: computed individual shares                 |
-| shareAmount | number            | Individual share (2 decimal places)                       |
-| isPaid      | boolean           | Whether this share has been settled                       |
-| paidAt      | number or null    | Epoch ms when marked as paid                              |
-| balance     | number            | Net balance (positive = owed to you)                      |
-| settlements | object[]          | Simplified debt transactions                              |
+| Field       | Type              | Description                               |
+| ----------- | ----------------- | ----------------------------------------- |
+| identifier  | string            | Expense UUID                              |
+| description | string            | Expense description                       |
+| amount      | number            | Total amount (2 decimal places)           |
+| currency    | string            | ISO currency code (default EUR)           |
+| category    | string or null    | Expense category                          |
+| paidBy      | object            | { userId, userName }                      |
+| splitType   | string            | "equal"                                   |
+| sharedWith  | string[] or "all" | Request only: who to split with           |
+| shares      | object[]          | Response only: computed individual shares |
+| shareAmount | number            | Individual share (2 decimal places)       |
+| isPaid      | boolean           | Share settled                             |
+| balance     | number            | Net balance (positive = owed to you)      |
+| settlements | object[]          | Simplified debt transactions              |
 
 ## Error Codes
 
@@ -215,8 +202,8 @@ Deletes the expense and all associated shares. Returns 403 if user is not the cr
 ## What the Frontend Handles
 
 - Expense creation form (description, amount, who paid, who shares)
-- Selecting "all participants" or specific users
-- Displaying expense list grouped by date
-- Balance summary view with who owes whom
+- "All participants" or specific users selection
+- Expense list grouped by date
+- Balance summary with who owes whom
 - "Mark as paid" action on individual shares
 - Currency formatting (EUR with 2 decimals)
