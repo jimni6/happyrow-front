@@ -57,27 +57,6 @@ export class HttpEventRepository implements EventRepository {
     };
 
     const token = this.getToken();
-    // #region agent log
-    fetch('http://127.0.0.1:7518/ingest/ad8a9794-dd36-49b4-95a6-c4726655f920', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Debug-Session-Id': 'aeded6',
-      },
-      body: JSON.stringify({
-        sessionId: 'aeded6',
-        location: 'HttpEventRepository.ts:createEvent',
-        message: 'request payload',
-        data: {
-          apiRequest,
-          bodyJson: JSON.stringify(apiRequest),
-          url: `${this.baseUrl}/events`,
-        },
-        timestamp: Date.now(),
-        runId: 'post-fix-v2',
-      }),
-    }).catch(() => {});
-    // #endregion
     if (!token) {
       throw new Error('Authentication required');
     }
@@ -92,32 +71,6 @@ export class HttpEventRepository implements EventRepository {
         body: JSON.stringify(apiRequest),
       });
 
-      // #region agent log
-      const clonedResp = response.clone();
-      const respText = await clonedResp.text().catch(() => '<unreadable>');
-      fetch(
-        'http://127.0.0.1:7518/ingest/ad8a9794-dd36-49b4-95a6-c4726655f920',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'aeded6',
-          },
-          body: JSON.stringify({
-            sessionId: 'aeded6',
-            location: 'HttpEventRepository.ts:response',
-            message: 'API response',
-            data: {
-              status: response.status,
-              ok: response.ok,
-              rawBody: respText.substring(0, 500),
-            },
-            timestamp: Date.now(),
-            runId: 'post-fix',
-          }),
-        }
-      ).catch(() => {});
-      // #endregion
       if (!response.ok) {
         await throwApiError(response);
       }
