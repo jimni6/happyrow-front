@@ -1,0 +1,76 @@
+/* CommentInput — input bar */
+
+.comment-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+}
+
+.comment-input__field {
+  flex: 1;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  background: var(--bg-surface);
+  outline: none;
+  color: var(--color-text-primary);
+  transition: var(--transition-all);
+}
+
+.comment-input__field::placeholder {
+  color: var(--color-text-muted);
+}
+
+.comment-input__field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(249, 112, 102, 0.12);
+}
+
+.comment-input__send {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.comment-input__send:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+}
+
+.comment-input__send:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.comment-input__send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* iOS safe area padding */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .comment-input {
+    padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Prevent iOS zoom on input focus (font-size >= 16px) */
+@media (max-width: 768px) {
+  .comment-input__field {
+    font-size: var(--text-base);
+  }
+}
