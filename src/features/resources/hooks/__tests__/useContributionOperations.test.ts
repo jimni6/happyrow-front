@@ -140,16 +140,15 @@ describe('useContributionOperations', () => {
       });
     });
 
-    it('should trigger background sync after successful API call', async () => {
+    it('should NOT trigger background sync after successful API call (optimistic data is sufficient)', async () => {
       const { result } = renderUseContributionOperations();
 
       await act(async () => {
         await result.current.addContribution('resource-1', 'user-1', 5);
       });
 
-      expect(mockUseCases.getResourcesUseCase.execute).toHaveBeenCalledWith({
-        eventId: 'event-1',
-      });
+      // No sync — optimistic update is the source of truth
+      expect(mockUseCases.getResourcesUseCase.execute).not.toHaveBeenCalled();
     });
 
     it('should rollback to previous state on API error', async () => {

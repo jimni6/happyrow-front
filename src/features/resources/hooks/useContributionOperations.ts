@@ -75,8 +75,6 @@ export function useContributionOperations({
           userId,
           quantity,
         });
-
-        syncResources(currentEventId);
       } catch (err) {
         setResources(previousResources);
         if (err instanceof ApiError && err.isConflict) {
@@ -136,8 +134,6 @@ export function useContributionOperations({
           resourceId,
           quantity,
         });
-
-        syncResources(currentEventId);
       } catch (err) {
         setResources(previousResources);
         if (err instanceof ApiError && err.isConflict) {

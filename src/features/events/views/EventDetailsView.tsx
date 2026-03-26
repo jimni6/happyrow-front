@@ -46,6 +46,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
     addContribution,
     updateContribution,
     deleteContribution,
+    refreshResource,
   } = useResources();
 
   const {
@@ -135,6 +136,9 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
   }) => {
     if (!user) return;
     await addResource({ eventId: event.id, ...data });
+    // The backend records the creator as a contributor, but the POST response
+    // may not include it. Refresh to sync contributor data immediately.
+    refreshResource();
   };
 
   const handleAddContribution = async (
