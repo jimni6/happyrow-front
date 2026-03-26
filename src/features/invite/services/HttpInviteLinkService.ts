@@ -101,7 +101,7 @@ export class HttpInviteLinkService implements InviteLinkRepository {
     return {
       token: data.token,
       eventId: data.event_id,
-      inviteUrl: data.invite_url,
+      inviteUrl: `${window.location.origin}/invite/${data.token}`,
       createdAt: new Date(data.created_at),
       expiresAt: new Date(data.expires_at),
       maxUses: data.max_uses,
