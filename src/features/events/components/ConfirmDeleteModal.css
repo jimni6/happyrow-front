@@ -25,7 +25,7 @@
 
 .confirm-delete-header {
   padding: var(--space-5) var(--space-5) var(--space-3);
-  border-bottom: var(--border-width-thin) solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .confirm-delete-header h2 {
@@ -59,7 +59,7 @@
 
 .confirm-delete-warning {
   background: var(--error-bg);
-  border: var(--border-width-thin) solid var(--error-border);
+  border: 1px solid var(--error-border);
   border-radius: var(--radius-lg);
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);

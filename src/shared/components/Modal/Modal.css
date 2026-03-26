@@ -1,3 +1,5 @@
+/* Modal — Palette A */
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;
@@ -37,26 +39,25 @@
   max-width: 800px;
 }
 
-/* Modal Variant: Create Event */
+/* Modal Variant: Create Event (bottom-sheet) */
 .modal-create-event {
   align-items: flex-end;
   padding: 0;
 }
 
 .modal-create-event .modal-content {
-  background: var(--bg-modal-pink);
+  background: var(--bg-surface);
   border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
   max-width: 500px;
   max-height: 70vh;
   animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   margin: 0;
-  /* Masquer la scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .modal-create-event .modal-content::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Opera */
+  display: none;
 }
 
 .modal-create-event .modal-header {
@@ -65,15 +66,15 @@
 }
 
 .modal-create-event .modal-title {
-  color: var(--color-navy);
+  color: var(--color-secondary);
   font-size: var(--text-xl);
   font-weight: var(--font-normal);
   text-align: left;
 }
 
 .modal-create-event .modal-close-button {
-  background: var(--color-navy);
-  color: white;
+  background: var(--color-secondary);
+  color: var(--color-text-white);
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
@@ -81,19 +82,18 @@
 }
 
 .modal-create-event .modal-close-button:hover {
-  background: var(--color-teal);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-white);
 }
 
 .modal-create-event .modal-body {
   padding: var(--space-2) var(--space-4) var(--space-4) var(--space-4);
-  /* Masquer la scrollbar aussi sur le body */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .modal-create-event .modal-body::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Opera */
+  display: none;
 }
 
 @keyframes slideUpModal {
@@ -124,14 +124,14 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-5) var(--space-5) var(--space-3) var(--space-5);
-  border-bottom: var(--border-width-thin) solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .modal-title {
   margin: 0;
   font-size: var(--text-2xl);
   font-weight: var(--font-semibold);
-  color: var(--color-gray-700);
+  color: var(--color-secondary);
 }
 
 .modal-close-button {
@@ -151,7 +151,7 @@
 }
 
 .modal-close-button:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-surface);
   color: var(--color-text-secondary);
 }
 
