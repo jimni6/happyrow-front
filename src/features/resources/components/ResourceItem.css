@@ -1,9 +1,10 @@
-/* Resource Item Card - Figma Design */
+/* Resource Item Card — Palette A */
 .resource-item-card {
   background: var(--bg-primary);
   border-radius: var(--radius-xl);
   padding: var(--space-3);
   margin-bottom: var(--space-2);
+  border: 1px solid var(--border-light);
   transition: var(--transition-shadow);
 }
 
@@ -24,15 +25,13 @@
 .resource-item-name {
   font-size: var(--text-base);
   font-weight: var(--font-medium);
-  color: var(--color-navy);
-  font-family: var(--font-sans);
+  color: var(--color-secondary);
 }
 
 .resource-user-contribution {
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: var(--color-teal);
-  font-family: var(--font-sans);
+  color: var(--color-primary);
 }
 
 .resource-item-controls {
@@ -44,7 +43,7 @@
 .resource-item-quantity {
   font-size: var(--text-base);
   font-weight: var(--font-medium);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   min-width: 40px;
   text-align: center;
 }
@@ -58,14 +57,13 @@
 .resource-selected-quantity {
   font-size: var(--text-base);
   font-weight: var(--font-bold);
-  color: var(--color-teal);
+  color: var(--color-primary);
   min-width: 24px;
   text-align: center;
-  font-family: var(--font-sans);
 }
 
 .resource-selected-quantity.negative {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .resource-btn {
@@ -73,7 +71,7 @@
   height: 36px;
   border-radius: var(--radius-lg);
   border: none;
-  background: var(--color-teal);
+  background: var(--color-primary);
   color: var(--color-text-white);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
@@ -82,12 +80,11 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-all);
-  font-family: var(--font-sans);
   line-height: 1;
 }
 
 .resource-btn:hover:not(:disabled) {
-  background: var(--color-teal-dark);
+  background: var(--color-primary-dark);
   transform: scale(1.05);
 }
 
@@ -100,15 +97,7 @@
   cursor: not-allowed;
 }
 
-.resource-btn-minus {
-  /* Minus button inherits base styles */
-}
-
-.resource-btn-plus {
-  /* Plus button inherits base styles */
-}
-
-/* Validate button that appears when selection > 0 */
+/* Validate button */
 .resource-item-actions {
   display: flex;
   justify-content: center;
@@ -119,7 +108,7 @@
 
 .resource-validate-btn {
   padding: var(--space-2) var(--space-5);
-  background: var(--color-teal);
+  background: var(--color-primary);
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-lg);
@@ -127,14 +116,13 @@
   font-size: var(--text-sm);
   cursor: pointer;
   transition: var(--transition-all);
-  font-family: var(--font-sans);
   min-width: 120px;
 }
 
 .resource-validate-btn:hover:not(:disabled) {
-  background: var(--color-teal-dark);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(95, 189, 180, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .resource-validate-btn:disabled {
