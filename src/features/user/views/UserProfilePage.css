@@ -1,10 +1,10 @@
-/* User Profile Page Styles */
+/* User Profile Page — Palette A */
 
 .user-profile-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f0f8f7 0%, #fff5f4 50%, #f5f9fb 100%);
+  background: var(--gradient-page);
   padding: var(--space-5);
-  padding-bottom: 120px; /* Space for navbar */
+  padding-bottom: 120px;
   font-family: var(--font-sans);
   display: flex;
   align-items: center;
@@ -29,6 +29,7 @@
   background: var(--bg-primary);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
 }
 
 .user-avatar {
@@ -37,27 +38,27 @@
   border-radius: var(--radius-full);
   background: linear-gradient(
     135deg,
-    var(--color-teal) 0%,
-    var(--color-navy) 100%
+    var(--color-primary) 0%,
+    var(--color-accent) 100%
   );
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: var(--shadow-lg);
+  color: var(--color-text-white);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .user-name {
   font-size: var(--text-3xl);
   font-weight: var(--font-bold);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   margin: 0;
   text-align: center;
 }
 
 .user-email {
   font-size: var(--text-base);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -66,13 +67,14 @@
   padding: var(--space-5);
   background: var(--bg-primary);
   border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
 }
 
 .section-title {
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-3) 0;
 }
 
@@ -94,22 +96,21 @@
 .btn-sign-out {
   width: 100%;
   padding: var(--space-4);
-  background: var(--color-coral);
+  background: var(--color-primary);
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-2xl);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  font-family: var(--font-sans);
   cursor: pointer;
   transition: var(--transition-all);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-primary);
 }
 
 .btn-sign-out:hover {
-  background: #d88f89;
+  background: var(--color-primary-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .btn-sign-out:active {
