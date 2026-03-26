@@ -164,10 +164,34 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async signInWithProvider(provider: 'google'): Promise<void> {
+    const redirectTo = window.location.origin;
+    // #region agent log
+    fetch('http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Debug-Session-Id': '9c0c76',
+      },
+      body: JSON.stringify({
+        sessionId: '9c0c76',
+        location: 'SupabaseAuthRepository.ts:signInWithProvider',
+        message: 'OAuth redirect config',
+        data: {
+          redirectTo,
+          windowOrigin: window.location.origin,
+          windowHref: window.location.href,
+          provider,
+        },
+        timestamp: Date.now(),
+        hypothesisId: 'H5+H6',
+      }),
+    }).catch(() => {});
+    // #endregion
+
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: window.location.origin,
+        redirectTo,
       },
     });
 
