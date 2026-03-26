@@ -1,7 +1,7 @@
-/* Event Details View - Figma Design */
+/* Event Details View — Palette A */
 .event-details-view {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f0f8f7 0%, #fff5f4 50%, #f5f9fb 100%);
+  background: var(--gradient-page);
   padding: var(--space-4);
   padding-bottom: var(--space-10);
   font-family: var(--font-sans);
@@ -17,6 +17,7 @@
   padding: var(--space-4);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
 }
 
 .back-button {
@@ -25,7 +26,7 @@
   min-width: 40px;
   border-radius: var(--radius-full);
   border: none;
-  background: var(--color-teal);
+  background: var(--color-primary);
   color: var(--color-text-white);
   font-size: var(--text-2xl);
   cursor: pointer;
@@ -37,7 +38,7 @@
 }
 
 .back-button:hover {
-  background: var(--color-teal-dark);
+  background: var(--color-primary-dark);
   transform: scale(1.05);
 }
 
@@ -53,9 +54,8 @@
 .event-name {
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-2) 0;
-  font-family: var(--font-sans);
 }
 
 .event-meta {
@@ -63,7 +63,7 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   font-size: var(--text-sm);
-  color: var(--color-navy);
+  color: var(--color-text-secondary);
 }
 
 .event-meta-item {
@@ -81,19 +81,18 @@
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-lg);
   border: none;
-  background: var(--color-teal);
+  background: var(--color-primary);
   color: var(--color-text-white);
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   cursor: pointer;
   transition: var(--transition-all);
-  font-family: var(--font-sans);
   white-space: nowrap;
   margin-top: var(--space-1);
 }
 
 .edit-button-header:hover {
-  background: var(--color-teal-dark);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
 }
 
@@ -105,7 +104,7 @@
 .error-message {
   padding: var(--space-3);
   background: var(--error-bg);
-  border: var(--border-width-thin) solid var(--error-border);
+  border: 1px solid var(--error-border);
   border-radius: var(--radius-xl);
   color: var(--error-text);
   margin-bottom: var(--space-4);
@@ -131,7 +130,8 @@
 
 /* Category Section */
 .category-section {
-  background: rgba(255, 245, 244, 0.5);
+  background: rgba(255, 251, 245, 0.7);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-2xl);
   padding: var(--space-4);
 }
@@ -139,9 +139,8 @@
 .category-title {
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   margin: 0 0 var(--space-3) 0;
-  font-family: var(--font-sans);
 }
 
 /* Resources List */
@@ -154,7 +153,8 @@
 
 /* Participants Section */
 .participants-section {
-  background: rgba(255, 245, 244, 0.5);
+  background: rgba(255, 251, 245, 0.7);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-2xl);
   padding: var(--space-4);
   max-width: 600px;
@@ -171,9 +171,8 @@
 .participants-section-title {
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
-  color: var(--color-navy);
+  color: var(--color-secondary);
   margin: 0;
-  font-family: var(--font-sans);
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -183,17 +182,16 @@
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-lg);
   border: none;
-  background: var(--color-teal);
+  background: var(--color-primary);
   color: var(--color-text-white);
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   cursor: pointer;
   transition: var(--transition-all);
-  font-family: var(--font-sans);
 }
 
 .add-participant-btn:hover {
-  background: var(--color-teal-dark);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
 }
 
@@ -201,25 +199,24 @@
   transform: translateY(0);
 }
 
-/* Delete Event Button */
+/* Delete Event Button — outline style */
 .delete-event-button {
   width: 100%;
   max-width: 600px;
   margin: var(--space-5) auto 0;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-danger);
-  color: var(--color-text-white);
-  border: none;
+  background: transparent;
+  color: var(--color-danger);
+  border: 2px solid var(--color-danger);
   border-radius: var(--radius-xl);
   font-weight: var(--font-semibold);
   font-size: var(--text-base);
   cursor: pointer;
   transition: var(--transition-all);
-  font-family: var(--font-sans);
 }
 
 .delete-event-button:hover {
-  background: var(--color-danger-hover);
+  background: var(--error-bg);
   transform: translateY(-1px);
   box-shadow: var(--shadow-danger);
 }
