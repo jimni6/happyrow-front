@@ -21,6 +21,7 @@ import {
   ParticipantStatus,
 } from '@/features/participants';
 import { ShareInviteModal } from '@/features/invite/components/ShareInviteModal';
+import { ChatSection } from '@/features/chat';
 import './EventDetailsView.css';
 
 interface EventDetailsViewProps {
@@ -301,6 +302,8 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
           onUpdateStatus={handleUpdateParticipantStatus}
         />
       </div>
+
+      <ChatSection eventId={event.id} />
 
       {isOrganizer && (
         <button

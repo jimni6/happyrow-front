@@ -1,0 +1,60 @@
+/* CommentCard — Variant B (threaded comments) */
+
+.comment-card {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.comment-card:last-of-type {
+  border-bottom: none;
+}
+
+.comment-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.comment-card__avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: var(--font-bold);
+  color: var(--color-text-white);
+}
+
+.comment-card__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-card__name-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.comment-card__name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-secondary);
+}
+
+.comment-card__time {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.comment-card__text {
+  margin: 4px 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
