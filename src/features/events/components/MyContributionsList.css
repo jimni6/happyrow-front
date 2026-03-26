@@ -1,4 +1,4 @@
-/* My Contributions Section — Palette A */
+/* My Contributions — Compact flat list */
 .my-contributions-section {
   background: rgba(255, 251, 245, 0.7);
   border: 1px solid var(--border-light);
@@ -29,27 +29,22 @@
 .my-contributions-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
 }
 
 .my-contribution-item {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  transition: var(--transition-all);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
-.my-contribution-item:hover {
-  background: var(--bg-surface);
-  border-color: var(--border-medium);
+.my-contribution-item:last-child {
+  border-bottom: none;
 }
 
 .my-contribution-icon {
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   flex-shrink: 0;
 }
 
@@ -64,9 +59,6 @@
   font-weight: var(--font-bold);
   color: var(--color-primary);
   font-size: var(--text-sm);
-  padding: var(--space-1) var(--space-2);
-  background: rgba(249, 112, 102, 0.1);
-  border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 

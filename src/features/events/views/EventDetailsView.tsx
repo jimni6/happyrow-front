@@ -272,7 +272,7 @@ export const EventDetailsView: React.FC<EventDetailsViewProps> = ({
             <span className="meta-icon" aria-hidden="true">
               👥
             </span>{' '}
-            Participants
+            Participants ({participants.length})
           </h2>
           {isOrganizer && (
             <button
