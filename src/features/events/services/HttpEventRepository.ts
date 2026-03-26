@@ -58,49 +58,27 @@ export class HttpEventRepository implements EventRepository {
 
     const token = this.getToken();
     // #region agent log
-    fetch('http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d', {
+    fetch('http://127.0.0.1:7518/ingest/ad8a9794-dd36-49b4-95a6-c4726655f920', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Debug-Session-Id': '9c0c76',
+        'X-Debug-Session-Id': 'aeded6',
       },
       body: JSON.stringify({
-        sessionId: '9c0c76',
+        sessionId: 'aeded6',
         location: 'HttpEventRepository.ts:createEvent',
-        message: 'pre-fetch state',
+        message: 'request payload',
         data: {
-          baseUrl: this.baseUrl,
-          hasToken: !!token,
-          tokenLength: token?.length,
-          fullUrl: `${this.baseUrl}/events`,
+          apiRequest,
+          bodyJson: JSON.stringify(apiRequest),
+          url: `${this.baseUrl}/events`,
         },
         timestamp: Date.now(),
-        hypothesisId: 'H1+H2',
+        runId: 'post-fix-v2',
       }),
     }).catch(() => {});
     // #endregion
-
     if (!token) {
-      // #region agent log
-      fetch(
-        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '9c0c76',
-          },
-          body: JSON.stringify({
-            sessionId: '9c0c76',
-            location: 'HttpEventRepository.ts:createEvent',
-            message: 'TOKEN IS NULL - throwing auth error',
-            data: {},
-            timestamp: Date.now(),
-            hypothesisId: 'H2',
-          }),
-        }
-      ).catch(() => {});
-      // #endregion
       throw new Error('Authentication required');
     }
 
@@ -115,31 +93,31 @@ export class HttpEventRepository implements EventRepository {
       });
 
       // #region agent log
+      const clonedResp = response.clone();
+      const respText = await clonedResp.text().catch(() => '<unreadable>');
       fetch(
-        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
+        'http://127.0.0.1:7518/ingest/ad8a9794-dd36-49b4-95a6-c4726655f920',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '9c0c76',
+            'X-Debug-Session-Id': 'aeded6',
           },
           body: JSON.stringify({
-            sessionId: '9c0c76',
-            location: 'HttpEventRepository.ts:createEvent',
-            message: 'fetch response received',
+            sessionId: 'aeded6',
+            location: 'HttpEventRepository.ts:response',
+            message: 'API response',
             data: {
               status: response.status,
               ok: response.ok,
-              statusText: response.statusText,
-              url: response.url,
+              rawBody: respText.substring(0, 500),
             },
             timestamp: Date.now(),
-            hypothesisId: 'H3+H4',
+            runId: 'post-fix',
           }),
         }
       ).catch(() => {});
       // #endregion
-
       if (!response.ok) {
         await throwApiError(response);
       }
@@ -148,30 +126,6 @@ export class HttpEventRepository implements EventRepository {
 
       return this.mapApiResponseToEvent(eventResponse, eventData.organizerId);
     } catch (fetchError) {
-      // #region agent log
-      fetch(
-        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '9c0c76',
-          },
-          body: JSON.stringify({
-            sessionId: '9c0c76',
-            location: 'HttpEventRepository.ts:createEvent',
-            message: 'FETCH FAILED with error',
-            data: {
-              errorName: (fetchError as Error)?.name,
-              errorMessage: (fetchError as Error)?.message,
-              errorType: typeof fetchError,
-            },
-            timestamp: Date.now(),
-            hypothesisId: 'H3+H4',
-          }),
-        }
-      ).catch(() => {});
-      // #endregion
       throw new Error(
         `Failed to create event: ${(fetchError as Error).message}`
       );

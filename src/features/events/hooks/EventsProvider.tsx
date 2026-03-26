@@ -21,6 +21,23 @@ interface EventsProviderProps {
 }
 
 export const EventsProvider: React.FC<EventsProviderProps> = ({ children }) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7518/ingest/ad8a9794-dd36-49b4-95a6-c4726655f920', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Debug-Session-Id': 'aeded6',
+    },
+    body: JSON.stringify({
+      sessionId: 'aeded6',
+      location: 'EventsProvider.tsx:render',
+      message: 'EventsProvider mounted',
+      data: { timestamp: Date.now() },
+      timestamp: Date.now(),
+      runId: 'post-fix',
+    }),
+  }).catch(() => {});
+  // #endregion
   const { session } = useAuth();
   const getToken = useCallback(() => session?.accessToken || null, [session]);
   const [events, setEvents] = useState<Event[]>([]);
