@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Resource } from '@/features/resources';
 import {
   ResourceCategory,
   ResourceItem,
-  InlineAddResourceForm,
+  AddResourceModal,
 } from '@/features/resources';
 
 interface ResourceCategorySectionProps {
@@ -34,9 +34,19 @@ export const ResourceCategorySection: React.FC<
   onDeleteContribution,
   onAddResource,
 }) => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   return (
     <div className="category-section">
-      <h2 className="category-title">{title}</h2>
+      <div className="category-section-header">
+        <h2 className="category-title">{title}</h2>
+        <button
+          className="category-add-btn"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          + Add
+        </button>
+      </div>
       <div className="resources-list">
         {resources.map((resource, index) => (
           <ResourceItem
@@ -49,7 +59,12 @@ export const ResourceCategorySection: React.FC<
           />
         ))}
       </div>
-      <InlineAddResourceForm category={category} onSubmit={onAddResource} />
+      <AddResourceModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        category={category}
+        onSubmit={onAddResource}
+      />
     </div>
   );
 };

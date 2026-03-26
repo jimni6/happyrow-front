@@ -22,29 +22,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
   text-align: center;
 }
 
 .welcome-logo {
-  width: 280px;
+  width: 260px;
   height: auto;
-  margin-bottom: var(--space-4);
-}
-
-.brand-name {
-  font-size: var(--text-4xl);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
-  letter-spacing: 0.1em;
-  margin: 0;
-}
-
-.tagline {
-  font-size: var(--text-xl);
-  color: var(--color-secondary);
-  font-weight: var(--font-normal);
-  margin: 0;
 }
 
 /* Actions Section */
@@ -114,15 +97,7 @@
   }
 
   .welcome-logo {
-    width: 220px;
-  }
-
-  .brand-name {
-    font-size: var(--text-3xl);
-  }
-
-  .tagline {
-    font-size: var(--text-lg);
+    width: 200px;
   }
 
   .actions-section {
@@ -141,6 +116,6 @@
   }
 
   .welcome-logo {
-    width: 320px;
+    width: 300px;
   }
 }

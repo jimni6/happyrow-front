@@ -10,21 +10,6 @@
   padding-bottom: 90px; /* Space for navbar */
 }
 
-/* Loading screen */
-.loading-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gradient-page);
-}
-
-.loading-spinner {
-  color: var(--color-text-white);
-  font-size: var(--text-lg);
-  font-weight: var(--font-medium);
-}
-
 /* Error Toast */
 .error-toast {
   position: fixed;

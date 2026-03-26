@@ -12,6 +12,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [
         'logo.svg',
+        'logo-full.svg',
         'logo.png',
         'bg_gradient.svg',
         'apple-touch-icon.png',
@@ -20,7 +21,7 @@ export default defineConfig({
         name: 'HappyRow - Plan Together, Celebrate Better',
         short_name: 'HappyRow',
         description: 'Plan events together and celebrate better with friends',
-        theme_color: '#5FBDB4',
+        theme_color: '#F97066',
         background_color: '#FFFFFF',
         display: 'standalone',
         orientation: 'portrait',

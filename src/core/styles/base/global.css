@@ -116,6 +116,41 @@ select:focus {
   outline-offset: 2px;
 }
 
+/* App loading screen */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: var(--gradient-page);
+}
+
+.loading-screen__logo {
+  width: 80px;
+  height: 80px;
+  animation: pulse-logo 1.8s ease-in-out infinite;
+}
+
+.loading-spinner {
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+}
+
+@keyframes pulse-logo {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -64,7 +64,7 @@ try {
 }
 
 const AppContent: React.FC = () => {
-  const { user, session, isAuthenticated } = useAuth();
+  const { user, session, isAuthenticated, loading: authLoading } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -143,6 +143,15 @@ const AppContent: React.FC = () => {
       setRegisterError(message);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="loading-screen">
+        <img src="/logo.svg" alt="HappyRow" className="loading-screen__logo" />
+        <span className="loading-spinner">Chargement...</span>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
