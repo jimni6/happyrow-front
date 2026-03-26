@@ -100,6 +100,7 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
             {hasSelection && (
               <span
                 className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
+                aria-live="polite"
               >
                 {selectedQuantity > 0 ? '+' : ''}
                 {selectedQuantity}
@@ -122,6 +123,7 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
             className="resource-validate-btn"
             onClick={handleValidate}
             disabled={isSaving}
+            aria-label={`Validate contribution for ${resource.name}`}
           >
             {isSaving ? 'Saving...' : 'Validate'}
           </button>

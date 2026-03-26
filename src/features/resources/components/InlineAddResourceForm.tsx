@@ -78,6 +78,7 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
         <input
           type="text"
           className="inline-add-name-input"
+          aria-label="Resource name"
           placeholder="Add new +"
           value={name}
           onChange={e => handleNameChange(e.target.value)}
@@ -87,6 +88,7 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
           <input
             type="number"
             className="inline-add-suggested-input"
+            aria-label="Suggested quantity"
             min="1"
             max="10000"
             value={suggestedQuantity}
@@ -118,7 +120,11 @@ export const InlineAddResourceForm: React.FC<InlineAddResourceFormProps> = ({
           </div>
         </div>
       </div>
-      {error && <div className="inline-add-error">{error}</div>}
+      {error && (
+        <div className="inline-add-error" role="alert">
+          {error}
+        </div>
+      )}
       {isActive && (
         <div className="inline-add-actions">
           <button
