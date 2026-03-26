@@ -3,11 +3,11 @@ import type { EventRepository } from '../types/EventRepository';
 import { throwApiError } from '@/core/errors/ApiError';
 import { apiConfig } from '@/core/config/api';
 
-// API request body format that matches backend
+// API request body format that matches backend (snake_case)
 interface EventApiRequest {
   name: string;
   description: string;
-  eventDate: string;
+  event_date: string;
   location: string;
   type: string;
   members?: string[];
@@ -51,32 +51,131 @@ export class HttpEventRepository implements EventRepository {
     const apiRequest: EventApiRequest = {
       name: eventData.name,
       description: eventData.description,
-      eventDate: eventData.date,
+      event_date: eventData.date,
       location: eventData.location,
       type: eventData.type,
     };
 
     const token = this.getToken();
-    if (!token) {
-      throw new Error('Authentication required');
-    }
-
-    const response = await fetch(`${this.baseUrl}/events`, {
+    // #region agent log
+    fetch('http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        'X-Debug-Session-Id': '9c0c76',
       },
-      body: JSON.stringify(apiRequest),
-    });
+      body: JSON.stringify({
+        sessionId: '9c0c76',
+        location: 'HttpEventRepository.ts:createEvent',
+        message: 'pre-fetch state',
+        data: {
+          baseUrl: this.baseUrl,
+          hasToken: !!token,
+          tokenLength: token?.length,
+          fullUrl: `${this.baseUrl}/events`,
+        },
+        timestamp: Date.now(),
+        hypothesisId: 'H1+H2',
+      }),
+    }).catch(() => {});
+    // #endregion
 
-    if (!response.ok) {
-      await throwApiError(response);
+    if (!token) {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': '9c0c76',
+          },
+          body: JSON.stringify({
+            sessionId: '9c0c76',
+            location: 'HttpEventRepository.ts:createEvent',
+            message: 'TOKEN IS NULL - throwing auth error',
+            data: {},
+            timestamp: Date.now(),
+            hypothesisId: 'H2',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion
+      throw new Error('Authentication required');
     }
 
-    const eventResponse: EventApiResponse = await response.json();
+    try {
+      const response = await fetch(`${this.baseUrl}/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(apiRequest),
+      });
 
-    return this.mapApiResponseToEvent(eventResponse, eventData.organizerId);
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': '9c0c76',
+          },
+          body: JSON.stringify({
+            sessionId: '9c0c76',
+            location: 'HttpEventRepository.ts:createEvent',
+            message: 'fetch response received',
+            data: {
+              status: response.status,
+              ok: response.ok,
+              statusText: response.statusText,
+              url: response.url,
+            },
+            timestamp: Date.now(),
+            hypothesisId: 'H3+H4',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion
+
+      if (!response.ok) {
+        await throwApiError(response);
+      }
+
+      const eventResponse: EventApiResponse = await response.json();
+
+      return this.mapApiResponseToEvent(eventResponse, eventData.organizerId);
+    } catch (fetchError) {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7650/ingest/addb5d08-2bef-4f9b-b9ff-5c0712d6202d',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': '9c0c76',
+          },
+          body: JSON.stringify({
+            sessionId: '9c0c76',
+            location: 'HttpEventRepository.ts:createEvent',
+            message: 'FETCH FAILED with error',
+            data: {
+              errorName: (fetchError as Error)?.name,
+              errorMessage: (fetchError as Error)?.message,
+              errorType: typeof fetchError,
+            },
+            timestamp: Date.now(),
+            hypothesisId: 'H3+H4',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion
+      throw new Error(
+        `Failed to create event: ${(fetchError as Error).message}`
+      );
+    }
   }
 
   async getEventById(id: string): Promise<Event | null> {
@@ -138,7 +237,7 @@ export class HttpEventRepository implements EventRepository {
     const apiRequest: Partial<EventApiRequest> = {};
     if (eventData.name) apiRequest.name = eventData.name;
     if (eventData.description) apiRequest.description = eventData.description;
-    if (eventData.date) apiRequest.eventDate = eventData.date;
+    if (eventData.date) apiRequest.event_date = eventData.date;
     if (eventData.location) apiRequest.location = eventData.location;
     if (eventData.type) apiRequest.type = eventData.type;
 

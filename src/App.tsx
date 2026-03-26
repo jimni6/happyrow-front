@@ -59,7 +59,7 @@ try {
 }
 
 const AppContent: React.FC = () => {
-  const { user, session, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -125,14 +125,6 @@ const AppContent: React.FC = () => {
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="loading-screen">
-  //       <div className="loading-spinner">Loading...</div>
-  //     </div>
-  //   );
-  // }
-
   if (!isAuthenticated) {
     return (
       <>
@@ -181,15 +173,10 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <EventsProvider getToken={() => session?.accessToken || null}>
-      <ResourcesProvider getToken={() => session?.accessToken || null}>
+    <EventsProvider>
+      <ResourcesProvider>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <AppLayout user={user!} authRepository={authRepository!} />
-            }
-          >
+          <Route path="/" element={<AppLayout user={user!} />}>
             <Route index element={<HomePage user={user!} />} />
             <Route path="events/:eventId" element={<EventDetailPage />} />
             <Route path="profile" element={<UserProfilePage />} />

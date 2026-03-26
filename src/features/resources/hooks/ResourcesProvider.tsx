@@ -21,16 +21,17 @@ import { DeleteContribution } from '@/features/contributions/use-cases/DeleteCon
 import { HttpContributionRepository } from '@/features/contributions/services/HttpContributionRepository';
 import { useResourceOperations } from './useResourceOperations';
 import { useContributionOperations } from './useContributionOperations';
+import { useAuth } from '@/features/auth';
 
 interface ResourcesProviderProps {
   children: ReactNode;
-  getToken: () => string | null;
 }
 
 export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
   children,
-  getToken,
 }) => {
+  const { session } = useAuth();
+  const getToken = useCallback(() => session?.accessToken || null, [session]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

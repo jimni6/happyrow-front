@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import type { User, AuthRepository } from '@/features/auth';
+import type { User } from '@/features/auth';
 import { AppNavbar } from '@/shared/components/AppNavbar';
 import { Modal } from '@/shared/components/Modal';
 import { CreateEventForm } from '@/features/events';
@@ -10,7 +10,6 @@ import './AppLayout.css';
 
 interface AppLayoutProps {
   user: User;
-  authRepository: AuthRepository;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ user }) => {

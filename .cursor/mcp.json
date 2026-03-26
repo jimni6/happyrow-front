@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"],
+      "env": {
+        "NODE_PATH": "/Users/j.ni/IdeaProjects/happyrow-front/node_modules"
+      }
+    }
+  }
+}
