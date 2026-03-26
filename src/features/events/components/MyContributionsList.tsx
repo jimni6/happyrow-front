@@ -28,7 +28,7 @@ export const MyContributionsList: React.FC<MyContributionsListProps> = ({
     return (
       <div className="my-contributions-section">
         <h2 className="my-contributions-title">
-          <span className="meta-icon">🎁</span> My Contributions
+          <span className="meta-icon">🎁</span> My Contributions (0)
         </h2>
         <p className="my-contributions-empty">
           You haven't contributed to any resource yet.
@@ -40,7 +40,8 @@ export const MyContributionsList: React.FC<MyContributionsListProps> = ({
   return (
     <div className="my-contributions-section">
       <h2 className="my-contributions-title">
-        <span className="meta-icon">🎁</span> My Contributions
+        <span className="meta-icon">🎁</span> My Contributions (
+        {contributions.length})
       </h2>
       <div className="my-contributions-list">
         {contributions.map((c, index) => (
