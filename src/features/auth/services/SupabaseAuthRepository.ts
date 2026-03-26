@@ -24,8 +24,6 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async register(userData: UserRegistration): Promise<User> {
-    console.log('Attempting to register user:', { email: userData.email });
-
     const { data, error } = await this.supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
@@ -40,38 +38,30 @@ export class SupabaseAuthRepository implements AuthRepository {
     });
 
     if (error) {
-      console.error('Supabase registration error:', error);
       throw new Error(`Registration failed: ${error.message}`);
     }
 
     if (!data.user) {
-      console.error('No user data returned from Supabase');
       throw new Error('Registration failed: No user data returned');
     }
 
-    console.log('Registration successful:', data.user.email);
     return this.mapSupabaseUserToUser(data.user);
   }
 
   async signIn(credentials: UserCredentials): Promise<AuthSession> {
-    console.log('Attempting to sign in user:', { email: credentials.email });
-
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password,
     });
 
     if (error) {
-      console.error('Supabase sign-in error:', error);
       throw new Error(`Sign in failed: ${error.message}`);
     }
 
     if (!data.session || !data.user) {
-      console.error('No session data returned from Supabase');
       throw new Error('Sign in failed: No session data returned');
     }
 
-    console.log('Sign in successful:', data.user.email);
     return this.mapSupabaseSessionToAuthSession(data.session, data.user);
   }
 
@@ -91,7 +81,6 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error) {
       // Handle session_not_found errors gracefully
       if (error.message.includes('session_not_found') || error.status === 403) {
-        console.log('Session not found, user needs to re-authenticate');
         return null;
       }
       throw new Error(error.message);
@@ -109,7 +98,6 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error) {
       // Handle session_not_found errors gracefully
       if (error.message.includes('session_not_found') || error.status === 403) {
-        console.log('Session not found, returning null');
         return null;
       }
       throw new Error(error.message);
@@ -139,7 +127,6 @@ export class SupabaseAuthRepository implements AuthRepository {
       throw new Error('Session refresh failed: No session data returned');
     }
 
-    console.log('Session refreshed successfully');
     return this.mapSupabaseSessionToAuthSession(data.session, data.user);
   }
 

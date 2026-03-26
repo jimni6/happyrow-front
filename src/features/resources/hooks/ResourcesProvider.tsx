@@ -102,7 +102,6 @@ export const ResourcesProvider: React.FC<ResourcesProviderProps> = ({
             err instanceof Error ? err.message : 'Failed to load resources';
           setError(errorMessage);
         }
-        console.error('Error loading resources:', err);
         loadedEventIdRef.current = null;
       } finally {
         setLoading(false);

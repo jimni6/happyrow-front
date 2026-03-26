@@ -1,4 +1,5 @@
 import type { AuthRepository } from '../types/AuthRepository';
+import { isValidEmail } from '@/shared/utils/validation';
 
 /**
  * Reset Password Use Case
@@ -17,9 +18,7 @@ export class ResetPassword {
       throw new Error('Email is required');
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       throw new Error('Invalid email format');
     }
 

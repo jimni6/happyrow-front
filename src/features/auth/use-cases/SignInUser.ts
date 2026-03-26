@@ -1,3 +1,4 @@
+import { isValidEmail } from '@/shared/utils/validation';
 import type { UserCredentials, AuthSession } from '../types/User';
 import type { AuthRepository } from '../types/AuthRepository';
 
@@ -19,8 +20,7 @@ export class SignInUser {
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(credentials.email)) {
+    if (!isValidEmail(credentials.email)) {
       throw new Error('Invalid email format');
     }
 

@@ -12,8 +12,8 @@ export const UserProfilePage: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await authActions.signOut.execute();
-    } catch (error) {
-      console.error('Sign out failed:', error);
+    } catch {
+      // Sign out failed; user can retry
     }
   };
 

@@ -63,8 +63,8 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
 
       // Reset selection after successful operation
       setSelectedQuantity(0);
-    } catch (error) {
-      console.error('Error updating contribution:', error);
+    } catch {
+      // Operation failed; user can retry
     } finally {
       setIsSaving(false);
     }

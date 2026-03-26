@@ -54,8 +54,8 @@ class ErrorBoundary extends React.Component<
 let authRepository: AuthRepository | null = null;
 try {
   authRepository = AuthServiceFactory.getAuthRepository();
-} catch (error) {
-  console.error('Failed to initialize auth repository:', error);
+} catch {
+  // Auth repository unavailable; App renders configuration error UI
 }
 
 const AppContent: React.FC = () => {

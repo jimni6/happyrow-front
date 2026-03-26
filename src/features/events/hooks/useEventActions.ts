@@ -58,7 +58,6 @@ export function useEventActions({
         onEventUpdated?.(updatedEvent);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to update event');
-        console.error('Error updating event:', err);
         throw err;
       } finally {
         setIsUpdating(false);
@@ -81,7 +80,6 @@ export function useEventActions({
       onEventDeleted?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete event');
-      console.error('Error deleting event:', err);
     } finally {
       setIsDeleting(false);
     }

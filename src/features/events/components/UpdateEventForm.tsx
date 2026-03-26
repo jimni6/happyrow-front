@@ -129,8 +129,8 @@ export const UpdateEventForm: React.FC<UpdateEventFormProps> = ({
         location: formData.location.trim(),
         type: formData.type as EventType,
       });
-    } catch (error) {
-      console.error('Error updating event:', error);
+    } catch {
+      // Submit failed; parent may surface error via UI
     }
   };
 

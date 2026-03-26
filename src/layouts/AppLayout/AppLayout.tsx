@@ -37,12 +37,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ user }) => {
 
       // Success - close modal
       setIsCreateEventModalOpen(false);
-      console.log('Event created successfully!');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create event';
       setCreateEventError(errorMessage);
-      console.error('Error creating event:', error);
       throw error; // Re-throw to let modal handle it
     } finally {
       setIsCreatingEvent(false);

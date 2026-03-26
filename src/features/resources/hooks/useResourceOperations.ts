@@ -36,7 +36,6 @@ export function useResourceOperations({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to create resource';
         setError(errorMessage);
-        console.error('Error creating resource:', err);
         throw err;
       }
     },
@@ -61,7 +60,6 @@ export function useResourceOperations({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to update resource';
         setError(errorMessage);
-        console.error('Error updating resource:', err);
         setResources(previousResources);
         throw err;
       }
@@ -81,7 +79,6 @@ export function useResourceOperations({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to delete resource';
         setError(errorMessage);
-        console.error('Error deleting resource:', err);
         setResources(previousResources);
         throw err;
       }
