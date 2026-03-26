@@ -1,0 +1,8 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Diagonal: filled top-left + bottom-right, outlined the rest -->
+  <circle cx="60" cy="64" r="34" fill="#F97066" opacity="0.55"/>
+  <circle cx="140" cy="136" r="34" fill="#FB923C" opacity="0.55"/>
+  <circle cx="60" cy="136" r="34" stroke="#F97066" stroke-width="3.5" fill="none" opacity="0.55"/>
+  <circle cx="140" cy="64" r="34" stroke="#FB923C" stroke-width="3.5" fill="none" opacity="0.55"/>
+  <ellipse cx="100" cy="100" rx="56" ry="22" fill="#FBBF24" opacity="0.4"/>
+</svg>

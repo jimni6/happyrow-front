@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - H Circles Variants</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e2e8f0; padding: 3rem 2rem; }
+  h1 { text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h1 span { background: linear-gradient(135deg, #F97066, #FB923C); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 3rem; }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: #475569; margin-bottom: 1.25rem;
+    max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 4px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+  }
+
+  .card {
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #F97066; }
+
+  .card--dark { background: #111; }
+  .card--checker {
+    background: repeating-conic-gradient(#181818 0% 25%, #111 0% 50%) 50% / 12px 12px;
+  }
+  .card--light { background: #f8f6f3; }
+
+  .card img { width: 100px; height: 100px; }
+  .card-name { font-size: 0.85rem; font-weight: 700; color: #f1f5f9; }
+  .card--light .card-name { color: #1e293b; }
+  .card-desc { font-size: 0.68rem; color: #64748b; text-align: center; line-height: 1.4; }
+  .card-tag {
+    font-size: 0.55rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; border: 1px solid #2a2a2a; color: #94a3b8;
+  }
+  .card--light .card-tag { border-color: #ddd; }
+
+  hr { border: none; border-top: 1px solid #1a1a1a; max-width: 1200px; margin: 0 auto 2rem; }
+</style>
+</head>
+<body>
+
+<h1>H Circles &mdash; <span>14 variantes</span></h1>
+<p class="subtitle">Le meme ADN, 14 interpretations differentes</p>
+
+<p class="section-label">Fonds</p>
+<div class="grid">
+  <div class="card card--checker">
+    <img src="../concept-h-circles.svg">
+    <div class="card-name">Original</div>
+    <div class="card-desc">Sans fond, couleurs directes. La reference.</div>
+    <span class="card-tag">transparent</span>
+  </div>
+  <div class="card card--dark">
+    <img src="h-circles-grad.svg">
+    <div class="card-name">Gradient</div>
+    <div class="card-desc">Cercles blancs sur fond coral-orange.</div>
+    <span class="card-tag">app icon</span>
+  </div>
+  <div class="card card--dark">
+    <img src="h-circles-navy.svg">
+    <div class="card-name">Navy</div>
+    <div class="card-desc">Cercles colores sur fond sombre. Elegant, premium.</div>
+    <span class="card-tag">dark mode</span>
+  </div>
+  <div class="card card--light">
+    <img src="h-circles-surface.svg">
+    <div class="card-name">Surface</div>
+    <div class="card-desc">Cercles colores sur fond chaud #FFFBF5.</div>
+    <span class="card-tag">light mode</span>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Couleurs</p>
+<div class="grid">
+  <div class="card card--checker">
+    <img src="h-circles-mono.svg">
+    <div class="card-name">Mono</div>
+    <div class="card-desc">Tout en coral. Sobre, unifie.</div>
+    <span class="card-tag">monochrome</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-glow.svg">
+    <div class="card-name">Glow</div>
+    <div class="card-desc">Gradient radial. Lumieres douces qui s'estompent.</div>
+    <span class="card-tag">radial gradient</span>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Disposition</p>
+<div class="grid">
+  <div class="card card--checker">
+    <img src="h-circles-tight.svg">
+    <div class="card-name">Tight</div>
+    <div class="card-desc">Cercles rapproches, forte superposition. Compact, dense.</div>
+    <span class="card-tag">serre</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-loose.svg">
+    <div class="card-name">Loose</div>
+    <div class="card-desc">Cercles ecartes, ellipse fine. Aere, respire.</div>
+    <span class="card-tag">espace</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-6.svg">
+    <div class="card-name">6 Circles</div>
+    <div class="card-desc">3 cercles par colonne. H plus grand, plus vertical.</div>
+    <span class="card-tag">3+3</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-asymmetric.svg">
+    <div class="card-name">Asymmetric</div>
+    <div class="card-desc">Tailles variees, positions decalees. Organique, vivant.</div>
+    <span class="card-tag">organique</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-tilted.svg">
+    <div class="card-name">Tilted</div>
+    <div class="card-desc">Composition pivotee de -10°. Dynamique, ludique.</div>
+    <span class="card-tag">rotation</span>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Style de rendu</p>
+<div class="grid">
+  <div class="card card--checker">
+    <img src="h-circles-all-dots.svg">
+    <div class="card-name">All Dots</div>
+    <div class="card-desc">Barre = 3 cercles au lieu d'une ellipse. 100% rond.</div>
+    <span class="card-tag">circles only</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-outline.svg">
+    <div class="card-name">Outline</div>
+    <div class="card-desc">Contours uniquement, pas de remplissage. Aerien, fin.</div>
+    <span class="card-tag">stroke</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-mixed.svg">
+    <div class="card-name">Mixed</div>
+    <div class="card-desc">Diagonale remplie / diagonale contour. Rythme visuel.</div>
+    <span class="card-tag">fill + stroke</span>
+  </div>
+  <div class="card card--checker">
+    <img src="h-circles-molecular.svg">
+    <div class="card-name">Molecular</div>
+    <div class="card-desc">Lignes de liaison entre les cercles + dot central. Chimie sociale.</div>
+    <span class="card-tag">liens</span>
+  </div>
+</div>
+
+</body>
+</html>

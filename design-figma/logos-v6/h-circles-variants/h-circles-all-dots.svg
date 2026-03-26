@@ -1,0 +1,10 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- All circles, crossbar = 3 dots -->
+  <circle cx="60" cy="64" r="34" fill="#F97066" opacity="0.6"/>
+  <circle cx="60" cy="136" r="34" fill="#F97066" opacity="0.6"/>
+  <circle cx="140" cy="64" r="34" fill="#FB923C" opacity="0.6"/>
+  <circle cx="140" cy="136" r="34" fill="#FB923C" opacity="0.6"/>
+  <circle cx="80" cy="100" r="20" fill="#FBBF24" opacity="0.5"/>
+  <circle cx="100" cy="100" r="22" fill="#FBBF24" opacity="0.55"/>
+  <circle cx="120" cy="100" r="20" fill="#FBBF24" opacity="0.5"/>
+</svg>

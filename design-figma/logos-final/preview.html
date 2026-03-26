@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Logo Final Set</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f8f8f8; color: #1e293b; padding: 3rem 2rem; }
+
+  h1 { text-align: center; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.25rem; }
+  h1 span { color: #F97066; }
+  .subtitle { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 3rem; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: #94a3b8; margin-bottom: 1.5rem;
+    max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  hr { border: none; border-top: 1px solid #e5e7eb; max-width: 1100px; margin: 0 auto 2.5rem; }
+
+  /* Hero */
+  .hero {
+    max-width: 1100px; margin: 0 auto 4rem;
+    background: #1E293B; border-radius: 28px;
+    padding: 4rem 2rem;
+    display: flex; flex-direction: column; align-items: center; gap: 2rem;
+  }
+  .hero img { width: 160px; height: 160px; filter: drop-shadow(0 8px 32px rgba(249,112,102,0.2)); }
+  .hero-text { color: white; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.5px; }
+  .hero-text span { color: #F97066; }
+
+  /* Grid */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem; max-width: 1100px; margin: 0 auto 3.5rem;
+  }
+  .card {
+    border-radius: 16px; padding: 1.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); }
+  .card--white { background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .card--dark { background: #1E293B; }
+  .card--darker { background: #0F172A; }
+  .card--checker { background: repeating-conic-gradient(#f0f0f0 0% 25%, white 0% 50%) 50% / 14px 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); border-radius: 16px; }
+  .card img { max-width: 100%; height: auto; }
+  .card-label { font-size: 0.7rem; font-weight: 600; color: #94a3b8; }
+  .card--dark .card-label, .card--darker .card-label { color: #64748b; }
+
+  /* Formats row */
+  .formats-row {
+    display: flex; gap: 2rem; justify-content: center; align-items: flex-end;
+    flex-wrap: wrap; max-width: 1100px; margin: 0 auto 3.5rem;
+    background: white; border-radius: 20px; padding: 2.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .format-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .format-item img { border-radius: 8px; }
+  .format-label { font-size: 0.6rem; font-weight: 600; color: #94a3b8; }
+
+  /* Full logos */
+  .full-row {
+    max-width: 1100px; margin: 0 auto 1.5rem;
+    border-radius: 16px; padding: 2rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .full-row img { max-height: 60px; width: auto; }
+  .full-row--white { background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .full-row--dark { background: #1E293B; }
+
+  /* Variants grid */
+  .variants-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem; max-width: 1100px; margin: 0 auto 3.5rem;
+  }
+  .vcard {
+    border-radius: 14px; padding: 1.25rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    background: #f1f1f1;
+  }
+  .vcard img { width: 100px; height: 100px; }
+  .vcard-name { font-size: 0.8rem; font-weight: 700; color: #1e293b; }
+  .vcard-desc { font-size: 0.65rem; color: #64748b; text-align: center; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<h1>Happy<span>Row</span> &mdash; Logo Final</h1>
+<p class="subtitle">H Circles sur fond Navy &bull; Set professionnel complet</p>
+
+<!-- HERO -->
+<div class="hero">
+  <img src="icon.svg">
+  <div class="hero-text">Happy<span>Row</span></div>
+</div>
+
+<!-- PROFESSIONAL SET -->
+<p class="section-label">Set professionnel</p>
+
+<p class="section-label" style="font-size:0.6rem; color:#b0b8c4; margin-top:-1rem;">Logo complet</p>
+<div class="full-row full-row--white" style="margin-bottom:1rem">
+  <img src="full-horizontal.svg">
+</div>
+<div class="full-row full-row--dark" style="margin-bottom:1rem">
+  <img src="full-horizontal-white.svg">
+</div>
+<div class="full-row full-row--white" style="max-width:400px; margin-bottom:3.5rem">
+  <img src="full-vertical.svg" style="max-height:180px">
+</div>
+
+<p class="section-label" style="font-size:0.6rem; color:#b0b8c4;">Icon, mark, favicon</p>
+<div class="formats-row">
+  <div class="format-item">
+    <img src="icon.svg" width="100" height="100">
+    <span class="format-label">Icon (navy bg)</span>
+  </div>
+  <div class="format-item">
+    <img src="mark.svg" width="100" height="100" style="background: repeating-conic-gradient(#f0f0f0 0% 25%, white 0% 50%) 50% / 10px 10px; border-radius:8px;">
+    <span class="format-label">Mark (transparent)</span>
+  </div>
+  <div class="format-item" style="background:#1E293B; padding:16px; border-radius:12px;">
+    <img src="mark-white.svg" width="80" height="80">
+    <span class="format-label" style="color:#64748b">Mark white</span>
+  </div>
+  <div class="format-item">
+    <img src="favicon.svg" width="32" height="32">
+    <span class="format-label">Favicon 32px</span>
+  </div>
+  <div class="format-item">
+    <img src="favicon.svg" width="20" height="20">
+    <span class="format-label">Favicon 20px</span>
+  </div>
+</div>
+
+<p class="section-label" style="font-size:0.6rem; color:#b0b8c4;">Wordmark</p>
+<div class="full-row full-row--white" style="margin-bottom:1rem">
+  <img src="wordmark.svg" style="max-height:36px">
+</div>
+<div class="full-row full-row--dark" style="margin-bottom:3.5rem">
+  <img src="wordmark-white.svg" style="max-height:36px">
+</div>
+
+<hr>
+
+<!-- ARTISTIC VARIANTS -->
+<p class="section-label">Variantes artistiques</p>
+<div class="variants-grid">
+  <div class="vcard">
+    <img src="icon.svg">
+    <div class="vcard-name">Original</div>
+    <div class="vcard-desc">Reference. Equilibre parfait.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-vibrant.svg">
+    <div class="vcard-name">Vibrant</div>
+    <div class="vcard-desc">Opacite elevee. Plus punchy, plus colore.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-ethereal.svg">
+    <div class="vcard-name">Ethereal</div>
+    <div class="vcard-desc">Opacite basse. Doux, onirique, subtil.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-minimal.svg">
+    <div class="vcard-name">Minimal</div>
+    <div class="vcard-desc">4 cercles seuls. Pas de barre. Ultra epure.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-gradient-bar.svg">
+    <div class="vcard-name">Gradient Bar</div>
+    <div class="vcard-desc">Barre en degrade coral-orange. Transition fluide.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-3colors.svg">
+    <div class="vcard-name">3 Colors</div>
+    <div class="vcard-desc">Couleurs croisees en diagonale. Plus de variete.</div>
+  </div>
+  <div class="vcard">
+    <img src="variant-darker.svg">
+    <div class="vcard-name">Darker</div>
+    <div class="vcard-desc">Fond #0F172A. Plus sombre, plus premium.</div>
+  </div>
+</div>
+
+</body>
+</html>

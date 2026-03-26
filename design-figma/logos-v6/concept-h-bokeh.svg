@@ -1,0 +1,31 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Soft halos along H path -->
+  <circle cx="58" cy="52" r="22" fill="white" opacity="0.1"/>
+  <circle cx="64" cy="84" r="26" fill="white" opacity="0.08"/>
+  <circle cx="56" cy="120" r="20" fill="white" opacity="0.1"/>
+  <circle cx="62" cy="152" r="24" fill="white" opacity="0.08"/>
+  <circle cx="142" cy="48" r="20" fill="white" opacity="0.1"/>
+  <circle cx="136" cy="80" r="24" fill="white" opacity="0.08"/>
+  <circle cx="140" cy="116" r="22" fill="white" opacity="0.1"/>
+  <circle cx="138" cy="148" r="26" fill="white" opacity="0.08"/>
+  <circle cx="84" cy="96" r="18" fill="white" opacity="0.1"/>
+  <circle cx="104" cy="104" r="22" fill="white" opacity="0.09"/>
+  <circle cx="120" cy="98" r="18" fill="white" opacity="0.1"/>
+  <!-- Bright H highlights -->
+  <circle cx="60" cy="100" r="8" fill="white" opacity="0.6"/>
+  <circle cx="100" cy="100" r="10" fill="white" opacity="0.7"/>
+  <circle cx="140" cy="100" r="8" fill="white" opacity="0.6"/>
+  <circle cx="60" cy="48" r="6" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="48" r="6" fill="white" opacity="0.5"/>
+  <circle cx="60" cy="152" r="6" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="152" r="6" fill="white" opacity="0.5"/>
+  <circle cx="80" cy="100" r="5" fill="white" opacity="0.45"/>
+  <circle cx="120" cy="100" r="5" fill="white" opacity="0.45"/>
+</svg>

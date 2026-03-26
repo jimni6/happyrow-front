@@ -1,0 +1,15 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97066"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#g)"/>
+  <!-- Left pillar as gentle curve -->
+  <path d="M54,40 C66,40 66,160 54,160" stroke="white" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <!-- Right pillar as gentle curve -->
+  <path d="M146,40 C134,40 134,160 146,160" stroke="white" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <!-- Twisted ribbon crossbar -->
+  <path d="M60,92 C80,92 80,108 100,100 C120,92 120,108 140,108" stroke="white" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.8"/>
+</svg>

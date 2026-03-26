@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HappyRow - Logo v6: Creative H</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e2e8f0; padding: 3rem 2rem; }
+
+  h1 { text-align: center; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h1 span {
+    background: linear-gradient(135deg, #F97066, #FB923C);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; font-size: 0.9rem; color: #64748b; margin-bottom: 1rem; }
+  .intro { text-align: center; font-size: 0.78rem; color: #475569; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+  }
+
+  .card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #F97066; }
+  .card img { width: 120px; height: 120px; }
+
+  .card--checker .card-preview {
+    background: repeating-conic-gradient(#1a1a1a 0% 25%, #141414 0% 50%) 50% / 12px 12px;
+    border-radius: 12px; padding: 12px;
+  }
+
+  .card-number {
+    font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em;
+    color: #F97066; background: rgba(249,112,102,0.1);
+    padding: 2px 8px; border-radius: 100px;
+  }
+  .card-name { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; }
+  .card-desc { font-size: 0.72rem; color: #64748b; text-align: center; line-height: 1.45; }
+
+  .card-technique {
+    font-size: 0.58rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; border: 1px solid #2a2a2a; color: #94a3b8;
+  }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: #475569; margin-bottom: 1.5rem;
+    max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 4px;
+  }
+  hr { border: none; border-top: 1px solid #1a1a1a; max-width: 1200px; margin: 0 auto 2rem; }
+</style>
+</head>
+<body>
+
+<h1>La lettre <span>H</span> &mdash; 12 facons</h1>
+<p class="subtitle">Minimaliste, creatif, toujours reconnaissable</p>
+<p class="intro">Chaque concept suggere la lettre H avec une technique differente. Le H n'est jamais litteral, il emerge du design.</p>
+
+<p class="section-label">Structurel &mdash; le H est forme par des elements</p>
+<div class="grid">
+  <div class="card">
+    <span class="card-number">01</span>
+    <img src="concept-h-dots.svg">
+    <div class="card-name">H Dots</div>
+    <div class="card-desc">Points de tailles variees places sur la structure du H. Le plus gros dot marque le croisement.</div>
+    <span class="card-technique">pointillisme</span>
+  </div>
+  <div class="card">
+    <span class="card-number">02</span>
+    <img src="concept-h-wave.svg">
+    <div class="card-name">H Wave</div>
+    <div class="card-desc">Deux piliers relies par une courbe S fluide. Le H respire, le lien est vivant.</div>
+    <span class="card-technique">organique</span>
+  </div>
+  <div class="card">
+    <span class="card-number">03</span>
+    <img src="concept-h-petals.svg">
+    <div class="card-name">H Petals</div>
+    <div class="card-desc">Trois ellipses (2 verticales + 1 horizontale) forment un H floral avec des accents aux extremites.</div>
+    <span class="card-technique">petales</span>
+  </div>
+  <div class="card">
+    <span class="card-number">04</span>
+    <img src="concept-h-pixel.svg">
+    <div class="card-name">H Pixel</div>
+    <div class="card-desc">Grille 5x7 de tuiles arrondies. Retro-moderne, ludique, lisible a toutes tailles.</div>
+    <span class="card-technique">pixel art</span>
+  </div>
+  <div class="card">
+    <span class="card-number">05</span>
+    <img src="concept-h-ribbon.svg">
+    <div class="card-name">H Ribbon</div>
+    <div class="card-desc">Piliers courbes + barre tordue en ruban. Mouvement, elegance, lien torsade.</div>
+    <span class="card-technique">ruban</span>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Emergent &mdash; le H apparait par contraste ou densite</p>
+<div class="grid">
+  <div class="card">
+    <span class="card-number">06</span>
+    <img src="concept-h-negative.svg">
+    <div class="card-name">H Negative</div>
+    <div class="card-desc">Le H est l'espace vide decoupe dans un rectangle blanc. Espace negatif pur.</div>
+    <span class="card-technique">negative space</span>
+  </div>
+  <div class="card">
+    <span class="card-number">07</span>
+    <img src="concept-h-scatter.svg">
+    <div class="card-name">H Scatter</div>
+    <div class="card-desc">Nuage de particules dont la densite dessine le H. L'ordre emerge du chaos.</div>
+    <span class="card-technique">densite</span>
+  </div>
+  <div class="card">
+    <span class="card-number">08</span>
+    <img src="concept-h-lines.svg">
+    <div class="card-name">H Lines</div>
+    <div class="card-desc">Lignes horizontales uniformes qui s'illuminent au passage du H. Masque + luminosite.</div>
+    <span class="card-technique">scanlines</span>
+  </div>
+  <div class="card">
+    <span class="card-number">09</span>
+    <img src="concept-h-bokeh.svg">
+    <div class="card-name">H Bokeh</div>
+    <div class="card-desc">Halos lumineux flous qui convergent vers la forme du H. Chaleur de soiree.</div>
+    <span class="card-technique">bokeh</span>
+  </div>
+</div>
+
+<hr>
+<p class="section-label">Deconstructif &mdash; le H est fragmente ou reinterprete</p>
+<div class="grid">
+  <div class="card">
+    <span class="card-number">10</span>
+    <img src="concept-h-split.svg">
+    <div class="card-name">H Split</div>
+    <div class="card-desc">Deux L inverses qui se font face. Le H est implicite dans l'espace entre eux.</div>
+    <span class="card-technique">deconstruction</span>
+  </div>
+  <div class="card">
+    <span class="card-number">11</span>
+    <img src="concept-h-stitch.svg">
+    <div class="card-name">H Stitch</div>
+    <div class="card-desc">Traits pointilles + croix aux joints. Brode, artisanal, fait-main.</div>
+    <span class="card-technique">broderie</span>
+  </div>
+  <div class="card card--checker">
+    <span class="card-number">12</span>
+    <div class="card-preview"><img src="concept-h-circles.svg"></div>
+    <div class="card-name">H Circles</div>
+    <div class="card-desc">4 cercles colores + 1 ellipse dore. Le H nait de la superposition.</div>
+    <span class="card-technique">intersection</span>
+  </div>
+</div>
+
+</body>
+</html>
