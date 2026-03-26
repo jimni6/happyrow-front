@@ -1,16 +1,15 @@
-/* Home Screen Styles */
+/* Home Screen Styles — Palette A */
 .home-screen {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f0f8f7 0%, #fff5f4 50%, #f5f9fb 100%);
+  background: var(--gradient-page);
   padding: var(--space-5);
-  padding-bottom: 120px; /* Space for navbar */
+  padding-bottom: 120px;
   font-family: var(--font-sans);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
-/* Content Section */
 .home-content {
   max-width: 768px;
   width: 100%;
@@ -18,6 +17,21 @@
   flex-direction: column;
   gap: var(--space-5);
   padding: var(--space-5) 0;
+}
+
+/* Greeting */
+.home-greeting {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
+.home-section-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  margin: 0;
 }
 
 /* Events List */
@@ -32,7 +46,7 @@
 .no-events {
   text-align: center;
   padding: var(--space-7) var(--space-3);
-  color: var(--color-navy);
+  color: var(--color-text-secondary);
   font-size: var(--text-lg);
 }
 
@@ -61,6 +75,8 @@
   .events-list {
     gap: var(--space-3);
   }
-}
 
-/* Error Toast - Moved to AppLayout.css */
+  .home-greeting {
+    font-size: var(--text-xl);
+  }
+}

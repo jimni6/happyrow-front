@@ -41,9 +41,8 @@ export const EventCard: React.FC<EventCardProps> = ({
     hour12: true,
   });
 
-  // Determine card background color based on date
   const cardColorClass =
-    day % 2 === 0 ? 'event-card--coral' : 'event-card--teal';
+    day % 2 === 0 ? 'event-card--warm' : 'event-card--amber';
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't trigger card click if clicking on action buttons
@@ -201,7 +200,7 @@ export const EventCard: React.FC<EventCardProps> = ({
 
             {isOrganizer && (
               <button
-                className="event-card__action-btn"
+                className="event-card__action-btn event-card__action-btn--primary"
                 aria-label="Add participant"
                 onClick={e => {
                   e.stopPropagation();
