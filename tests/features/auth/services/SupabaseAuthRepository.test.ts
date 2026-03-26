@@ -85,7 +85,7 @@ describe('SupabaseAuthRepository', () => {
         email: userData.email,
         password: userData.password,
         options: {
-          emailRedirectTo: 'https://happyrow-front.vercel.app',
+          emailRedirectTo: window.location.origin,
           data: {
             firstname: userData.firstname,
             lastname: userData.lastname,
@@ -363,7 +363,7 @@ describe('SupabaseAuthRepository', () => {
       expect(
         mockSupabaseClient.auth.resetPasswordForEmail
       ).toHaveBeenCalledWith('test@example.com', {
-        redirectTo: 'https://happyrow-front.vercel.app/reset-password',
+        redirectTo: `${window.location.origin}/reset-password`,
       });
     });
 

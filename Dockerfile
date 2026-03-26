@@ -15,7 +15,11 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Build the application
+# Vite embeds VITE_* at build time -- pass via: docker build --build-arg VITE_SUPABASE_URL=...
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_API_BASE_URL
+
 RUN npm run build
 
 # Stage 2: Production stage
