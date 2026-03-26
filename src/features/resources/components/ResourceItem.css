@@ -8,11 +8,19 @@
   transition: var(--transition-shadow);
 }
 
+.resource-item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .resource-item-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
 }
 
 .resource-item-header {

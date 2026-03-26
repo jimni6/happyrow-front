@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Resource } from '../types/Resource';
+import { ProgressRing } from './ProgressRing';
 import './ResourceItem.css';
 
 interface ResourceItemProps {
@@ -70,50 +71,62 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
     }
   };
 
+  const hasSuggested =
+    resource.suggestedQuantity != null && resource.suggestedQuantity > 0;
+
   return (
     <div className="resource-item-card">
-      <div className="resource-item-content">
-        <div className="resource-item-header">
-          <span className="resource-item-name">{resource.name}</span>
-          {userQuantity > 0 && (
-            <span className="resource-user-contribution">
-              Your contribution: {userQuantity}
-            </span>
-          )}
-        </div>
-        <div className="resource-item-controls">
-          <span className="resource-item-quantity">
-            {resource.currentQuantity}
-            {resource.suggestedQuantity && `/${resource.suggestedQuantity}`}
-          </span>
-          <div className="resource-item-buttons">
-            <button
-              className="resource-btn resource-btn-minus"
-              onClick={handleDecrement}
-              disabled={
-                (selectedQuantity === 0 && userQuantity === 0) || isSaving
-              }
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            {hasSelection && (
-              <span
-                className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
-                aria-live="polite"
-              >
-                {selectedQuantity > 0 ? '+' : ''}
-                {selectedQuantity}
+      <div className="resource-item-row">
+        {hasSuggested && (
+          <ProgressRing
+            current={resource.currentQuantity}
+            suggested={resource.suggestedQuantity!}
+          />
+        )}
+        <div className="resource-item-content">
+          <div className="resource-item-header">
+            <span className="resource-item-name">{resource.name}</span>
+            {userQuantity > 0 && (
+              <span className="resource-user-contribution">
+                You bring {userQuantity}
               </span>
             )}
-            <button
-              className="resource-btn resource-btn-plus"
-              onClick={handleIncrement}
-              disabled={isSaving}
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
+          </div>
+          <div className="resource-item-controls">
+            {!hasSuggested && (
+              <span className="resource-item-quantity">
+                {resource.currentQuantity}
+              </span>
+            )}
+            <div className="resource-item-buttons">
+              <button
+                className="resource-btn resource-btn-minus"
+                onClick={handleDecrement}
+                disabled={
+                  (selectedQuantity === 0 && userQuantity === 0) || isSaving
+                }
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              {hasSelection && (
+                <span
+                  className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
+                  aria-live="polite"
+                >
+                  {selectedQuantity > 0 ? '+' : ''}
+                  {selectedQuantity}
+                </span>
+              )}
+              <button
+                className="resource-btn resource-btn-plus"
+                onClick={handleIncrement}
+                disabled={isSaving}
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
       </div>

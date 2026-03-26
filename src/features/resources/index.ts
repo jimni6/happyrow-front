@@ -24,5 +24,6 @@ export type { ResourcesContextType } from './hooks/ResourcesContext';
 
 // Components
 export { ResourceItem } from './components/ResourceItem';
+export { ProgressRing } from './components/ProgressRing';
 export { AddResourceForm } from './components/AddResourceForm';
 export { InlineAddResourceForm } from './components/InlineAddResourceForm';
