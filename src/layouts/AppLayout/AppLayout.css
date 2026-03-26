@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-gradient);
+  background: var(--gradient-page);
 }
 
 .loading-spinner {
