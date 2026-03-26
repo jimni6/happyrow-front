@@ -109,15 +109,12 @@ export const ResourceItem: React.FC<ResourceItemProps> = ({
               >
                 −
               </button>
-              {hasSelection && (
-                <span
-                  className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
-                  aria-live="polite"
-                >
-                  {selectedQuantity > 0 ? '+' : ''}
-                  {selectedQuantity}
-                </span>
-              )}
+              <span
+                className={`resource-selected-quantity ${selectedQuantity < 0 ? 'negative' : ''}`}
+                aria-live="polite"
+              >
+                {selectedQuantity}
+              </span>
               <button
                 className="resource-btn resource-btn-plus"
                 onClick={handleIncrement}
